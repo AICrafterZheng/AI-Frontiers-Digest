@@ -39,18 +39,14 @@ export const ArchiveList = () => {
       <h1 className="text-2xl font-bold mb-6">News Archive</h1>
       <div className="space-y-4">
         {Object.entries(stats).map(([date, sources]) => (
-          <Link 
+          <Link
             to={`/articles?date=${encodeURIComponent(date)}`}
             key={date} 
             className="block border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
           >
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold">
-                {new Date(date).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
+                {date}
               </h3>
               <div className="flex gap-4 text-sm text-gray-600">
                 <span>Hacker News: {sources.hackernews}</span>

@@ -24,8 +24,10 @@ export async function onRequest(context: any) {
 
     // Calculate date range (10 days ago from now)
     const endDate = new Date();
+    console.log('endDate', endDate);
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 10);
+    startDate.setDate(startDate.getDate() - 2);
+    console.log('startDate', startDate);
 
     // Query to get all news within date range
     const { data, error } = await supabase
@@ -52,9 +54,13 @@ export async function onRequest(context: any) {
     data.forEach((item: any) => {
       if (!item.created_at || !item.source) return;
       
-      const date = new Date(item.created_at).toISOString().split('T')[0];
+      // const date = new Date(item.created_at).toISOString().split('T')[0];
+      const date = new Date(item.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
       const source = item.source.toLowerCase();
-      
       // Initialize the date if it doesn't exist
       if (!stats[date]) {
         stats[date] = Array.from(sources).reduce((acc, src) => {

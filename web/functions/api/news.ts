@@ -1,5 +1,16 @@
 import { createClient } from '@supabase/supabase-js'
 
+async function getHNScore(id: string): Promise<number> {
+  try {
+    const response = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`);
+    const data = await response.json();
+    return data.score || 0;
+  } catch (error) {
+    console.error('Error fetching HN score:', error);
+    return 0;
+  }
+}
+
 export async function onRequest(context: any) {
   // Updated CORS headers
   const corsHeaders = {
@@ -45,9 +56,10 @@ export async function onRequest(context: any) {
     }
 
     // Execute the query with ordering and limit
-    const { data, error } = await query
-      .order('created_at', { ascending: false })
-      .limit(limit ? parseInt(limit) : 10)
+    let { data, error } = await query
+      .order('source', { ascending: true })
+      .order('score', { ascending: false })
+      .limit(limit ? parseInt(limit) : 30)
 
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), {
@@ -59,13 +71,25 @@ export async function onRequest(context: any) {
       })
     }
 
-    // Format the summary and comments summary
-    // const formattedData = data?.map((story: any) => ({
-    //   ...story,
-    //   story_summary: formatSummary(story.story_summary),
-    //   story_comments_summary: formatSummary(story.story_comments_summary)
-    // }))
-
+    // If source is HN, update scores before returning
+    if (data && data.length > 0) {
+      const updatedData = await Promise.all(
+        data.map(async (story: any) => {
+          if (story.source.toLowerCase() === 'hackernews') {
+            const score = await getHNScore(story.story_id);
+            // Update the score in database if it changed
+            if (score !== story.score) {
+            await supabase
+              .from(context.env.SUPABASE_TABLE_STORIES!)
+              .update({ score })
+                .eq('id', story.id);
+            }
+            return { ...story, score };
+          }
+        })
+      );
+      data = updatedData;
+    }
     return new Response(JSON.stringify(data || []), {
       status: 200,
       headers: {
