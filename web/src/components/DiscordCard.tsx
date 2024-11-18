@@ -26,7 +26,7 @@ export function DiscordCard() {
         </ul>
       </div>
       <a
-        href="https://discord.gg/your-invite-link"
+        href="https://discord.gg/Ukbeb8rDmm"
         target="_blank"
         rel="noopener noreferrer"
         className="block w-full bg-[#5865F2] text-white font-semibold py-3 px-6 rounded-xl hover:bg-[#4752C4] transition-colors text-center flex items-center justify-center gap-2"

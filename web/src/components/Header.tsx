@@ -24,8 +24,8 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
 
   useEffect(() => {
     // Replace with your GitHub repo details
-    const owner = 'yourusername';
-    const repo = 'yourrepo';
+    const owner = 'AICrafterZheng';
+    const repo = 'AI-Frontiers-Digest';
     
     fetch(`https://api.github.com/repos/${owner}/${repo}`)
       .then(res => res.json())
@@ -73,7 +73,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
           </button>
 
           <a
-            href="https://github.com/yourusername/yourrepo"
+            href="https://github.com/AICrafterZheng/AI-Frontiers-Digest"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 sm:gap-3 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-xs sm:text-base"

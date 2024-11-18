@@ -12,7 +12,7 @@ from src.utils.llm_client import LLMClient
 from src.services.models import Story
 from src.utils.email_templates import get_tc_email_template
 from src.utils.email_sender import send_emails
-from src.config import HACKER_NEWS_DISCORD_WEBHOOK, TC_SOURCE_NAME
+from src.config import HACKER_NEWS_DISCORD_WEBHOOK, TC_SOURCE_NAME, AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK
 from src.utils.helpers import save_to_supabase
 
 class TechCrunchService:
@@ -69,7 +69,8 @@ class TechCrunchService:
             else:
                 message = f"\n<{url}>\n{summary}"
             message = message.replace("\n\n", "\n")
-            split_messages_to_send_discord(self.discord_webhook, message)
+            for webhook in [self.discord_webhook, AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK]:
+                split_messages_to_send_discord(webhook, message)
         return stories
 
     @task
@@ -100,7 +101,7 @@ async def run_test_tc_flow():
     urls = ["https://www.latent.space/p/ai-ux-moat"]  
     service = await TechCrunchService.create()
     service.formatted_date = "2024/11/08"
-    service.discord_webhook = HACKER_NEWS_DISCORD_WEBHOOK
+    service.discord_webhook = AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK
     stories = service.process_urls(urls)
     await service.send_newsletter(stories, to_emails=["aicrafter.ai@gmail.com"])
-    save_to_supabase(stories)
+    # save_to_supabase(stories)

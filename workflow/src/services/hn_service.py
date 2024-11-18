@@ -16,6 +16,7 @@ from src.utils.helpers import has_mentioned_keywords, save_to_supabase
 from src.config import (
     HN_API_BASE,
     HACKER_NEWS_DISCORD_WEBHOOK,
+    AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK,
     HN_SOURCE_NAME
 )
 from .models import Story
@@ -115,8 +116,11 @@ class HackerNewsService:
                 if first_news: # add the header
                     summary_message = f"Top Hacker News:\n{summary_message}"
                     first_news = False
-                send_discord(self.discord_webhook, summary_message, divider_style="none")
-                send_discord(self.discord_webhook, comments_summary_message)
+                
+                for webhook in [self.discord_webhook, AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK]:
+                    send_discord(webhook, summary_message, divider_style="none")
+                    send_discord(webhook, comments_summary_message)
+
             except Exception as e:
                 logger.error(f"Error processing story {story.title}: {e}")
         return stories
