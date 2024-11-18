@@ -1,0 +1,13 @@
+prefect
+python-dotenv
+supabase
+# tweepy
+aiohttp
+resend
+openai
+# flask
+# autogen-agentchat~=0.2
+pytz
+azure-ai-inference
+html2text
+azure-cognitiveservices-speech

@@ -1,0 +1,3 @@
+# Set more detailed logging while developing
+[logging]
+level = "DEBUG"
