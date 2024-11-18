@@ -144,7 +144,7 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
       <style>{summaryStyles}</style>
       
       <h1 className="text-4xl font-bold text-center text-blue-600 mb-2">
-        {source ? `${source} News` : 'Latest News'}
+        {source ? `${source} News` : 'Latest AI News'}
       </h1>
       <p className="text-center text-gray-600 mb-8">{new Date(date).toLocaleDateString()}</p>
       

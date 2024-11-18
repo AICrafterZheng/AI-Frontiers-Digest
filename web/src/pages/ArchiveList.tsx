@@ -47,15 +47,14 @@ export const ArchiveList = () => {
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold">
                 {new Date(date).toLocaleDateString('en-US', {
-                  weekday: 'long',
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric'
                 })}
               </h3>
               <div className="flex gap-4 text-sm text-gray-600">
-                <span>HN: {sources.hackernews}</span>
-                <span>TC: {sources.techcrunch}</span>
+                <span>Hacker News: {sources.hackernews}</span>
+                <span>TechCrunch: {sources.techcrunch}</span>
               </div>
             </div>
           </Link>

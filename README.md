@@ -1,59 +1,67 @@
 # AI Frontiers Digest
 
-**AI Frontiers Digest** is a curated platform that aggregates and showcases the latest developments, breakthroughs, and news in the field of artificial intelligence. Designed for AI enthusiasts, professionals, and researchers, this project offers:
+**AI Frontiers Digest** leverages Large Language Models (LLMs) to intelligently summarize and curate the latest developments in artificial intelligence. By analyzing both articles and Hacker News discussions, it provides concise, digestible insights into the AI landscape.
 
-- **Newsletter Summaries:** A compilation of AI-related news and updates from top sources like Hacker News, TechCrunch, Reddit, and more.
-- **Community Engagement:** Join discussions and connect with like-minded individuals through our integrated Discord community.
-- **Subscription Service:** Stay up-to-date with personalized newsletters delivered straight to your inbox.
+## Project Structure
 
-This repository contains the codebase and resources for building and maintaining the **AI Frontiers Digest** platform, including backend services, frontend interfaces, and data aggregation scripts.
+- `/web` - Frontend application (Vite + React + TypeScript)
+- `/workflow` - Prefect workflows for fetching, processing, and summarizing news articles
 
----
+## Key Features
 
-### Key Features
+1. **Real-time AI News Aggregation:** Automatically fetch and organize AI news from trusted sources
+2. **Modern Web Architecture:**
+   - Server-side rendering for optimal performance
+   - Edge computing via Cloudflare Workers
+   - TypeScript for enhanced code reliability
+3. **Responsive Design:** Mobile-first approach ensuring great UX across all devices
+4. **AI Content Curation:** Smart filtering and categorization of AI-related content
 
-1. **Aggregated News:** Automatically fetch and organize AI news from multiple reputable sources.
-2. **User-Friendly UI:** A sleek interface that displays news summaries in a categorized and digestible format.
-3. **Subscription Management:** Enable users to subscribe to newsletters and manage their preferences.
-4. **Community Integration:** Tools to connect with a Discord community dedicated to AI topics.
-5. **Customizable Sources:** Easily extend the platform to include new sources or topics.
+## Tech Stack
 
----
+### Frontend
+- Vite (Build tool)
+- React
+- TypeScript
+- Modern CSS (TailwindCSS/styled-components)
 
-### Technologies Used
-- **Frontend:** [React/Vue/Other Framework]
-- **Backend:** [Django/Flask/FastAPI/Node.js]
-- **Database:** [PostgreSQL/MongoDB/SQLite]
-- **Automation:** Scripts for fetching, processing, and summarizing news articles.
-- **Hosting:** [AWS/Heroku/Other Service]
+### Backend
+- Prefect (Workflows)
+- Supabase (Database)
+- Cloudflare Page Functions (Backend APIs)
 
----
-
-### Getting Started
+## Getting Started
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/ai-frontiers-digest.git
-   ```
+```bash
+git clone https://github.com/your-username/ai-frontiers-digest.git
+cd ai-frontiers-digest
+```
+
 2. Install dependencies:
-   ```bash
-   npm install / pip install -r requirements.txt
-   ```
-3. Set up environment variables and run the app:
-   ```bash
-   npm start / python app.py
-   ```
+```bash
+cd web
+npm install
+```
+
+3. Start the Web App:
+```bash
+npm run dev
+```
+
+4. Start Cloudflare Page Functions (Backend APIs):
+```bash
+npm run preview:wrangler
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-### Contributing
-Contributions are welcome! Please read our [contribution guidelines](CONTRIBUTING.md) and submit your pull requests.
-
----
-
-### License
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-Feel free to adapt this template based on your specific technologies and features!
+Built with ❤️ by [dannyzheng.me](https://dannyzheng.me) for the AI community

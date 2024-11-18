@@ -1,6 +1,4 @@
-# Newsletter-Digest-Web
-
-[Edit in StackBlitz next generation editor ⚡️](https://stackblitz.com/~/github.com/AICrafterZheng/Newsletter-Digest-Web)
+# AI Frontiers Digest Web
 
 ## Run the Cloudflare Functions locally:
 ### Copy the .dev.vars.example file to .dev.vars and fill in the values:
