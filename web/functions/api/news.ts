@@ -57,6 +57,7 @@ export async function onRequest(context: any) {
 
     // Execute the query with ordering and limit
     let { data, error } = await query
+      .not('source', 'is', null)
       .order('source', { ascending: true })
       .order('score', { ascending: false })
       .limit(limit ? parseInt(limit) : 30)
@@ -79,13 +80,14 @@ export async function onRequest(context: any) {
             const score = await getHNScore(story.story_id);
             // Update the score in database if it changed
             if (score !== story.score) {
-            await supabase
-              .from(context.env.SUPABASE_TABLE_STORIES!)
-              .update({ score })
+              await supabase
+                .from(context.env.SUPABASE_TABLE_STORIES!)
+                .update({ score })
                 .eq('id', story.id);
             }
             return { ...story, score };
           }
+          return story;
         })
       );
       data = updatedData;
