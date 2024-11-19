@@ -18,15 +18,16 @@ from src.utils.helpers import save_to_supabase
 class TechCrunchService:
     def __init__(self):
         self.base_url = "https://techcrunch.com/category/artificial-intelligence/"
-        self.llm_client = LLMClient(use_azure=True)
-        self.header = "TechCrunch AI News Summary"
+        self.llm_client = LLMClient(use_azure_mistral=True, model="large")
+        self.header = "AI Frontiers on TechCrunch"
         self.formatted_date = datetime.now(pytz.timezone('America/Los_Angeles')).strftime("%Y/%m/%d")
-
+        self.discord_webhooks = []
     @classmethod
     async def create(cls):
         instance = cls()
-        instance.discord_webhook = await Variable.get("discord_webhook", "")
-        instance.discord_webhook = HACKER_NEWS_DISCORD_WEBHOOK if instance.discord_webhook == "" else instance.discord_webhook
+        discord_webhook = await Variable.get("discord_webhook", "")
+        instance.discord_webhooks.append(HACKER_NEWS_DISCORD_WEBHOOK if discord_webhook == "" else discord_webhook)
+        instance.discord_webhooks.append(AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK)
         return instance
     
     def is_image_url(self, url: str) -> bool:
@@ -41,7 +42,7 @@ class TechCrunchService:
         except requests.RequestException:
             return False
 
-    @task(log_prints=True)
+    @task(log_prints=True, cache_key_fn=None)
     def get_ai_urls_from_tc(self) -> List[str]:
         response = requests.get(self.base_url)
         input_text = response.text
@@ -69,7 +70,7 @@ class TechCrunchService:
             else:
                 message = f"\n<{url}>\n{summary}"
             message = message.replace("\n\n", "\n")
-            for webhook in [self.discord_webhook, AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK]:
+            for webhook in self.discord_webhooks:
                 split_messages_to_send_discord(webhook, message)
         return stories
 
@@ -101,7 +102,7 @@ async def run_test_tc_flow():
     urls = ["https://www.latent.space/p/ai-ux-moat"]  
     service = await TechCrunchService.create()
     service.formatted_date = "2024/11/08"
-    service.discord_webhook = AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK
+    service.discord_webhooks = [HACKER_NEWS_DISCORD_WEBHOOK]
     stories = service.process_urls(urls)
     await service.send_newsletter(stories, to_emails=["aicrafter.ai@gmail.com"])
     # save_to_supabase(stories)

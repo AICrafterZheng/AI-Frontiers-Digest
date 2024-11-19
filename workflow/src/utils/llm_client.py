@@ -1,23 +1,28 @@
 from prefect import task
 from openai import OpenAI
 from src.config import (AZURE_MISTRAL_SMALL_API, AZURE_MISTRAL_SMALL_INFERENCE_KEY, OPENROUTER_API_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY,
-                    OPENROUTER_MODEL_MISTRAL_FREE, OPENAI_MODEL, ANTHROPIC_MODEL)
+                    OPENROUTER_MODEL_MISTRAL_FREE, 
+                    AZURE_MISTRAL_LARGE_API, AZURE_MISTRAL_LARGE_INFERENCE_KEY,
+                    AZURE_OPENAI_API_DEPLOYMENT_NAME, AZURE_OPENAI_API_BASE, AZURE_OPENAI_API_VERSION, AZURE_OPENAI_API_KEY)
+import requests
 
 class LLMClient:
     def __init__(self, 
-                 use_azure: bool = False,
+                 use_azure_mistral: bool = False,
+                 use_azure_openai: bool = False,
                  use_openrouter: bool = False,
                  use_anthropic: bool = False,
                  use_openai: bool = False,
                  model: str = "",
                  app: str = "newsletterdigest"):
-        self.use_azure = use_azure
+        self.use_azure_mistral = use_azure_mistral
+        self.use_azure_openai = use_azure_openai
         self.use_openrouter = use_openrouter
         self.use_anthropic = use_anthropic
         self.use_openai = use_openai
         self.model = model
         self.app = app
-        print(f"LLMClient init: use_azure: {self.use_azure}, use_openrouter: {self.use_openrouter}, use_anthropic: {self.use_anthropic}, use_openai: {self.use_openai}, model: {self.model}, app: {self.app}")
+        print(f"LLMClient init: use_azure_mistral: {self.use_azure_mistral}, use_azure_openai: {self.use_azure_openai}, use_openrouter: {self.use_openrouter}, use_anthropic: {self.use_anthropic}, use_openai: {self.use_openai}, model: {self.model}, app: {self.app}")
 
     @task(log_prints=True)
     def call_llm(self, 
@@ -26,8 +31,13 @@ class LLMClient:
                 ai_input: str = ""):
         try:
             response = ""
-            if self.use_azure:
-                response = self._call_azure(sys_prompt, user_input, ai_input)
+            if self.use_azure_mistral:
+                if self.model.lower() == "small":
+                    response = self._call_azure_mistral(sys_prompt, user_input, ai_input, AZURE_MISTRAL_SMALL_API, AZURE_MISTRAL_SMALL_INFERENCE_KEY)
+                elif self.model.lower() == "large":
+                    response = self._call_azure_mistral(sys_prompt, user_input, ai_input, AZURE_MISTRAL_LARGE_API, AZURE_MISTRAL_LARGE_INFERENCE_KEY)
+            elif self.use_azure_openai:
+                response = self._call_azure_openai(sys_prompt, user_input, ai_input)
             elif self.use_openrouter:
                 if self.model == "":
                     self.model = OPENROUTER_MODEL_MISTRAL_FREE
@@ -46,6 +56,7 @@ class LLMClient:
             return f"LLM Call Error: {e}"
 
     def _call_openrouter(self, sys_prompt: str, user_input: str, ai_input: str) -> str:
+        print(f"Calling OpenRouter with {self.model} ...")
         llm = OpenAI(
             base_url="https://openrouter.ai/api/v1",
             api_key=OPENROUTER_API_KEY
@@ -88,13 +99,13 @@ class LLMClient:
         )
         return response.content[0].text
 
-    def _call_azure(self, sys_prompt: str, user_input: str, ai_input: str) -> str:
+    def _call_azure_mistral(self, sys_prompt: str, user_input: str, ai_input: str, endpoint: str, inference_key: str) -> str:
         from azure.ai.inference import ChatCompletionsClient
         from azure.core.credentials import AzureKeyCredential
-        
+        print(f"Calling Azure Mistral with {self.model} ...")
         client = ChatCompletionsClient(
-            endpoint=AZURE_MISTRAL_SMALL_API,
-            credential=AzureKeyCredential(AZURE_MISTRAL_SMALL_INFERENCE_KEY)
+            endpoint=endpoint,
+            credential=AzureKeyCredential(inference_key)
         )
         messages = [{"role": "user", "content": f"<s>[INST]<<SYS>>{ sys_prompt }<</SYS>>"}]
         if ai_input:
@@ -110,8 +121,31 @@ class LLMClient:
         response = client.complete(payload)
         return response.choices[0].message.content
 
-# Example usage:
-if __name__ == "__main__":
-    llm_client = LLMClient(use_azure=True)
-    response = llm_client.call_llm("tell me a joke", "You are a helpful assistant")
-    print(response)
+    def _call_azure_openai(self, sys_prompt: str, user_input: str, ai_input: str) -> str:
+        print(f"Calling Azure OpenAI with {AZURE_OPENAI_API_DEPLOYMENT_NAME} ...")
+        # Configuration
+        headers = {
+            "Content-Type": "application/json",
+            "api-key": AZURE_OPENAI_API_KEY,
+        }
+        # Payload for the request
+        payload = {
+        "messages": [
+                {"role": "user", "content": sys_prompt},
+                {"role": "user", "content": user_input},
+                {"role": "assistant", "content": ai_input}
+            ],
+            "temperature": 0.7,
+            "top_p": 0.95,
+            "max_tokens": 2048
+        }
+        url = f"{AZURE_OPENAI_API_BASE}/openai/deployments/{AZURE_OPENAI_API_DEPLOYMENT_NAME}/chat/completions?api-version={AZURE_OPENAI_API_VERSION}"
+        # Send request
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()  # Will raise an HTTPError if the HTTP request returned an unsuccessful status code
+        except requests.RequestException as e:
+            raise SystemExit(f"Failed to make the request. Error: {e}")
+        response_json = response.json()
+        print(response_json)
+        return response_json["choices"][0]["message"]["content"]

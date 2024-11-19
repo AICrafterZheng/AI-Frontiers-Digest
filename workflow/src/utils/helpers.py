@@ -39,8 +39,17 @@ def save_to_supabase(stories):
     for story in stories:
         try:
             print(f"Saving story: {story.title}")
-            # remove the first line of the summary, which is the title (already in story.title)
-            story.summary = story.summary.split("\n", 1)[1]
-            insertRow({"story_id": int(story.id), "story_title": story.title, "story_url": story.url, "score": story.score, "hn_url": story.hn_url, "story_summary": story.summary, "story_comments_summary": story.comments_summary, "source": story.source})
+            # Safely handle summary splitting
+            summary = story.summary.split("\n", 1)[1] if story.summary and "\n" in story.summary else story.summary
+            insertRow({
+                "story_id": int(story.id), 
+                "story_title": story.title, 
+                "story_url": story.url, 
+                "score": story.score, 
+                "hn_url": story.hn_url, 
+                "story_summary": summary, 
+                "story_comments_summary": story.comments_summary, 
+                "source": story.source
+            })
         except Exception as e:
             logger.error(f"Error saving story {story.title}: {e}")

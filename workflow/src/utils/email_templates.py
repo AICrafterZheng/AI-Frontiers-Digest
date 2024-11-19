@@ -1,6 +1,7 @@
-
 from prefect import task, flow
 from datetime import datetime
+from urllib.parse import quote
+
 def format_content(text: str) -> str:
     """Format text content with proper HTML structure"""
     if not text:
@@ -42,12 +43,15 @@ def get_hn_email_template(subject: str, stories) -> str:
     for story in stories:
         summary_html = format_content(story.summary)
         comments_html = format_content(story.comments_summary)
+        # Encode the URLs
+        safe_url = quote(story.url, safe=':/?=&')
+        safe_hn_url = quote(story.hn_url, safe=':/?=&')
         stories_html += f"""
         <div class="section">
             <div class="header">{story.title}</div>
             <div class="story-meta">
-                    • Article: <a href="{story.url}" class="story-link">{story.url}</a> <br>
-                    • HN Discussion: <a href="{story.hn_url}" class="hn-link">{story.hn_url}</a> <br>
+                    • Article: <a href="{safe_url}" class="story-link">{story.url}</a> <br>
+                    • HN Discussion: <a href="{safe_hn_url}" class="hn-link">{story.hn_url}</a> <br>
                     • Score: {story.score}
             </div>
             

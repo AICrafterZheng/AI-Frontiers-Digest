@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { formatSummary } from '../utils/formatSummary'
 import { useSearchParams } from 'react-router-dom';
+import { AudioButton } from '../components/AudioButton';
 // Types
 interface Story {
   story_id: number
@@ -173,6 +174,9 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
                   <span className="text-gray-600">Score: {story.score}</span>
                 </>
               )}
+              <div className="ml-auto">
+                <AudioButton />
+              </div>
             </div>
 
             <CardContent>

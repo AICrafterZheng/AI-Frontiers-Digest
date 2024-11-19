@@ -1,13 +1,8 @@
 from prefect.client.schemas.schedules import CronSchedule
 from prefect.docker import DockerImage
-from src.services.hn_service import run_hn_flow, run_test_hn_flow
-from src.services.tc_service import run_tc_flow, run_test_tc_flow
+from src.services.hn_service import run_hn_flow
+from src.services.tc_service import run_tc_flow
 if __name__ == "__main__":
-    import asyncio
-    # Enable to run locally
-    # asyncio.run(HackerNewsService().run_test_flow())
-    # asyncio.run(run_test_hn_flow())
-    # asyncio.run(run_test_tc_flow())
 
     # # Hacker News flow
     run_hn_flow.deploy(name="HN-ACR",

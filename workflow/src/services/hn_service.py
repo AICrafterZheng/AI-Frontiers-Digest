@@ -26,7 +26,8 @@ class HackerNewsService:
     def __init__(self):
         self.logger = get_run_logger()
         self.header = "AI Frontiers on Hacker News"
-        self.llm_client = LLMClient(use_azure=True)
+        self.llm_client = LLMClient(use_azure_mistral=True, model="large")
+        self.discord_webhooks = []
         
     @classmethod
     async def create(cls):
@@ -38,8 +39,9 @@ class HackerNewsService:
         instance.score = await Variable.get("score", "")
         instance.score = 40 if instance.score == "" else int(instance.score)
         
-        instance.discord_webhook = await Variable.get("discord_webhook", "")
-        instance.discord_webhook = HACKER_NEWS_DISCORD_WEBHOOK if instance.discord_webhook == "" else instance.discord_webhook
+        discord_webhook = await Variable.get("discord_webhook", "")
+        instance.discord_webhooks.append(HACKER_NEWS_DISCORD_WEBHOOK if discord_webhook == "" else discord_webhook)
+        instance.discord_webhooks.append(AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK)
         return instance
 
     @task(log_prints=True)
@@ -50,24 +52,22 @@ class HackerNewsService:
         return data
 
     # Check if new and mentioned in keywords
-    @task(log_prints=True, name="top-hn-processStories")
+    @task(log_prints=True, name="top-hn-processStories", cache_key_fn=None)
     async def processStories(self, stories):
         results = []
         async def processStory(id):
             # Check if story exists
             if checkIfExists(id):
-                print(f"Story {id} already exists")
+                # print(f"Story {id} already exists")
                 return
             story = await self.fetchStory(id)
-            print(f"Fetched story: {story}")
+            # print(f"Fetched story: {story}")
             if story is None:
                 return
             # If any keywords are mentioned in the story title
             if has_mentioned_keywords(story, self.discord_keywords) and int(story.score) > self.score:
                 print(f"Found a story: {story.title}, url: {story.url}")
                 results.append(story)
-            else:
-                print(f"Story {story.title} does not have mentioned keywords {self.discord_keywords} or score is less than {self.score}")
         tasks = [processStory(id) for id in stories]
         await asyncio.gather(*tasks)
         return results
@@ -117,7 +117,7 @@ class HackerNewsService:
                     summary_message = f"Top Hacker News:\n{summary_message}"
                     first_news = False
                 
-                for webhook in [self.discord_webhook, AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK]:
+                for webhook in self.discord_webhooks:
                     send_discord(webhook, summary_message, divider_style="none")
                     send_discord(webhook, comments_summary_message)
 
@@ -127,7 +127,7 @@ class HackerNewsService:
 
     async def run_flow(self):
         storieIds = await self.fetchTopStoryIds()
-        print(f"Found {len(storieIds)} story IDs")
+        print(f"Processing {len(storieIds)} story IDs")
         stories = await self.top_hn_flow(storieIds)
         await self.send_emails(stories)
         save_to_supabase(stories)
@@ -141,7 +141,7 @@ async def run_hn_flow():
 @flow(log_prints=True, name="test-flow")
 async def run_test_hn_flow():
     service = await HackerNewsService.create()
-    service.discord_webhook = HACKER_NEWS_DISCORD_WEBHOOK
+    service.discord_webhooks = [HACKER_NEWS_DISCORD_WEBHOOK]
     # service.discord_keywords = ['Y']
     # service.score = 0
     # ids = ["1"]
