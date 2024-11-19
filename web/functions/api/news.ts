@@ -38,10 +38,25 @@ export async function onRequest(context: any) {
     
     // Get the date from query parameters
     const dateParam = url.searchParams.get('date') // format: 2024-11-01
-    // Parse the date and create UTC boundaries
-    const date = dateParam ? new Date(dateParam) : new Date()
-    const startOfDay = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())).toISOString()
-    const endOfDay = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + 1)).toISOString()
+    console.log('dateParam', dateParam);
+
+    // if dateParam is formatted as 2024-11-01, convert it to 2024-11-01T00:00:00
+    // else if dataParam is formatted as November 18, 2024, just use the date
+    let date: Date;
+    if (dateParam) {
+      if (dateParam.includes('-') && !dateParam.includes('T')) {
+        date = new Date(dateParam + 'T00:00:00');
+      } else {
+        date = new Date(dateParam);
+      }
+    } else {
+      date = new Date();
+    }
+    console.log('date', date);
+    const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString()
+    const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString()
+    console.log('startOfDay', startOfDay);
+    console.log('endOfDay', endOfDay);
 
     // Start building the query
     let query = supabase
