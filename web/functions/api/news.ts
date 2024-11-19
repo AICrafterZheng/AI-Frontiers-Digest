@@ -88,25 +88,25 @@ export async function onRequest(context: any) {
     }
 
     // If source is HN, update scores before returning
-    if (data && data.length > 0) {
-      const updatedData = await Promise.all(
-        data.map(async (story: any) => {
-          if (story.source.toLowerCase() === 'hackernews') {
-            const score = await getHNScore(story.story_id);
-            // Update the score in database if it changed
-            if (score !== story.score) {
-              await supabase
-                .from(context.env.SUPABASE_TABLE_STORIES!)
-                .update({ score })
-                .eq('id', story.id);
-            }
-            return { ...story, score };
-          }
-          return story;
-        })
-      );
-      data = updatedData;
-    }
+    // if (data && data.length > 0) {
+    //   const updatedData = await Promise.all(
+    //     data.map(async (story: any) => {
+    //       if (story.source.toLowerCase() === 'hackernews') {
+    //         const score = await getHNScore(story.story_id);
+    //         // Update the score in database if it changed
+    //         if (score !== story.score) {
+    //           await supabase
+    //             .from(context.env.SUPABASE_TABLE_STORIES!)
+    //             .update({ score })
+    //             .eq('id', story.id);
+    //         }
+    //         return { ...story, score };
+    //       }
+    //       return story;
+    //     })
+    //   );
+    //   data = updatedData;
+    // }
     return new Response(JSON.stringify(data || []), {
       status: 200,
       headers: {
