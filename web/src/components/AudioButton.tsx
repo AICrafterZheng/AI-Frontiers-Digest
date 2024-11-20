@@ -1,8 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export default function AudioButton({ speechUrl, name }: { speechUrl: string, name: string }) {
+interface AudioButtonProps {
+  speechUrl: string;
+  name: string;
+}
+
+export default function AudioButton({ speechUrl, name }: AudioButtonProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [duration, setDuration] = useState<number | null>(null);
   const audioRef = React.useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    // Create temporary audio element to get duration
+    const audio = new Audio(speechUrl);
+    audio.addEventListener('loadedmetadata', () => {
+      setDuration(audio.duration);
+    });
+  }, [speechUrl]);
+
+  // Format duration to MM:SS
+  const formatTime = (time: number): string => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -34,7 +55,7 @@ export default function AudioButton({ speechUrl, name }: { speechUrl: string, na
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            {name}
+            {name} {duration && `(${formatTime(duration)})`}
           </>
         )}
       </button>

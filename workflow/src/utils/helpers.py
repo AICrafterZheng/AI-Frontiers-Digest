@@ -1,6 +1,6 @@
 import re
 from prefect import task, get_run_logger
-from src.utils.supabase_utils import insertRow
+from src.utils.supabase_utils import insertRow, updateRow
 
 def extract_llm_response(text: str, tag: str):
     # Try to match <mermaid> tags first
@@ -55,3 +55,15 @@ def save_to_supabase(stories):
             })
         except Exception as e:
             logger.error(f"Error saving story {story.title}: {e}")
+
+@task(log_prints=True)
+def update_supabase_row(stories):
+    logger = get_run_logger()
+    for story in stories:
+        try:
+            updateRow({
+                "speech_url": story.speech_url,
+                "notebooklm_url": story.notebooklm_url
+            }, "story_id", story.id)
+        except Exception as e:
+            logger.error(f"Error updating story {story.title}: {e}")

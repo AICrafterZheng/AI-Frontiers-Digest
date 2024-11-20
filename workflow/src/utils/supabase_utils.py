@@ -20,6 +20,7 @@ def searchRow(tableName: str, searchColumn: str, searchValue: int):
         print(f"Error searching for a row: {error}")
         raise error
 
+@task(log_prints=True)
 def insertRow(row):
     """Insert a row into the database."""
     try:
@@ -28,6 +29,24 @@ def insertRow(row):
         return data.data
     except Exception as error:
         print(f"Error inserting a row: {error}")
+        raise error
+
+
+# update row
+def updateRow(updates: dict, searchColumn: str, searchValue: int):
+    """
+    Update multiple columns in a row in the database.
+    Args:
+        updates: Dictionary of column names and their new values
+        searchColumn: Column to search by
+        searchValue: Value to search for
+    """
+    try:
+        data = supabase.table(SUPABASE_TABLE).update(updates).eq(searchColumn, searchValue).execute()
+        print(f"updateRow result: {data.data}")
+        return data.data
+    except Exception as error:
+        print(f"Error updating a row: {error}")
         raise error
 
 @task(log_prints=True)

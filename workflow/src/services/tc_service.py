@@ -99,7 +99,7 @@ async def run_tc_flow():
     service = await TechCrunchService.create()
     await service.run_flow()
 
-@flow(log_prints=True, name="test-flow")
+@flow(log_prints=True, name="test-tc-flow")
 async def run_test_tc_flow():
     urls = ["https://www.latent.space/p/ai-ux-moat"]  
     service = await TechCrunchService.create()

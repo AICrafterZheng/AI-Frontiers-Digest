@@ -11,7 +11,7 @@ from src.utils.supabase_utils import checkIfExists
 from src.summarizer.hn_comments_summarizer import HNCommentsSummarizer
 from src.summarizer.agentic_summarizer import ContentSummarizer
 from src.utils.discord import send_discord
-from src.utils.helpers import has_mentioned_keywords, save_to_supabase
+from src.utils.helpers import has_mentioned_keywords, save_to_supabase, update_supabase_row
 
 from src.config import (
     HN_API_BASE,
@@ -28,6 +28,7 @@ class HackerNewsService:
         self.header = "AI Frontiers on Hacker News"
         self.llm_client = LLMClient(use_azure_mistral=True, model="large")
         self.discord_webhooks = []
+        self.update_supabase = False # Set to true to update the supabase row
         
     @classmethod
     async def create(cls):
@@ -57,7 +58,7 @@ class HackerNewsService:
         results = []
         async def processStory(id):
             # Check if story exists
-            if checkIfExists(id):
+            if not self.update_supabase and checkIfExists(id):
                 # print(f"Story {id} already exists")
                 return
             story = await self.fetchStory(id)
@@ -108,9 +109,10 @@ class HackerNewsService:
                 url = story.url
                 comments_summary = await HNCommentsSummarizer(self.llm_client).summarize_comments(str(story.id))
                 story.comments_summary = comments_summary
-                summary = ContentSummarizer(self.llm_client, story.title, url).summarize_url()
-                story.summary = summary
-                summary_message = f"**Article**: <{story.url}>\n**Summary**:\n {summary}"
+                result = ContentSummarizer(self.llm_client, story.title, url).summarize_url()
+                story.summary = result.get("summary")
+                story.speech_url = result.get("speech_url")
+                summary_message = f"**Article**: <{story.url}>\n**Summary**:\n {story.summary}"
                 comments_summary_message = f"**HNUrl**: <{story.hn_url}>\n**Score**: {story.score}\n**Discussion Highlights**:\n {comments_summary}"
                 logger.info(f"Story comments summary: {comments_summary_message}")
                 if first_news: # add the header
@@ -138,15 +140,17 @@ async def run_hn_flow():
     service = await HackerNewsService.create()
     await service.run_flow()
 
-@flow(log_prints=True, name="test-flow")
+@flow(log_prints=True, name="test-hn-flow")
 async def run_test_hn_flow():
     service = await HackerNewsService.create()
     service.discord_webhooks = [HACKER_NEWS_DISCORD_WEBHOOK]
+    service.update_supabase = True
     # service.discord_keywords = ['Y']
     # service.score = 0
-    # ids = ["1"]
-    storieIds = await service.fetchTopStoryIds()
+    # storieIds = await service.fetchTopStoryIds()
+    storieIds = ["42164141"]
     stories = await service.top_hn_flow(storieIds)
     print(f"Found {len(stories)} stories")
     await service.send_emails(stories, ["aicrafter.ai@gmail.com"])
-    save_to_supabase(stories)
+    # save_to_supabase(stories)
+    update_supabase_row(stories)
