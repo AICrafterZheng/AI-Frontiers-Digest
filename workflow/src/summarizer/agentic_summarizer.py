@@ -3,7 +3,9 @@ from prefect import task, flow
 from src.utils.jina_reader import call_jina_reader
 from src.utils.llm_client import LLMClient
 from src.utils.helpers import extract_llm_response
-
+from src.utils.tts import text_to_speech
+from src.utils.supabase_utils import upload_audio_file
+import uuid
 from .prompts import (
     constraints_and_example,
     INITIAL_SUMMARIZE_SYSTEM_PROMPT,
@@ -96,31 +98,50 @@ class ContentSummarizer:
         except Exception as e:
             return f"Error extracting content: {e}"
 
+    @task(log_prints=True)
+    def article_to_speech(self, article: str) -> str:
+        # Generate uuid for the file name
+        print(f"Generating speech for article: {self.url}")
+        file_name = str(uuid.uuid4()) + ".wav"
+        text_to_speech(article, file_name)
+        public_url = upload_audio_file(file_name)
+        return public_url
+    
     @flow(log_prints=True)
-    def summarize_url(self) -> str:
+    def summarize_url(self) -> dict:
         print(f"Processing URL: {self.url} with model: {self.llm_client.model}")
-        
+        result = {"summary": "", "speech_url": ""}
         # Fetch content
         article, error = call_jina_reader(self.url)
         if error or not article:
-            return error or "Failed to fetch article"
+            result["summary"] = error or "Failed to fetch article"
+            return result
 
         # Extract and process content
         article = self.extract_content(self.topic, article)
         article = extract_llm_response(article, "extracted_content")
         
         if not article:
-            return "No content extracted"
-            
+            result["summary"] = "No content extracted"
+            return result
+
+        public_url = self.article_to_speech(article)
+
         if len(article) < 1000:
-            return article
+            result["summary"] = article
+            result["speech_url"] = public_url
+            return result
 
         # Generate summary
-        result = self.summarize(article)
-        summary = result.final_summary.replace("\n\n", "\n")
-        
-        print(f"Initial summary: {result.initial_summary}")
-        print(f"Reflection: {result.reflection}")
+        res = self.summarize(article)
+        summary = res.final_summary.replace("\n\n", "\n")
+
+        print(f"Initial summary: {res.initial_summary}")
+        print(f"Reflection: {res.reflection}")
         print(f"Final summary: {summary}")
-        
-        return summary
+
+        result["summary"] = summary
+        result["speech_url"] = public_url
+        return result
+
+

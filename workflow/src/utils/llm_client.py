@@ -52,8 +52,8 @@ class LLMClient:
                 return "LLM response is None"
             return response
         except Exception as e:
-            print(f"LLM Call Error: {e}")
-            return f"LLM Call Error: {e}"
+            print(f"LLM Call Warning: {e}")
+            return f"LLM Call Warning: {e}"
 
     def _call_openrouter(self, sys_prompt: str, user_input: str, ai_input: str) -> str:
         print(f"Calling OpenRouter with {self.model} ...")
@@ -102,7 +102,7 @@ class LLMClient:
     def _call_azure_mistral(self, sys_prompt: str, user_input: str, ai_input: str, endpoint: str, inference_key: str) -> str:
         from azure.ai.inference import ChatCompletionsClient
         from azure.core.credentials import AzureKeyCredential
-        print(f"Calling Azure Mistral with {self.model} ...")
+        print(f"Calling Azure Mistral with {self.model} model ...")
         client = ChatCompletionsClient(
             endpoint=endpoint,
             credential=AzureKeyCredential(inference_key)

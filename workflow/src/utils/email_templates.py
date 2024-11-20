@@ -1,4 +1,4 @@
-from prefect import task, flow
+from prefect import task
 from datetime import datetime
 from urllib.parse import quote
 
@@ -41,11 +41,13 @@ def get_hn_email_template(subject: str, stories) -> str:
         return ""
     stories_html = ""
     for story in stories:
+        # Ensure URLs are absolute and properly encoded
+        url = story.url if story.url.startswith('http') else f'https://{story.url}'
+        hn_url = story.hn_url if story.hn_url.startswith('http') else f'https://{story.hn_url}'
+        safe_url = quote(url, safe=':/?=&')
+        safe_hn_url = quote(hn_url, safe=':/?=&')
         summary_html = format_content(story.summary)
         comments_html = format_content(story.comments_summary)
-        # Encode the URLs
-        safe_url = quote(story.url, safe=':/?=&')
-        safe_hn_url = quote(story.hn_url, safe=':/?=&')
         stories_html += f"""
         <div class="section">
             <div class="header">{story.title}</div>

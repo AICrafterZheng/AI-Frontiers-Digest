@@ -1,8 +1,12 @@
 import azure.cognitiveservices.speech as speechsdk
 from src.config import SPEECH_KEY, SPEECH_REGION
+from prefect import task
 
-def speak(text: str, output_file: str = "output.wav"):
-# This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
+@task(log_prints=True)
+def text_to_speech(text: str, output_file: str = "output.wav"):
+    """
+    Convert text to speech and save to a file
+    """
     speech_config = speechsdk.SpeechConfig(subscription=SPEECH_KEY, region=SPEECH_REGION)
     audio_config = speechsdk.audio.AudioOutputConfig(filename=output_file)
 

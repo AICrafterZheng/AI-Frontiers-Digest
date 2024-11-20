@@ -11,6 +11,8 @@ class Story:
     summary: str = ""
     comments_summary: str = ""
     source: str = ""
+    speech_url: str = ""
+    notebooklm_url: str = ""
 
 @dataclass
 class Comment:

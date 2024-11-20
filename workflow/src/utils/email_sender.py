@@ -21,9 +21,14 @@ class EmailSender:
         try:
             params = {
                 "from": self.from_email,
-                "to": [to_email],  # Send to single recipient
+                "to": [to_email],
                 "subject": subject,
                 "html": message,
+                "headers": {
+                    "Click-Tracking": "false",
+                    "X-Click-Tracking": "false",
+                },
+                "click_tracking": False
             }
             r = resend.Emails.send(params)
             print(f"✓ Sent to {to_email}")

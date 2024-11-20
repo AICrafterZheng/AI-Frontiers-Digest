@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { formatSummary } from '../utils/formatSummary'
 import { useSearchParams } from 'react-router-dom';
-import { AudioButton } from '../components/AudioButton';
+import AudioButton from '../components/AudioButton';
 // Types
 interface Story {
   story_id: number
@@ -13,6 +13,7 @@ interface Story {
   story_comments_summary?: string
   created_at: string
   source: string
+  speech_url: string
 }
 
 interface NewsletterProps {
@@ -174,9 +175,11 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
                   <span className="text-gray-600">Score: {story.score}</span>
                 </>
               )}
-              <div className="ml-auto">
-                <AudioButton />
-              </div>
+              {story.speech_url && (
+                <div className="ml-auto">
+                  <AudioButton speechUrl={story.speech_url} name="Audio" />
+                </div>
+              )}
             </div>
 
             <CardContent>

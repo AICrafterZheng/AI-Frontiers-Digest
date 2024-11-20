@@ -59,11 +59,13 @@ class TechCrunchService:
         
         for url in urls:
             # Use TechCrunch url as the topic
-            summary = ContentSummarizer(self.llm_client, url, url).summarize_url()
+            result = ContentSummarizer(self.llm_client, url, url).summarize_url()
+            summary = result.get("summary")
+            speech_url = result.get("speech_url")
             if summary and summary != "No relevant content found":
                 title = summary.split("\n")[0]
                 title = title.strip('"').strip('(').strip(')').strip("'")
-                stories.append(Story(url=url, title=title, summary=summary, source=TC_SOURCE_NAME))
+                stories.append(Story(url=url, title=title, summary=summary, source=TC_SOURCE_NAME, speech_url=speech_url))
             if first_news:
                 message = f"{self.header}\n<{url}>\n{summary}"
                 first_news = False
@@ -105,4 +107,4 @@ async def run_test_tc_flow():
     service.discord_webhooks = [HACKER_NEWS_DISCORD_WEBHOOK]
     stories = service.process_urls(urls)
     await service.send_newsletter(stories, to_emails=["aicrafter.ai@gmail.com"])
-    # save_to_supabase(stories)
+    save_to_supabase(stories)

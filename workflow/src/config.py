@@ -65,3 +65,9 @@ TC_SOURCE_NAME = os.getenv("TC_SOURCE_NAME", "TechCrunch")
 # Azure Cognitive Services
 SPEECH_KEY = os.getenv("SPEECH_KEY", "")
 SPEECH_REGION = os.getenv("SPEECH_REGION", "")
+
+# Supabase
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+SUPABASE_TABLE = os.getenv("SUPABASE_TABLE", "")
+SUPABASE_BUCKET_NAME = os.getenv("SUPABASE_BUCKET_NAME", "")

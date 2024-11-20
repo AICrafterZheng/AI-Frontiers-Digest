@@ -49,7 +49,9 @@ def save_to_supabase(stories):
                 "hn_url": story.hn_url, 
                 "story_summary": summary, 
                 "story_comments_summary": story.comments_summary, 
-                "source": story.source
+                "source": story.source,
+                "speech_url": story.speech_url,
+                "notebooklm_url": story.notebooklm_url
             })
         except Exception as e:
             logger.error(f"Error saving story {story.title}: {e}")
