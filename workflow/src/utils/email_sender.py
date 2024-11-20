@@ -84,7 +84,7 @@ class EmailSender:
             "results": results
         }
 
-@task(log_prints=True)
+@task(log_prints=True, cache_key_fn=None)
 async def send_emails(subject: str, message: str, to_emails: List[str] = None) -> Dict:
     """Prefect task to send emails in parallel"""
     logger = get_run_logger()
@@ -120,7 +120,7 @@ async def send_emails(subject: str, message: str, to_emails: List[str] = None) -
         return {"success": 0, "error": 0, "total": 0, "results": []}
 
 # get the emails from supabase
-@task(log_prints=True)
+@task(log_prints=True, cache_key_fn=None)
 def get_emails():
     try:
         response = supabase.table("NewsletterSubs")\

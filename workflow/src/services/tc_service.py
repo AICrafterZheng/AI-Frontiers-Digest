@@ -76,7 +76,7 @@ class TechCrunchService:
                 split_messages_to_send_discord(webhook, message)
         return stories
 
-    @task
+    @task(log_prints=True, cache_key_fn=None)
     async def send_newsletter(self, stories: List[Story], to_emails: List[str] = None) -> None:
         """Send email newsletter"""
         logger = get_run_logger()

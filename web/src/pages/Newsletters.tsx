@@ -69,7 +69,9 @@ const summaryStyles = `
 const getSourcePrefix = (source: string) => {
   const prefixes: Record<string, string> = {
     'hackernews': '[Hacker News] ',
-    'techcrunch': '[TechCrunch] '
+    'techcrunch': '[TechCrunch] ',
+    'arxiv': '[Arxiv] ',
+    'latentspace': '[Latent Space]'
   };
   return prefixes[source.toLowerCase()] || '';
 };

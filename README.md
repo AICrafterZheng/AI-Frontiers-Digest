@@ -10,6 +10,10 @@
 ## Key Features
 
 1. **AI News Aggregation:** Automatically fetch and organize AI news from trusted sources
+ - Hacker News
+   - We filter for stories mentioning keywords: "gpt, llm, workflow, serverless, function as a service, backend as a service, faas, baas, developer experience, developer productivity, dev productivity, dev experience,  automation, ai, artificial intelligence, dev, dx, machine learning, deep learning, nlp, openai, anthropic, gemini, claude, devin, mistral, llama, sora, midjourney, lpu, LlamaIndex, LangChain"
+ - TechCrunch AI
+   - We scrape the [TechCrunch AI section](https://techcrunch.com/category/artificial-intelligence/) for the latest articles. 
 - Right now, only Hacker News and TechCrunch AI articles are supported. We will add more sources in the future.
 2. **Summarization:** Summarize articles and Hacker News discussions
 3. **Email Delivery:** Deliver summaries directly to your inbox
@@ -27,10 +31,13 @@
 
 ### Backend
 - Prefect (Workflows)
-- Supabase (Database)
+- Supabase (Database + Audio Storage)
 - Cloudflare Page Functions (Backend APIs)
-- Azure Container Registry (Docker Images)
-- Azure AI Services (LLMs)
+- Azure
+  - Azure Container Registry (Docker Images for Prefect Workers Pool)
+  - Azure AI Services (LLMs)
+  - Azure TTS (Text-to-Speech)
+- Jina Reader (URL to markdown)
 - OpenRouter (LLMs)
 - Resend (Email)
 

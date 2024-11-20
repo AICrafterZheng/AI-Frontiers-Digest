@@ -33,7 +33,7 @@ def has_mentioned_keywords(story, keywords):
                     return True
     return False
 
-@task(log_prints=True)
+@task(log_prints=True, cache_key_fn=None)
 def save_to_supabase(stories):
     logger = get_run_logger()
     for story in stories:
@@ -56,7 +56,7 @@ def save_to_supabase(stories):
         except Exception as e:
             logger.error(f"Error saving story {story.title}: {e}")
 
-@task(log_prints=True)
+@task(log_prints=True, cache_key_fn=None)
 def update_supabase_row(stories):
     logger = get_run_logger()
     for story in stories:

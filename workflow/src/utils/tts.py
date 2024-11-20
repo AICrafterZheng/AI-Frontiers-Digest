@@ -2,7 +2,7 @@ import azure.cognitiveservices.speech as speechsdk
 from src.config import SPEECH_KEY, SPEECH_REGION
 from prefect import task
 
-@task(log_prints=True)
+@task(log_prints=True, cache_key_fn=None)
 def text_to_speech(text: str, output_file: str = "output.wav"):
     """
     Convert text to speech and save to a file

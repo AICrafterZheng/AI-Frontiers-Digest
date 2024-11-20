@@ -35,7 +35,7 @@ def format_content(text: str) -> str:
     return html
 
 # get the email template
-@task(log_prints=True)
+@task(log_prints=True, cache_key_fn=None)
 def get_hn_email_template(subject: str, stories) -> str:
     if not stories or len(stories) == 0:
         return ""
@@ -69,7 +69,7 @@ def get_hn_email_template(subject: str, stories) -> str:
         """
     return get_email_html(subject, stories_html)
 
-@task(log_prints=True)
+@task(log_prints=True, cache_key_fn=None)
 def get_tc_email_template(subject: str, stories) -> str:
     if not stories or len(stories) == 0:
         return ""

@@ -66,7 +66,7 @@ class ContentSummarizer:
         print(f"final_summary - Final Summary: {final_summary}")
         return final_summary
 
-    @task(log_prints=True)
+    @task(log_prints=True, cache_key_fn=None)
     def summarize(self, content: str) -> SummaryResult:
         print(f"Summarizing with model {self.llm_client.model}")
         print(f"Content preview: {content[:100]}")
@@ -82,7 +82,7 @@ class ContentSummarizer:
         )
 
 
-    @task(log_prints=True)
+    @task(log_prints=True, cache_key_fn=None)
     def extract_content(self, topic: str, content: str) -> str:
         try:
             user_input = EXTRACT_CONTENT_USER_PROMPT.format(
@@ -98,7 +98,7 @@ class ContentSummarizer:
         except Exception as e:
             return f"Error extracting content: {e}"
 
-    @task(log_prints=True)
+    @task(log_prints=True, cache_key_fn=None)
     def article_to_speech(self, article: str) -> str:
         # Generate uuid for the file name
         print(f"Generating speech for article: {self.url}")

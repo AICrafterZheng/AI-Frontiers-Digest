@@ -36,7 +36,7 @@ class HackerNewsService:
         # Move async initialization here
         instance.discord_keywords = await Variable.get("discord_keywords", "")
         instance.discord_keywords = ['gpt', ' llm', ' workflow', ' serverless'] if instance.discord_keywords == "" else instance.discord_keywords.split(",")
-        
+        print(f"Discord keywords: {instance.discord_keywords}")
         instance.score = await Variable.get("score", "")
         instance.score = 40 if instance.score == "" else int(instance.score)
         
@@ -45,7 +45,7 @@ class HackerNewsService:
         instance.discord_webhooks.append(AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK)
         return instance
 
-    @task(log_prints=True)
+    @task(log_prints=True, cache_key_fn=None)
     async def fetchTopStoryIds(self):
         async with aiohttp.ClientSession() as session:
             async with session.get(f"{HN_API_BASE}/topstories.json") as response:
@@ -83,7 +83,7 @@ class HackerNewsService:
                 else:
                     return None
 
-    @task(log_prints=True)
+    @task(log_prints=True, cache_key_fn=None)
     async def send_emails(self, stories, to_emails: List[str] = None):
         logger = get_run_logger()
         try:
@@ -92,7 +92,7 @@ class HackerNewsService:
         except Exception as e:
             logger.error(f"Error sending emails: {e}")
 
-    @task(log_prints=True)
+    @task(log_prints=True, cache_key_fn=None)
     async def top_hn_flow(self, storieIds: list[str]):
         logger = get_run_logger()
         stories = await self.processStories(storieIds)
@@ -148,7 +148,7 @@ async def run_test_hn_flow():
     # service.discord_keywords = ['Y']
     # service.score = 0
     # storieIds = await service.fetchTopStoryIds()
-    storieIds = ["42164141"]
+    storieIds = ["42156752"]
     stories = await service.top_hn_flow(storieIds)
     print(f"Found {len(stories)} stories")
     await service.send_emails(stories, ["aicrafter.ai@gmail.com"])

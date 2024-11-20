@@ -20,7 +20,7 @@ def searchRow(tableName: str, searchColumn: str, searchValue: int):
         print(f"Error searching for a row: {error}")
         raise error
 
-@task(log_prints=True)
+@task(log_prints=True, cache_key_fn=None)
 def insertRow(row):
     """Insert a row into the database."""
     try:
@@ -49,7 +49,7 @@ def updateRow(updates: dict, searchColumn: str, searchValue: int):
         print(f"Error updating a row: {error}")
         raise error
 
-@task(log_prints=True)
+@task(log_prints=True, cache_key_fn=None)
 def upload_audio_file(file_path: str, bucket_name: str = SUPABASE_BUCKET_NAME) -> str:
     """
     Upload an audio file to Supabase storage and return the public URL.

@@ -5,6 +5,7 @@ interface NewsStats {
   [date: string]: {
     hackernews: number;
     techcrunch: number;
+    latentspace: number;
   };
 }
 
@@ -49,8 +50,9 @@ export const ArchiveList = () => {
                 {date}
               </h3>
               <div className="flex gap-4 text-sm text-gray-600">
-                <span>Hacker News: {sources.hackernews}</span>
-                <span>TechCrunch: {sources.techcrunch}</span>
+                {sources.hackernews > 0 && <span>Hacker News: {sources.hackernews}</span>}
+                {sources.techcrunch > 0 && <span>TechCrunch: {sources.techcrunch}</span>}
+                {sources.latentspace > 0 && <span>Latent Space: {sources.latentspace}</span>}
               </div>
             </div>
           </Link>

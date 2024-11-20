@@ -4,6 +4,17 @@ interface SourceStats {
   [source: string]: number;
 }
 
+// Add this date handling logic to match news.ts
+const getDateRange = (endDate: Date) => {
+  const startDate = new Date(endDate);
+  startDate.setDate(startDate.getDate() - 5);
+  
+  const startOfDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).toISOString();
+  const endOfDay = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1).toISOString();
+  
+  return { startOfDay, endOfDay };
+};
+
 export async function onRequest(context: any) {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -22,19 +33,18 @@ export async function onRequest(context: any) {
       context.env.SUPABASE_ANON_KEY!
     )
 
-    // Calculate date range (10 days ago from now)
+    // Calculate date range using the same logic as news.ts
     const endDate = new Date();
-    console.log('endDate', endDate);
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 2);
-    console.log('startDate', startDate);
+    const { startOfDay, endOfDay } = getDateRange(endDate);
+    console.log('startOfDay', startOfDay);
+    console.log('endOfDay', endOfDay);
 
-    // Query to get all news within date range
+    // Update the query to use the same date format
     const { data, error } = await supabase
       .from(context.env.SUPABASE_TABLE_STORIES!)
       .select('created_at, source')
-      .gte('created_at', startDate.toISOString())
-      .lte('created_at', endDate.toISOString());
+      .gte('created_at', startOfDay)
+      .lt('created_at', endOfDay);
 
     if (error) {
       throw error;
