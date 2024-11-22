@@ -11,6 +11,26 @@ async function getHNScore(id: string): Promise<number> {
   }
 }
 
+async function getLastRecordDate(supabase: any, tableName: string): Promise<string | null> {
+  try {
+    const { data, error } = await supabase
+      .from(tableName)
+      .select('created_at')
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (error) {
+      console.error('Error fetching last record:', error);
+      return null;
+    }
+
+    return data?.[0]?.created_at || null;
+  } catch (error) {
+    console.error('Error in getLastRecordDate:', error);
+    return null;
+  }
+}
+
 export async function onRequest(context: any) {
   // Updated CORS headers
   const corsHeaders = {
@@ -31,17 +51,18 @@ export async function onRequest(context: any) {
       context.env.SUPABASE_URL!,
       context.env.SUPABASE_ANON_KEY!
     )
-    // Get the source from query parameters
-    const url = new URL(context.request.url)
-    const source = url.searchParams.get('source')
-    const limit = url.searchParams.get('limit')
-    
-    // Get the date from query parameters
-    const dateParam = url.searchParams.get('date') // format: 2024-11-01
-    console.log('dateParam', dateParam);
 
-    // if dateParam is formatted as 2024-11-01, convert it to 2024-11-01T00:00:00
-    // else if dataParam is formatted as November 18, 2024, just use the date
+    // Get the last record date
+    const lastRecordDate = await getLastRecordDate(supabase, context.env.SUPABASE_TABLE_STORIES!);
+    console.log('Last record date:', lastRecordDate);
+
+    // Get query parameters
+    const url = new URL(context.request.url);
+    const source = url.searchParams.get('source');
+    const limit = url.searchParams.get('limit');
+    const dateParam = url.searchParams.get('date');
+
+    // Use the last record date if no date parameter is provided
     let date: Date;
     if (dateParam) {
       if (dateParam.includes('-') && !dateParam.includes('T')) {
@@ -50,8 +71,10 @@ export async function onRequest(context: any) {
         date = new Date(dateParam);
       }
     } else {
-      date = new Date();
+      // Use last record date or current date as fallback
+      date = lastRecordDate ? new Date(lastRecordDate) : new Date();
     }
+
     console.log('date', date);
     const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString()
     const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString()

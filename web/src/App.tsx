@@ -7,7 +7,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<AIFrontiersArticles limit={20} date={new Date().toISOString()}/>} />
+          <Route path="/" element={<AIFrontiersArticles limit={20}/>} />
           <Route path="/articles" element={<AIFrontiersArticles limit={20}/>} />
           <Route path="/archive" element={<ArchiveList />} />
         </Route>
