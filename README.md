@@ -32,7 +32,7 @@
 - TailwindCSS
 
 ### Backend
-- Prefect (Workflows)
+- Prefect (Workflow orchestration)
 - Supabase (Database + Audio Storage)
 - Cloudflare Page Functions (Backend APIs)
 - Azure
@@ -40,9 +40,9 @@
   - Azure AI Services (LLMs)
   - Azure TTS (Text-to-Speech)
 - Jina Reader (URL to markdown)
-- NotebookLM (Ariticle to Podcast)
+- NotebookLM (Article to Podcast)
     - Credits to [NotebookLlama](https://github.com/meta-llama/llama-recipes/blob/main/recipes/quickstart/NotebookLlama/README.md) for transcript generation, and [PodCastLM](https://github.com/YOYZHANG/PodCastLM/blob/master/backend/utils.py) for audio generation.
-    - Transcript generation model: gpt-4o-mini
+    - Transcript generation model: Azure AI Services (gpt-4o-mini)
     - Audio generation: Azure TTS
 - OpenRouter (LLMs)
 - Resend (Email)
