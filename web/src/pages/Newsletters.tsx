@@ -164,21 +164,23 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
               </CardTitle>
             </CardHeader>
             
-            <div className="flex items-center gap-2 px-6 py-2">
-              <a href={story.story_url} className="text-blue-600 hover:underline cursor-pointer">
-                Original Article
-              </a>
-              {story.hn_url && (
-                <>
-                  <span>•</span>
-                  <a href={story.hn_url} className="text-blue-600 hover:underline cursor-pointer">
-                    HN Discussion
-                  </a>
-                  <span>•</span>
-                  <span className="text-gray-600">Score: {story.score}</span>
-                </>
-              )}
-              <div className="ml-auto flex gap-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 px-6 py-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <a href={story.story_url} className="text-blue-600 hover:underline cursor-pointer">
+                  Original Article
+                </a>
+                {story.hn_url && (
+                  <>
+                    <span>•</span>
+                    <a href={story.hn_url} className="text-blue-600 hover:underline cursor-pointer">
+                      HN Discussion
+                    </a>
+                    <span>•</span>
+                    <span className="text-gray-600">Score: {story.score}</span>
+                  </>
+                )}
+              </div>
+              <div className="w-full sm:w-auto sm:ml-auto flex justify-start gap-2">
                 {story.speech_url && (
                   <div>
                     <AudioButton speechUrl={story.speech_url} name="Audio" />
