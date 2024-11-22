@@ -96,7 +96,7 @@ class ContentSummarizer:
                 EXTRACT_CONTENT_SYS_PROMPT,
                 user_input
             )
-            print(f"Extracted content preview: {extracted_content[:100]}")
+            print(f"Extracted content preview (first 100 characters): {extracted_content[:100]}")
             return extracted_content
         except Exception as e:
             return f"Error extracting content: {e}"

@@ -1,6 +1,6 @@
 # AI Frontiers Digest
 
-**AI Frontiers Digest** leverages Large Language Models (LLMs) to intelligently summarize and curate the latest developments in artificial intelligence. By analyzing both articles and Hacker News discussions, it provides concise, digestible insights into the AI landscape.
+**AI Frontiers Digest** leverages Large Language Models (LLMs) to intelligently summarize and curate the latest developments in artificial intelligence. By analyzing both articles and article discussions, it provides concise, digestible insights into the AI landscape. Additionally, it generates podcasts and audio from articles, which provides a more engaging and immersive experience.
 
 ## Project Structure
 
@@ -14,20 +14,22 @@
    - We filter for stories mentioning keywords: "gpt, llm, workflow, serverless, function as a service, backend as a service, faas, baas, developer experience, developer productivity, dev productivity, dev experience,  automation, ai, artificial intelligence, dev, dx, machine learning, deep learning, nlp, openai, anthropic, gemini, claude, devin, mistral, llama, sora, midjourney, lpu, LlamaIndex, LangChain"
  - TechCrunch AI
    - We scrape the [TechCrunch AI section](https://techcrunch.com/category/artificial-intelligence/) for the latest articles. 
-- Right now, only Hacker News and TechCrunch AI articles are supported. We will add more sources in the future.
+- Right now, Hacker News and TechCrunch AI articles are supported, actively adding more resources.
 2. **Summarization:** Summarize articles and Hacker News discussions
 3. **Email Delivery:** Deliver summaries directly to your inbox
 4. **Discord Delivery:** Deliver summaries to our [Discord community](https://discord.gg/Ukbeb8rDmm)
 5. **Web App:** View summaries and explore AI news on [aicrafter.info](https://aicrafter.info)
+6. **Audio:** Generate audio from article.
+6. **Podcast:** Generate podcasts from article.
 
 
 ## Tech Stack
 
 ### Frontend
-- Vite (Build tool)
+- Vite
 - React
 - TypeScript
-- Modern CSS (TailwindCSS/styled-components)
+- TailwindCSS
 
 ### Backend
 - Prefect (Workflows)
@@ -38,6 +40,10 @@
   - Azure AI Services (LLMs)
   - Azure TTS (Text-to-Speech)
 - Jina Reader (URL to markdown)
+- NotebookLM (Ariticle to Podcast)
+    - Credits to [NotebookLlama](https://github.com/meta-llama/llama-recipes/blob/main/recipes/quickstart/NotebookLlama/README.md) for transcript generation, and [PodCastLM](https://github.com/YOYZHANG/PodCastLM/blob/master/backend/utils.py) for audio generation.
+    - Transcript generation model: gpt-4o-mini
+    - Audio generation: Azure TTS
 - OpenRouter (LLMs)
 - Resend (Email)
 
