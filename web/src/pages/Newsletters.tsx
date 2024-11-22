@@ -186,7 +186,7 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
                 )}
                 {story.notebooklm_url && (
                   <div>
-                    <AudioButton speechUrl={story.notebooklm_url} name="Podcast" />
+                    <AudioButton speechUrl={story.notebooklm_url} name="NotebookLM" />
                   </div>
                 )}
               </div>

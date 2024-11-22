@@ -107,7 +107,7 @@ async def run_tc_flow():
 async def run_test_tc_flow():
     # urls = ["https://techcrunch.com/2024/11/20/openai-accidentally-deleted-potential-evidence-in-ny-times-copyright-lawsuit/"]
     service = await TechCrunchService.create()
-    service.formatted_date = "2024/11/20"
+    service.formatted_date = "2024/11/21"
     urls = service.get_ai_urls_from_tc()
     service.discord_webhooks = [HACKER_NEWS_DISCORD_WEBHOOK]
     stories = await service.process_urls(urls)

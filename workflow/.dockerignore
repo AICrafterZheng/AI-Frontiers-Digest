@@ -1,0 +1,75 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.py[cod]
+*$py.class
+.pytest_cache
+.coverage
+htmlcov/
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Node
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+.pnpm-debug.log
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+*.sublime-workspace
+*.sublime-project
+
+# Project specific
+dist
+build
+*.log
+logs
+tmp
+temp
+.cache
+.next
+.nuxt
+.output
+
+# Documentation
+docs
+*.md
+LICENSE
+
+# Test files
+test
+tests
+coverage
+
+# Local development
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile*
+.docker
+
+# Large files/directories
+*.mp3
+*.wav
+*.zip
+*.tar.gz
+audiofiles/
+tmp/
