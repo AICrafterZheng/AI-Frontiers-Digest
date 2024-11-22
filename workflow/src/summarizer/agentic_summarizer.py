@@ -7,6 +7,8 @@ from src.utils.tts import text_to_speech
 from src.utils.supabase_utils import upload_audio_file
 from src.notebooklm.app import NotebookLM
 import uuid
+from src.config import AUDIO_CACHE_DIR
+import os
 from .prompts import (
     constraints_and_example,
     INITIAL_SUMMARIZE_SYSTEM_PROMPT,
@@ -103,18 +105,18 @@ class ContentSummarizer:
     def article_to_speech(self, article: str) -> str:
         # Generate uuid for the file name
         print(f"Generating speech for article: {self.url}")
-        file_name = str(uuid.uuid4()) + ".mp3"
-        text_to_speech(article, file_name)
-        public_url = upload_audio_file(file_name)
+        os.makedirs(AUDIO_CACHE_DIR, exist_ok=True)
+        unique_filename = os.path.join(AUDIO_CACHE_DIR, f"{uuid.uuid4()}.mp3")
+        text_to_speech(article, unique_filename)
+        public_url = upload_audio_file(unique_filename)
         return public_url
-    
+
     @task(log_prints=True, cache_key_fn=None)
     async def article_to_podcast(self, article: str) -> str:
         print(f"Generating podcast for article: {self.url}")
         llm_client = LLMClient(use_azure_openai=True)
         notebooklm = NotebookLM(llm_client=llm_client)
-        file_path = await notebooklm.generate_podcast(article)
-        public_url = upload_audio_file(file_path)
+        public_url = await notebooklm.generate_and_upload_podcast(article)
         return public_url
 
     @flow(log_prints=True)
@@ -135,13 +137,13 @@ class ContentSummarizer:
 
 
     @flow(log_prints=True)
-    def summarize_url(self) -> dict:
+    async def summarize_url(self) -> dict:
         print(f"Processing URL: {self.url} with model: {self.llm_client.model}")
         result = {"summary": "", "speech_url": "", "notebooklm_url": ""}
         # Fetch content
         article = self.extract_content_from_url()
         audio_url = self.article_to_speech(article)
-        notebooklm_url = self.article_to_podcast(article)
+        notebooklm_url = await self.article_to_podcast(article)
         result["speech_url"] = audio_url
         result["notebooklm_url"] = notebooklm_url
         if len(article) < 1000:

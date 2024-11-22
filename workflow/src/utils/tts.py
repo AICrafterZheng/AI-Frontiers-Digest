@@ -1,10 +1,11 @@
 import azure.cognitiveservices.speech as speechsdk
-from src.config import SPEECH_KEY, SPEECH_REGION, HOST_VOICE, GUEST_VOICE
+from src.config import SPEECH_KEY, SPEECH_REGION, HOST_VOICE, GUEST_VOICE, AUDIO_CACHE_DIR
 from prefect import task, get_run_logger
 import asyncio
 import io
 import ast
 import uuid
+import os
 from pydub import AudioSegment
 
 @task(log_prints=True, cache_key_fn=None)
@@ -78,7 +79,8 @@ async def generate_podcast_audio(text: str) -> str:
             return None
         combined_audio = await asyncio.to_thread(sum, audio_segments)
         print("Audio combined")
-        unique_filename = f"./{uuid.uuid4()}.mp3"
+        os.makedirs(AUDIO_CACHE_DIR, exist_ok=True)
+        unique_filename = os.path.join(AUDIO_CACHE_DIR, f"{uuid.uuid4()}.mp3")
         await asyncio.to_thread(combined_audio.export, unique_filename, format="mp3")
         return unique_filename
     except Exception as e:

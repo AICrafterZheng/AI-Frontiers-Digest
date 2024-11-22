@@ -24,7 +24,7 @@ class LLMClient:
         self.app = app
         print(f"LLMClient init: use_azure_mistral: {self.use_azure_mistral}, use_azure_openai: {self.use_azure_openai}, use_openrouter: {self.use_openrouter}, use_anthropic: {self.use_anthropic}, use_openai: {self.use_openai}, model: {self.model}, app: {self.app}")
 
-    @task(log_prints=True, cache_key_fn=None)
+    @task(log_prints=True, cache_key_fn=None, retries=2)
     def call_llm(self, 
                 sys_prompt: str, 
                 user_input: str, 

@@ -57,7 +57,7 @@ class HackerNewsService:
         results = []
         async def processStory(id):
             # Check if story exists
-            if not self.update_supabase and checkIfExists(id):
+            if not self.update_supabase and checkIfExists('story_id', id):
                 # print(f"Story {id} already exists")
                 return
             story = await self.fetchStory(id)
@@ -108,7 +108,7 @@ class HackerNewsService:
                 url = story.url
                 comments_summary = await HNCommentsSummarizer(self.llm_client).summarize_comments(str(story.id))
                 story.comments_summary = comments_summary
-                result = ContentSummarizer(self.llm_client, story.title, url).summarize_url()
+                result = await ContentSummarizer(self.llm_client, story.title, url).summarize_url()
                 story.summary = result.get("summary")
                 story.speech_url = result.get("speech_url")
                 story.notebooklm_url = result.get("notebooklm_url")

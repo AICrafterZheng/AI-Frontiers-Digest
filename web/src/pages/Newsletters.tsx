@@ -14,6 +14,7 @@ interface Story {
   created_at: string
   source: string
   speech_url: string
+  notebooklm_url: string
 }
 
 interface NewsletterProps {
@@ -78,7 +79,7 @@ const getSourcePrefix = (source: string) => {
 
 export default function AIFrontiersArticles({ source, limit }: NewsletterProps) {
   const [searchParams] = useSearchParams();
-  const date = searchParams.get('date') || new Date().toISOString();
+  const date = searchParams.get('date');
   const [stories, setStories] = useState<Story[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -150,7 +151,7 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
       <h1 className="text-4xl font-bold text-center text-blue-600 mb-2">
         {source ? `${source} News` : 'Latest AI News'}
       </h1>
-      <p className="text-center text-gray-600 mb-8">{new Date(date).toLocaleDateString()}</p>
+      <p className="text-center text-gray-600 mb-8">{date ? new Date(date).toLocaleDateString() : new Date().toLocaleDateString()}</p>
       
       {stories.length === 0 ? (
         <p className="text-center text-gray-600">No stories found</p>
@@ -177,11 +178,18 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
                   <span className="text-gray-600">Score: {story.score}</span>
                 </>
               )}
-              {story.speech_url && (
-                <div className="ml-auto">
-                  <AudioButton speechUrl={story.speech_url} name="Audio" />
-                </div>
-              )}
+              <div className="ml-auto flex gap-2">
+                {story.speech_url && (
+                  <div>
+                    <AudioButton speechUrl={story.speech_url} name="Audio" />
+                  </div>
+                )}
+                {story.notebooklm_url && (
+                  <div>
+                    <AudioButton speechUrl={story.notebooklm_url} name="Podcast" />
+                  </div>
+                )}
+              </div>
             </div>
 
             <CardContent>

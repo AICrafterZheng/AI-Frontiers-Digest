@@ -14,7 +14,7 @@ from src.utils.email_templates import get_tc_email_template
 from src.utils.email_sender import send_emails
 from src.config import HACKER_NEWS_DISCORD_WEBHOOK, TC_SOURCE_NAME, AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK
 from src.utils.helpers import save_to_supabase
-
+from src.utils.supabase_utils import checkIfExists
 class TechCrunchService:
     def __init__(self):
         self.base_url = "https://techcrunch.com/category/artificial-intelligence/"
@@ -42,24 +42,27 @@ class TechCrunchService:
         except requests.RequestException:
             return False
 
+    def check_if_exists_in_supabase(self, url: str) -> bool:
+        return checkIfExists('story_url', url)
+
     @task(log_prints=True, cache_key_fn=None)
     def get_ai_urls_from_tc(self) -> List[str]:
         response = requests.get(self.base_url)
         input_text = response.text
         url_pattern = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
         urls = re.findall(url_pattern, input_text)
-        urls = [url for url in urls if self.formatted_date in url and not self.is_image_url(url)]
+        urls = [url for url in urls if self.formatted_date in url and not self.is_image_url(url) and not self.check_if_exists_in_supabase(url)]
         urls = list(set(urls))
         print(f"Found {len(urls)} URLs: \n{urls}")
         return urls
 
-    def process_urls(self, urls: List[str]) -> List[Story]:
+    async def process_urls(self, urls: List[str]) -> List[Story]:
         first_news = True
         stories = []
         
         for url in urls:
             # Use TechCrunch url as the topic
-            result = ContentSummarizer(self.llm_client, url, url).summarize_url()
+            result = await ContentSummarizer(self.llm_client, url, url).summarize_url()
             summary = result.get("summary")
             speech_url = result.get("speech_url")
             notebooklm_url = result.get("notebooklm_url")
@@ -90,7 +93,7 @@ class TechCrunchService:
     async def run_flow(self):
         print(f"Formatted date: {self.formatted_date}")
         urls = self.get_ai_urls_from_tc()
-        stories = self.process_urls(urls)
+        stories = await self.process_urls(urls)
         await self.send_newsletter(stories)
         save_to_supabase(stories)
 
@@ -102,10 +105,11 @@ async def run_tc_flow():
 
 @flow(log_prints=True, name="test-tc-flow")
 async def run_test_tc_flow():
-    urls = ["https://www.latent.space/p/ai-ux-moat"]  
+    # urls = ["https://techcrunch.com/2024/11/20/openai-accidentally-deleted-potential-evidence-in-ny-times-copyright-lawsuit/"]
     service = await TechCrunchService.create()
-    service.formatted_date = "2024/11/08"
+    service.formatted_date = "2024/11/20"
+    urls = service.get_ai_urls_from_tc()
     service.discord_webhooks = [HACKER_NEWS_DISCORD_WEBHOOK]
-    stories = service.process_urls(urls)
+    stories = await service.process_urls(urls)
     await service.send_newsletter(stories, to_emails=["aicrafter.ai@gmail.com"])
     save_to_supabase(stories)

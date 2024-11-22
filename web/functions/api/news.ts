@@ -66,13 +66,21 @@ export async function onRequest(context: any) {
     let date: Date;
     if (dateParam) {
       if (dateParam.includes('-') && !dateParam.includes('T')) {
+        console.log("dateParam.includes('-') && !dateParam.includes('T') date: ", dateParam)
         date = new Date(dateParam + 'T00:00:00');
       } else {
         date = new Date(dateParam);
+        console.log("new Date(dateParam) date: ", dateParam)
       }
-    } else {
+    } else if (lastRecordDate) {
       // Use last record date (with) or current date as fallback
-      date = lastRecordDate ? new Date(`${lastRecordDate.split('T')[0]}T00:00:00'`) : new Date();
+      const dateString = lastRecordDate.split('T')[0]
+      console.log("lastRecordDate.split('T')[0] dateString: ", dateString)
+      date = new Date(`${dateString}T00:00:00`)
+      console.log("new Date(`${dateString}T00:00:00`) date: ", date)
+    } else {
+      date = new Date();
+      console.log("new Date() date: ", date)
     }
 
     console.log('date', date);

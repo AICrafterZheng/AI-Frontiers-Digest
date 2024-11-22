@@ -5,12 +5,12 @@ from prefect import task, get_run_logger
 # Initialize Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-def checkIfExists(story_id: int) -> bool:
+def checkIfExists(column: str, value: any) -> bool:
     """Check if a story exists in the database."""
-    result = searchRow(SUPABASE_TABLE, 'story_id', story_id)
+    result = searchRow(SUPABASE_TABLE, column, value)
     return len(result) > 0
 
-def searchRow(tableName: str, searchColumn: str, searchValue: int):
+def searchRow(tableName: str, searchColumn: str, searchValue: any):
     """Search for a row in the database."""
     try:
         data = supabase.table(tableName).select("*").eq(searchColumn, searchValue).execute()

@@ -39,13 +39,13 @@ class NotebookLM:
         """Generate podcast audio from transcript."""
         return await generate_podcast_audio(transcript)
     
-    @flow(name="generate_podcast")
-    async def generate_podcast(self, raw_text: str) -> str:
+    @flow(name="generate_upload_podcast")
+    async def generate_and_upload_podcast(self, raw_text: str) -> str:
         """Main flow to generate podcast from raw text."""
         preprocessed = self.preprocess_text(raw_text)
         transcript = self.write_transcript(preprocessed)
         tts_transcript = self.rewrite_transcript(transcript)
         audio_path = await self.transcript_to_podcast(tts_transcript)
         public_url = upload_audio_file(audio_path)
-        print(f"generate_podcast - Public URL: {public_url}")
+        print(f"generate_upload_podcast - Public URL: {public_url}")
         return public_url
