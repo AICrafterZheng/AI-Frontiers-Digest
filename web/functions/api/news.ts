@@ -71,8 +71,8 @@ export async function onRequest(context: any) {
         date = new Date(dateParam);
       }
     } else {
-      // Use last record date or current date as fallback
-      date = lastRecordDate ? new Date(lastRecordDate) : new Date();
+      // Use last record date (with) or current date as fallback
+      date = lastRecordDate ? new Date(`${lastRecordDate.split('T')[0]}T00:00:00'`) : new Date();
     }
 
     console.log('date', date);
