@@ -9,3 +9,5 @@ azure-ai-inference
 html2text
 azure-cognitiveservices-speech
 requests
+pydub
+tenacity

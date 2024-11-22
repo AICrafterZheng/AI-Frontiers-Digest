@@ -65,7 +65,6 @@ def upload_audio_file(file_path: str, bucket_name: str = SUPABASE_BUCKET_NAME) -
     try:
         # Get the filename from the path
         file_name = Path(file_path).name
-        
         # Read the file
         with open(file_path, 'rb') as f:
             file_data = f.read()

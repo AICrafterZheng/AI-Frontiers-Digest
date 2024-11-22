@@ -5,6 +5,7 @@ from src.utils.llm_client import LLMClient
 from src.utils.helpers import extract_llm_response
 from src.utils.tts import text_to_speech
 from src.utils.supabase_utils import upload_audio_file
+from src.notebooklm.app import NotebookLM
 import uuid
 from .prompts import (
     constraints_and_example,
@@ -102,34 +103,49 @@ class ContentSummarizer:
     def article_to_speech(self, article: str) -> str:
         # Generate uuid for the file name
         print(f"Generating speech for article: {self.url}")
-        file_name = str(uuid.uuid4()) + ".wav"
+        file_name = str(uuid.uuid4()) + ".mp3"
         text_to_speech(article, file_name)
         public_url = upload_audio_file(file_name)
         return public_url
     
+    @task(log_prints=True, cache_key_fn=None)
+    async def article_to_podcast(self, article: str) -> str:
+        print(f"Generating podcast for article: {self.url}")
+        llm_client = LLMClient(use_azure_openai=True)
+        notebooklm = NotebookLM(llm_client=llm_client)
+        file_path = await notebooklm.generate_podcast(article)
+        public_url = upload_audio_file(file_path)
+        return public_url
+
     @flow(log_prints=True)
-    def summarize_url(self) -> dict:
-        print(f"Processing URL: {self.url} with model: {self.llm_client.model}")
-        result = {"summary": "", "speech_url": ""}
+    def extract_content_from_url(self) -> dict:
         # Fetch content
         article, error = call_jina_reader(self.url)
         if error or not article:
-            result["summary"] = error or "Failed to fetch article"
-            return result
+            return error or "Failed to fetch article"
 
         # Extract and process content
         article = self.extract_content(self.topic, article)
         article = extract_llm_response(article, "extracted_content")
-        
+
         if not article:
-            result["summary"] = "No content extracted"
-            return result
+            return "No content extracted"
 
-        public_url = self.article_to_speech(article)
+        return article
 
+
+    @flow(log_prints=True)
+    def summarize_url(self) -> dict:
+        print(f"Processing URL: {self.url} with model: {self.llm_client.model}")
+        result = {"summary": "", "speech_url": "", "notebooklm_url": ""}
+        # Fetch content
+        article = self.extract_content_from_url()
+        audio_url = self.article_to_speech(article)
+        notebooklm_url = self.article_to_podcast(article)
+        result["speech_url"] = audio_url
+        result["notebooklm_url"] = notebooklm_url
         if len(article) < 1000:
             result["summary"] = article
-            result["speech_url"] = public_url
             return result
 
         # Generate summary
@@ -139,9 +155,7 @@ class ContentSummarizer:
         print(f"Initial summary: {res.initial_summary}")
         print(f"Reflection: {res.reflection}")
         print(f"Final summary: {summary}")
-
         result["summary"] = summary
-        result["speech_url"] = public_url
         return result
 
 

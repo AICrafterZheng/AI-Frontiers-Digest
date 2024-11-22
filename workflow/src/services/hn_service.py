@@ -3,7 +3,6 @@ import aiohttp
 import asyncio
 from prefect import flow, task, get_run_logger
 from prefect.variables import Variable
-from prefect.artifacts import create_table_artifact
 from src.utils.email_templates import get_hn_email_template
 from src.utils.llm_client import LLMClient
 from src.utils.email_sender import send_emails
@@ -112,6 +111,7 @@ class HackerNewsService:
                 result = ContentSummarizer(self.llm_client, story.title, url).summarize_url()
                 story.summary = result.get("summary")
                 story.speech_url = result.get("speech_url")
+                story.notebooklm_url = result.get("notebooklm_url")
                 summary_message = f"**Article**: <{story.url}>\n**Summary**:\n {story.summary}"
                 comments_summary_message = f"**HNUrl**: <{story.hn_url}>\n**Score**: {story.score}\n**Discussion Highlights**:\n {comments_summary}"
                 logger.info(f"Story comments summary: {comments_summary_message}")

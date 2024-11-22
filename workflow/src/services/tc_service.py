@@ -62,10 +62,11 @@ class TechCrunchService:
             result = ContentSummarizer(self.llm_client, url, url).summarize_url()
             summary = result.get("summary")
             speech_url = result.get("speech_url")
+            notebooklm_url = result.get("notebooklm_url")
             if summary and summary != "No relevant content found":
                 title = summary.split("\n")[0]
                 title = title.strip('"').strip('(').strip(')').strip("'")
-                stories.append(Story(url=url, title=title, summary=summary, source=TC_SOURCE_NAME, speech_url=speech_url))
+                stories.append(Story(url=url, title=title, summary=summary, source=TC_SOURCE_NAME, speech_url=speech_url, notebooklm_url=notebooklm_url))
             if first_news:
                 message = f"{self.header}\n<{url}>\n{summary}"
                 first_news = False

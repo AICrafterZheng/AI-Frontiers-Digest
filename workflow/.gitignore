@@ -29,6 +29,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+.DS_Store
 
 # Google GitHub Actions credentials files created by:
 # https://github.com/google-github-actions/auth

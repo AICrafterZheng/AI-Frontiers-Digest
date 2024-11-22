@@ -37,7 +37,7 @@ class LLMClient:
                 elif self.model.lower() == "large":
                     response = self._call_azure_mistral(sys_prompt, user_input, ai_input, AZURE_MISTRAL_LARGE_API, AZURE_MISTRAL_LARGE_INFERENCE_KEY)
             elif self.use_azure_openai:
-                response = self._call_azure_openai(sys_prompt, user_input, ai_input)
+                response = self._call_azure_openai(sys_prompt, user_input)
             elif self.use_openrouter:
                 if self.model == "":
                     self.model = OPENROUTER_MODEL_MISTRAL_FREE
@@ -114,15 +114,16 @@ class LLMClient:
         
         payload = {
             "messages": messages,
-            "max_tokens": 2048,
+            "max_tokens": 8192,
             "temperature": 0.7,
-            "top_p": 0.1
+            "top_p": 0.7
         }
         response = client.complete(payload)
         return response.choices[0].message.content
 
-    def _call_azure_openai(self, sys_prompt: str, user_input: str, ai_input: str) -> str:
-        print(f"Calling Azure OpenAI with {AZURE_OPENAI_API_DEPLOYMENT_NAME} ...")
+    def _call_azure_openai(self, sys_prompt: str, user_input: str) -> str:
+        model = AZURE_OPENAI_API_DEPLOYMENT_NAME if self.model == "" else self.model
+        print(f"Calling Azure OpenAI with {model} ...")
         # Configuration
         headers = {
             "Content-Type": "application/json",
@@ -130,16 +131,15 @@ class LLMClient:
         }
         # Payload for the request
         payload = {
-        "messages": [
+            "messages": [
                 {"role": "user", "content": sys_prompt},
-                {"role": "user", "content": user_input},
-                {"role": "assistant", "content": ai_input}
+                {"role": "user", "content": user_input}
             ],
             "temperature": 0.7,
-            "top_p": 0.95,
-            "max_tokens": 2048
+            "top_p": 0.7,
+            "max_tokens": 8192
         }
-        url = f"{AZURE_OPENAI_API_BASE}/openai/deployments/{AZURE_OPENAI_API_DEPLOYMENT_NAME}/chat/completions?api-version={AZURE_OPENAI_API_VERSION}"
+        url = f"{AZURE_OPENAI_API_BASE}/openai/deployments/{model}/chat/completions?api-version={AZURE_OPENAI_API_VERSION}"
         # Send request
         try:
             response = requests.post(url, headers=headers, json=payload)

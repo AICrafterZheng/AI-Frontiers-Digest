@@ -62,12 +62,22 @@ DEFAULT_MIN_SCORE = os.getenv("DEFAULT_MIN_SCORE", "40")
 HN_SOURCE_NAME = os.getenv("HN_SOURCE_NAME", "HackerNews")
 TC_SOURCE_NAME = os.getenv("TC_SOURCE_NAME", "TechCrunch")
 
-# Azure Cognitive Services
-SPEECH_KEY = os.getenv("SPEECH_KEY", "")
-SPEECH_REGION = os.getenv("SPEECH_REGION", "")
+
 
 # Supabase
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
 SUPABASE_TABLE = os.getenv("SUPABASE_TABLE", "")
 SUPABASE_BUCKET_NAME = os.getenv("SUPABASE_BUCKET_NAME", "")
+
+
+# TTS settings
+AUDIO_CACHE_DIR = os.path.join(os.path.dirname(__file__), 'tmp', 'cache')
+CACHE_DURATION = 1 * 2 * 60 * 60  # 2 hours
+
+# Azure Cognitive Services
+SPEECH_KEY = os.getenv("SPEECH_KEY", "")
+SPEECH_REGION = os.getenv("SPEECH_REGION", "")
+HOST_VOICE = "en-US-AvaMultilingualNeural"
+# GUEST_VOICE = "en-US-BrianMultilingualNeural"
+GUEST_VOICE = "en-US-AndrewMultilingualNeural"
