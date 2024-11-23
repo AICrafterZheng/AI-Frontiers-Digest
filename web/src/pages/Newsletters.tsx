@@ -179,6 +179,8 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
                     <span className="text-gray-600">Score: {story.score}</span>
                   </>
                 )}
+                <span>•</span>
+                <span className="text-gray-600">{new Date(story.created_at).toLocaleTimeString()}</span>
               </div>
               <div className="w-full sm:w-auto sm:ml-auto flex justify-start gap-2">
                 {story.speech_url && (

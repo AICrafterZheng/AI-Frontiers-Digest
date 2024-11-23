@@ -158,9 +158,14 @@ async def run_test_hn_flow():
     # service.discord_keywords = ['Y']
     # service.score = 0
     # storieIds = await service.fetchTopStoryIds()
-    storieIds = ["42136711"]
+    storieIds = ["42115873", "42116140"]
     stories = await service.top_hn_flow(storieIds)
     print(f"Found {len(stories)} stories")
     # await service.send_emails(stories, ["aicrafter.ai@gmail.com"])
     # save_to_supabase(stories)
-    update_supabase_row(stories, ["summary", "speech_url", "notebooklm_url", "comments_summary"])
+    columns_to_update = []
+    columns_to_update.append("summary")
+    columns_to_update.append("comments_summary")
+    columns_to_update.append("speech_url") 
+    columns_to_update.append("notebooklm_url")
+    update_supabase_row(stories, columns_to_update)

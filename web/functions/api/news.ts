@@ -104,8 +104,8 @@ export async function onRequest(context: any) {
     // Execute the query with ordering and limit
     let { data, error } = await query
       .not('source', 'is', null)
-      .order('source', { ascending: true })
-      .order('score', { ascending: false })
+      .order('created_at', { ascending: false })
+      // .order('source', { ascending: true })
       .limit(limit ? parseInt(limit) : 30)
 
     if (error) {
