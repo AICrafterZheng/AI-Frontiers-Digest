@@ -28,10 +28,13 @@ class SummaryResult:
     final_summary: str
 
 class ContentSummarizer:
-    def __init__(self, llm_client: LLMClient, topic: str, url: str):
+    def __init__(self, llm_client: LLMClient, topic: str, url: str, generate_speech: bool = True, generate_podcast: bool = True, generate_summary: bool = True):
         self.llm_client = llm_client
         self.topic = topic
         self.url = url
+        self.generate_speech = generate_speech
+        self.generate_podcast = generate_podcast
+        self.generate_summary = generate_summary
 
     @task(log_prints=True, retries=2, retry_delay_seconds=[5, 10])
     def _initial_summary(self, content: str) -> str:
@@ -142,22 +145,25 @@ class ContentSummarizer:
         result = {"summary": "", "speech_url": "", "notebooklm_url": ""}
         # Fetch content
         article = self.extract_content_from_url()
-        audio_url = self.article_to_speech(article)
-        notebooklm_url = await self.article_to_podcast(article)
-        result["speech_url"] = audio_url
-        result["notebooklm_url"] = notebooklm_url
-        if len(article) < 1000:
+
+        if self.generate_speech:
+            audio_url = self.article_to_speech(article)
+            result["speech_url"] = audio_url
+        if self.generate_podcast:
+            notebooklm_url = await self.article_to_podcast(article)
+            result["notebooklm_url"] = notebooklm_url
+        if len(article) < 500:
             result["summary"] = article
             return result
 
-        # Generate summary
-        res = self.summarize(article)
-        summary = res.final_summary.replace("\n\n", "\n")
-
-        print(f"Initial summary: {res.initial_summary}")
-        print(f"Reflection: {res.reflection}")
-        print(f"Final summary: {summary}")
-        result["summary"] = summary
+        if self.generate_summary:
+            # Generate summary
+            res = self.summarize(article)
+            summary = res.final_summary.replace("\n\n", "\n")
+            print(f"Initial summary: {res.initial_summary}")
+            print(f"Reflection: {res.reflection}")
+            print(f"Final summary: {summary}")
+            result["summary"] = summary
         return result
 
 

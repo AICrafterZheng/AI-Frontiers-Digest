@@ -5,12 +5,12 @@ import AudioButton from '../components/AudioButton';
 // Types
 interface Story {
   story_id: number
-  story_title: string
-  story_url: string
+  title: string
+  url: string
   hn_url?: string
   score?: number
-  story_summary: string
-  story_comments_summary?: string
+  summary: string
+  comments_summary?: string
   created_at: string
   source: string
   speech_url: string
@@ -160,13 +160,13 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
           <Card key={story.story_id} className="mb-8">
             <CardHeader>
               <CardTitle>
-                {getSourcePrefix(story.source)}{story.story_title}
+                {getSourcePrefix(story.source)}{story.title}
               </CardTitle>
             </CardHeader>
             
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 px-6 py-2">
               <div className="flex flex-wrap items-center gap-2">
-                <a href={story.story_url} className="text-blue-600 hover:underline cursor-pointer">
+                <a href={story.url} className="text-blue-600 hover:underline cursor-pointer">
                   Original Article
                 </a>
                 {story.hn_url && (
@@ -196,22 +196,22 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
 
             <CardContent>
               <div className="space-y-6">
-                {story.story_summary && (
+                {story.summary && (
                   <div className="prose prose-sm max-w-none">
                     <h3 className="font-semibold text-lg mb-3">Article Summary</h3>
                     <div 
                       className="text-gray-700"
-                      dangerouslySetInnerHTML={{ __html: formatSummary(story.story_summary) }} 
+                      dangerouslySetInnerHTML={{ __html: formatSummary(story.summary) }} 
                     />
                   </div>
                 )}
                 
-                {story.story_comments_summary && (
+                {story.comments_summary && (
                   <div className="prose prose-sm max-w-none">
                     <h3 className="font-semibold text-lg mb-3">Discussion Highlights</h3>
                     <div 
                       className="text-gray-700"
-                      dangerouslySetInnerHTML={{ __html: formatSummary(story.story_comments_summary) }} 
+                      dangerouslySetInnerHTML={{ __html: formatSummary(story.comments_summary) }} 
                     />
                   </div>
                 )}

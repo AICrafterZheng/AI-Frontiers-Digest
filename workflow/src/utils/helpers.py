@@ -43,12 +43,12 @@ def save_to_supabase(stories):
             summary = story.summary.split("\n", 1)[1] if story.summary and "\n" in story.summary else story.summary
             insertRow({
                 "story_id": int(story.id), 
-                "story_title": story.title, 
-                "story_url": story.url, 
+                "title": story.title, 
+                "url": story.url, 
                 "score": story.score, 
                 "hn_url": story.hn_url, 
-                "story_summary": summary, 
-                "story_comments_summary": story.comments_summary, 
+                "summary": summary, 
+                "comments_summary": story.comments_summary, 
                 "source": story.source,
                 "speech_url": story.speech_url,
                 "notebooklm_url": story.notebooklm_url
@@ -57,13 +57,17 @@ def save_to_supabase(stories):
             logger.error(f"Error saving story {story.title}: {e}")
 
 @task(log_prints=True, cache_key_fn=None)
-def update_supabase_row(stories):
+def update_supabase_row(stories, columns: list[str] = ["speech_url", "notebooklm_url", "summary", "comments_summary"]):
     logger = get_run_logger()
     for story in stories:
         try:
-            updateRow({
-                "speech_url": story.speech_url,
-                "notebooklm_url": story.notebooklm_url
-            }, "story_id", story.id)
+            # Use getattr to access object attributes
+            fields = {
+                column: getattr(story, column) for column in columns
+            }
+            print(f"Updating story {story.url} with fields: {fields}")
+            updateRow(fields, "story_id", story.id)
+        except AttributeError as e:
+            logger.error(f"Story missing attribute: {e}")
         except Exception as e:
-            logger.error(f"Error updating story {story.title}: {e}")
+            logger.error(f"Error updating story {story.url}: {e}")

@@ -25,10 +25,10 @@ class HackerNewsService:
     def __init__(self):
         self.logger = get_run_logger()
         self.header = "AI Frontiers on Hacker News"
-        self.llm_client = LLMClient(use_azure_mistral=True, model="large")
+        self.llm_client = LLMClient(use_azure_openai=True)
         self.discord_webhooks = []
         self.update_supabase = False # Set to true to update the supabase row
-        
+        self.columns_to_update = ["speech_url", "notebooklm_url", "summary", "comments_summary"]
     @classmethod
     async def create(cls):
         instance = cls()
@@ -106,23 +106,31 @@ class HackerNewsService:
         for story in stories:
             try:
                 url = story.url
-                comments_summary = await HNCommentsSummarizer(self.llm_client).summarize_comments(str(story.id))
-                story.comments_summary = comments_summary
-                result = await ContentSummarizer(self.llm_client, story.title, url).summarize_url()
+                if not self.update_supabase or "comments_summary" in self.columns_to_update:
+                    comments_summary = await HNCommentsSummarizer(self.llm_client).summarize_comments(str(story.id))
+                    story.comments_summary = comments_summary
+                result = await ContentSummarizer(
+                    self.llm_client,
+                    story.title,
+                    url,
+                    generate_summary= "summary" in self.columns_to_update,
+                    generate_speech= "speech_url" in self.columns_to_update,
+                    generate_podcast= "notebooklm_url" in self.columns_to_update
+                ).summarize_url()
                 story.summary = result.get("summary")
                 story.speech_url = result.get("speech_url")
                 story.notebooklm_url = result.get("notebooklm_url")
-                summary_message = f"**Article**: <{story.url}>\n**Summary**:\n {story.summary}"
-                comments_summary_message = f"**HNUrl**: <{story.hn_url}>\n**Score**: {story.score}\n**Discussion Highlights**:\n {comments_summary}"
-                logger.info(f"Story comments summary: {comments_summary_message}")
-                if first_news: # add the header
-                    summary_message = f"Top Hacker News:\n{summary_message}"
-                    first_news = False
-                
-                for webhook in self.discord_webhooks:
-                    send_discord(webhook, summary_message, divider_style="none")
-                    send_discord(webhook, comments_summary_message)
 
+                if len(self.discord_webhooks) > 0:
+                    summary_message = f"**Article**: <{story.url}>\n**Summary**:\n {story.summary}"
+                    comments_summary_message = f"**HNUrl**: <{story.hn_url}>\n**Score**: {story.score}\n**Discussion Highlights**:\n {comments_summary}"
+                    logger.info(f"Story comments summary: {comments_summary_message}")
+                    if first_news: # add the header
+                        summary_message = f"Top Hacker News:\n{summary_message}"
+                        first_news = False
+                    for webhook in self.discord_webhooks:
+                        send_discord(webhook, summary_message, divider_style="none")
+                        send_discord(webhook, comments_summary_message)
             except Exception as e:
                 logger.error(f"Error processing story {story.title}: {e}")
         return stories
@@ -142,15 +150,17 @@ async def run_hn_flow():
 
 @flow(log_prints=True, name="test-hn-flow")
 async def run_test_hn_flow():
+    # llm_client = LLMClient(use_azure_openai=True)
     service = await HackerNewsService.create()
+    # service.llm_client = llm_client
     service.discord_webhooks = []
     service.update_supabase = True
     # service.discord_keywords = ['Y']
     # service.score = 0
     # storieIds = await service.fetchTopStoryIds()
-    storieIds = ["42210560", "42206817"]
+    storieIds = ["42136711"]
     stories = await service.top_hn_flow(storieIds)
     print(f"Found {len(stories)} stories")
     # await service.send_emails(stories, ["aicrafter.ai@gmail.com"])
     # save_to_supabase(stories)
-    update_supabase_row(stories)
+    update_supabase_row(stories, ["summary", "speech_url", "notebooklm_url", "comments_summary"])
