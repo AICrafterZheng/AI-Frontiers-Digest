@@ -7,7 +7,7 @@ interface SourceStats {
 // Add this date handling logic to match news.ts
 const getDateRange = (endDate: Date) => {
   const startDate = new Date(endDate);
-  startDate.setDate(startDate.getDate() - 10);
+  startDate.setDate(startDate.getDate() - 11);
   
   const startOfDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).toISOString();
   const endOfDay = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1).toISOString();

@@ -138,7 +138,15 @@ export async function onRequest(context: any) {
     //   );
     //   data = updatedData;
     // }
-    return new Response(JSON.stringify(data || []), {
+
+    // Count by source
+    const countBySource = data?.reduce((acc: any, story: any) => {
+      acc[story.source.toLowerCase()] = (acc[story.source.toLowerCase()] || 0) + 1;
+      return acc;
+    }, {});
+
+    const result = {stories: data || [], countBySource: countBySource}
+    return new Response(JSON.stringify(result), {
       status: 200,
       headers: {
         ...corsHeaders,

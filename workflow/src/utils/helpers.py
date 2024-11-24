@@ -57,16 +57,31 @@ def save_to_supabase(stories):
             logger.error(f"Error saving story {story.title}: {e}")
 
 @task(log_prints=True, cache_key_fn=None)
-def update_supabase_row(stories, columns: list[str] = ["speech_url", "notebooklm_url", "summary", "comments_summary"]):
+def update_supabase_row(stories, key_column: str, columns: list[str]):
     logger = get_run_logger()
+    if len(columns) == 0:
+        logger.error("No columns to update")
+        return
+    logger.info(f"Updating {len(stories)} stories")
     for story in stories:
         try:
             # Use getattr to access object attributes
-            fields = {
-                column: getattr(story, column) for column in columns
-            }
+            # fields = {
+            #     column: getattr(story, column) for column in columns
+            # }
+            fields = {}
+            for column in columns:
+                if column == "story_id":
+                    value = story.id
+                else:
+                    value = getattr(story, column)
+                fields[column] = value
             print(f"Updating story {story.url} with fields: {fields}")
-            updateRow(fields, "story_id", story.id)
+            if key_column == "story_id":
+                value = story.id
+            elif key_column == "url":
+                value = story.url
+            updateRow(fields, key_column, value)
         except AttributeError as e:
             logger.error(f"Story missing attribute: {e}")
         except Exception as e:

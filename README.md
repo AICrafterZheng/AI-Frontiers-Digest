@@ -73,9 +73,15 @@ npm run preview:wrangler
 
 ## Milestones
 
-- [ ] Add more sources (e.g. Twitter, Reddit, etc.)
-- [ ] Add more summarization options (e.g. NotebookLM Podcast, audio, etc.)
+- Add more sources:
+  - Github
+  - Twitter
+  - Reddit
+  - Product Hunt
+  - LinkedIn
+- Add Audio playlist to auto-play next audio.
 
+Let me know what do you like to see! Join our [Discord](https://discord.gg/Ukbeb8rDmm).
 
 ## Contributing
 

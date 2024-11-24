@@ -13,20 +13,21 @@ divider_options = {
     "stars": "★━━━━━━━━━━━━━━━━━━━★",
     "clean": "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬",
 }
+discord_limit = 1800
 # Discord has 2000 character limit, so split the message
 # needs to have async to be able to send in parallel
 @task(log_prints=True, cache_key_fn=None)
 def split_messages_to_send_discord(discord_webhook, message, divider_style: str = "none"):
     while len(message) > 0 or message != "":
         print(f"split_messages_to_send message length: {len(message)}")
-        if len(message) < 2000:
+        if len(message) < discord_limit:
             send_discord(discord_webhook, message, divider_style)
             message = ''
         else:
-            split_index = message[:2000].rfind("\n")
+            split_index = message[:discord_limit].rfind("\n")
             print(f"split_messages_to_send split_index: {split_index}")
             if split_index == -1 or split_index == 0:
-                split_index = 2000
+                split_index = discord_limit
             send_discord(discord_webhook, message[:split_index], divider_style)
             message = message[split_index:]
 
@@ -39,9 +40,9 @@ def send_discord(discord_webhook, message, divider_style: str = "simple"):
         logger.error(f"send_discord discord webhook or message is empty: discord_webhook: {discord_webhook},\n message: {message}")
         return
 
-    if len(message) > 2000:
-        logger.error(f"send_discord message is too long: {len(message)}, sending first 2000 characters")
-        message = message[:2000]
+    if len(message) > discord_limit:
+        logger.error(f"send_discord message is too long: {len(message)}, sending first {discord_limit} characters")
+        message = message[:discord_limit]
     message = f"{message}\n{divider}"
     logger.info(f"send_discord message: \n {message}")
     try:

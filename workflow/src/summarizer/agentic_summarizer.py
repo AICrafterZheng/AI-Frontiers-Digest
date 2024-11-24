@@ -36,7 +36,7 @@ class ContentSummarizer:
         self.generate_podcast = generate_podcast
         self.generate_summary = generate_summary
 
-    @task(log_prints=True, retries=2, retry_delay_seconds=[5, 10])
+    @task(log_prints=True, retries=2, retry_delay_seconds=[5, 10], cache_key_fn=None)
     def _initial_summary(self, content: str) -> str:
         print(f"initial_summary - Content preview: {content[:100]}")
         prompt = INITIAL_SUMMARIZE_USER_PROMPT.format(
@@ -47,7 +47,7 @@ class ContentSummarizer:
         print(f"initial_summary - Summary: {summary}")
         return summary
 
-    @task(log_prints=True, retries=2, retry_delay_seconds=[5, 10])
+    @task(log_prints=True, retries=2, retry_delay_seconds=[5, 10], cache_key_fn=None)
     def _reflection(self, content: str, summary: str) -> str:
         print(f"reflection - Content preview: {content[:100]}")
         prompt = REFLECTION_SUMMARIZE_USER_PROMPT.format(
@@ -59,7 +59,7 @@ class ContentSummarizer:
         print(f"reflection - Reflection: {reflection}")
         return reflection
 
-    @task(log_prints=True, retries=2, retry_delay_seconds=[5, 10])
+    @task(log_prints=True, retries=2, retry_delay_seconds=[5, 10], cache_key_fn=None)
     def _final_summary(self, content: str, summary: str, reflection: str) -> str:
         print(f"final_summary - Content preview: {content[:100]}")
         prompt = FINAL_SUMMARIZE_USER_PROMPT.format(

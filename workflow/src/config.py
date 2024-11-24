@@ -34,10 +34,11 @@ ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET", "")
 TWITTER_BEARER_TOKEN = os.getenv("TWITTER_BEARER_TOKEN", "")
 
 
-# Discord webhook
+# Discord settings
 HACKER_NEWS_DISCORD_WEBHOOK = os.getenv("HACKER_NEWS_DISCORD_WEBHOOK", "")
 AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK = os.getenv("AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK", "")
-
+DISCORD_FOOTER = "Interested in listening to the podcast? Visit <https://aicrafter.info> 🎧"
+DISCORD_SERVER_INVITE = "https://discord.gg/Ukbeb8rDmm"
 # LLM Settings
 USE_AZURE_AI_API = os.getenv("USE_AZURE_AI_API", "False").lower() == "true"
 USE_ANTHROPIC = os.getenv("USE_ANTHROPIC", "False").lower() == "true"
@@ -81,3 +82,4 @@ SPEECH_REGION = os.getenv("SPEECH_REGION", "")
 HOST_VOICE = "en-US-AvaMultilingualNeural"
 # GUEST_VOICE = "en-US-BrianMultilingualNeural"
 GUEST_VOICE = "en-US-AndrewMultilingualNeural"
+

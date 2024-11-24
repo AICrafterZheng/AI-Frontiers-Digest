@@ -77,10 +77,23 @@ const getSourcePrefix = (source: string) => {
   return prefixes[source.toLowerCase()] || '';
 };
 
+const getSubtitle = (countBySource: Record<string, number>) => {
+  let subtitle = 'Today, our AI agents found '
+  if (countBySource.hackernews !== undefined) {
+    subtitle += `${countBySource.hackernews} Hacker News`
+  }
+  if (countBySource.techcrunch !== undefined) {
+    subtitle += ` and ${countBySource.techcrunch} TechCrunch`
+  }
+  subtitle += ' for you.'
+  return subtitle
+}
+
 export default function AIFrontiersArticles({ source, limit }: NewsletterProps) {
   const [searchParams] = useSearchParams();
   const date = searchParams.get('date');
   const [stories, setStories] = useState<Story[]>([])
+  const [countBySource, setCountBySource] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -119,12 +132,13 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
         }
         
         const data = await response.json()
-        if (!Array.isArray(data)) {
-          console.error('Unexpected data format:', data)
-          throw new Error('Invalid data format received')
+        if (!Array.isArray(data.stories)) {
+          console.error('Unexpected data.stories format:', data)
+          throw new Error('Invalid data.stories format received')
         }
 
-        setStories(data)
+        setStories(data.stories)
+        setCountBySource(data.countBySource)
       } catch (err) {
         console.error('Fetch error:', err)
         setError(err instanceof Error ? err.message : 'An error occurred while fetching stories')
@@ -151,8 +165,11 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
       <h1 className="text-4xl font-bold text-center text-blue-600 mb-2">
         {source ? `${source} News` : 'Latest AI News'}
       </h1>
-      <p className="text-center text-gray-600 mb-8">{date ? new Date(date).toLocaleDateString() : new Date().toLocaleDateString()}</p>
-      
+      <p className="text-center text-gray-600">{date ? new Date(date).toLocaleDateString() : new Date().toLocaleDateString()}</p>
+      <p className="text-center">
+        {stories.length > 0 && getSubtitle(countBySource)}
+      </p>
+      <p className="text-center mb-8">{stories.length > 0 ? 'Please enjoy the GPT-4o-mini summaries and AI-generated podcasts 🎧✨' : ''}</p>
       {stories.length === 0 ? (
         <p className="text-center text-gray-600">No stories found</p>
       ) : (

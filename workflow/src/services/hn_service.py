@@ -9,8 +9,9 @@ from src.utils.email_sender import send_emails
 from src.utils.supabase_utils import checkIfExists
 from src.summarizer.hn_comments_summarizer import HNCommentsSummarizer
 from src.summarizer.agentic_summarizer import ContentSummarizer
-from src.utils.discord import send_discord
+from src.utils.discord import split_messages_to_send_discord
 from src.utils.helpers import has_mentioned_keywords, save_to_supabase, update_supabase_row
+from src.config import DISCORD_FOOTER
 
 from src.config import (
     HN_API_BASE,
@@ -27,8 +28,7 @@ class HackerNewsService:
         self.header = "AI Frontiers on Hacker News"
         self.llm_client = LLMClient(use_azure_openai=True)
         self.discord_webhooks = []
-        self.update_supabase = False # Set to true to update the supabase row
-        self.columns_to_update = ["speech_url", "notebooklm_url", "summary", "comments_summary"]
+        self.columns_to_update = []
     @classmethod
     async def create(cls):
         instance = cls()
@@ -57,7 +57,7 @@ class HackerNewsService:
         results = []
         async def processStory(id):
             # Check if story exists
-            if not self.update_supabase and checkIfExists('story_id', id):
+            if len(self.columns_to_update) == 0 and checkIfExists('story_id', id):
                 # print(f"Story {id} already exists")
                 return
             story = await self.fetchStory(id)
@@ -106,16 +106,16 @@ class HackerNewsService:
         for story in stories:
             try:
                 url = story.url
-                if not self.update_supabase or "comments_summary" in self.columns_to_update:
+                if len(self.columns_to_update) == 0 or "comments_summary" in self.columns_to_update:
                     comments_summary = await HNCommentsSummarizer(self.llm_client).summarize_comments(str(story.id))
                     story.comments_summary = comments_summary
                 result = await ContentSummarizer(
                     self.llm_client,
                     story.title,
                     url,
-                    generate_summary= "summary" in self.columns_to_update,
-                    generate_speech= "speech_url" in self.columns_to_update,
-                    generate_podcast= "notebooklm_url" in self.columns_to_update
+                    generate_summary= len(self.columns_to_update) == 0 or "summary" in self.columns_to_update,
+                    generate_speech= len(self.columns_to_update) == 0 or "speech_url" in self.columns_to_update,
+                    generate_podcast= len(self.columns_to_update) == 0 or "notebooklm_url" in self.columns_to_update
                 ).summarize_url()
                 story.summary = result.get("summary")
                 story.speech_url = result.get("speech_url")
@@ -123,16 +123,20 @@ class HackerNewsService:
 
                 if len(self.discord_webhooks) > 0:
                     summary_message = f"**Article**: <{story.url}>\n**Summary**:\n {story.summary}"
-                    comments_summary_message = f"**HNUrl**: <{story.hn_url}>\n**Score**: {story.score}\n**Discussion Highlights**:\n {comments_summary}"
+                    comments_summary_message = f"**HNUrl**: <{story.hn_url}>\n**Score**: {story.score}\n**Discussion Highlights**:\n {comments_summary} \n ----------"
+                    comments_summary_message = f"{comments_summary_message}"
                     logger.info(f"Story comments summary: {comments_summary_message}")
                     if first_news: # add the header
                         summary_message = f"Top Hacker News:\n{summary_message}"
                         first_news = False
                     for webhook in self.discord_webhooks:
-                        send_discord(webhook, summary_message, divider_style="none")
-                        send_discord(webhook, comments_summary_message)
+                        split_messages_to_send_discord(webhook, summary_message)
+                        split_messages_to_send_discord(webhook, comments_summary_message)
             except Exception as e:
                 logger.error(f"Error processing story {story.title}: {e}")
+        if len(stories) > 0:
+            for webhook in self.discord_webhooks:
+                split_messages_to_send_discord(webhook, DISCORD_FOOTER)
         return stories
 
     async def run_flow(self):
@@ -143,7 +147,7 @@ class HackerNewsService:
         save_to_supabase(stories)
 
 
-@flow(log_prints=True, name="hn-summary-flow")
+@flow(log_prints=True, name="hn-flow")
 async def run_hn_flow():
     service = await HackerNewsService.create()
     await service.run_flow()
@@ -152,20 +156,21 @@ async def run_hn_flow():
 async def run_test_hn_flow():
     # llm_client = LLMClient(use_azure_openai=True)
     service = await HackerNewsService.create()
-    # service.llm_client = llm_client
-    service.discord_webhooks = []
-    service.update_supabase = True
-    # service.discord_keywords = ['Y']
-    # service.score = 0
-    # storieIds = await service.fetchTopStoryIds()
-    storieIds = ["42115873", "42116140"]
-    stories = await service.top_hn_flow(storieIds)
-    print(f"Found {len(stories)} stories")
-    # await service.send_emails(stories, ["aicrafter.ai@gmail.com"])
-    # save_to_supabase(stories)
     columns_to_update = []
     columns_to_update.append("summary")
     columns_to_update.append("comments_summary")
     columns_to_update.append("speech_url") 
     columns_to_update.append("notebooklm_url")
-    update_supabase_row(stories, columns_to_update)
+    service.columns_to_update = columns_to_update
+    # service.llm_client = llm_client
+    service.discord_webhooks = []
+    # service.discord_keywords = ['Y']
+    # service.score = 0
+    # storieIds = await service.fetchTopStoryIds()
+    storieIds = ["42136711"]
+    stories = await service.top_hn_flow(storieIds)
+    print(f"Found {len(stories)} stories")
+    # await service.send_emails(stories, ["aicrafter.ai@gmail.com"])
+    # save_to_supabase(stories)
+
+    update_supabase_row(stories, "story_id", columns_to_update)
