@@ -83,9 +83,9 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
               <span className="flex items-center gap-1">
                 <span>★</span> {githubStats.stars}
               </span>
-              <span className="flex items-center gap-1">
+              {/* <span className="flex items-center gap-1">
                 <span>𝝙</span> {githubStats.forks}
-              </span>
+              </span> */}
             </div>
           </a>
         </div>

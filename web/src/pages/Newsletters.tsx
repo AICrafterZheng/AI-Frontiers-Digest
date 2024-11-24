@@ -82,8 +82,13 @@ const getSubtitle = (countBySource: Record<string, number>) => {
   if (countBySource.hackernews !== undefined) {
     subtitle += `${countBySource.hackernews} Hacker News`
   }
+
+  if (countBySource.hackernews !== undefined && countBySource.techcrunch !== undefined) {
+    subtitle += ' and '
+  }
+
   if (countBySource.techcrunch !== undefined) {
-    subtitle += ` and ${countBySource.techcrunch} TechCrunch`
+    subtitle += `${countBySource.techcrunch} TechCrunch`
   }
   subtitle += ' for you.'
   return subtitle
