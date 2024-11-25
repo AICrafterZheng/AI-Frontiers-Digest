@@ -3,7 +3,7 @@ import aiohttp
 import asyncio
 from prefect import flow, task, get_run_logger
 from prefect.variables import Variable
-from src.utils.email_templates import get_hn_email_template
+from src.utils.email_templates import get_email_html
 from src.utils.llm_client import LLMClient
 from src.utils.email_sender import send_emails
 from src.utils.supabase_utils import checkIfExists
@@ -86,7 +86,7 @@ class HackerNewsService:
     async def send_emails(self, stories, to_emails: List[str] = None):
         logger = get_run_logger()
         try:
-            message = get_hn_email_template(self.header, stories)
+            message = get_email_html(self.header, stories)
             await send_emails(self.header, message, to_emails)
         except Exception as e:
             logger.error(f"Error sending emails: {e}")

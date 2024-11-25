@@ -2,11 +2,11 @@ from prefect import task
 from datetime import datetime
 from urllib.parse import quote
 
-def format_content(text: str) -> str:
+def _format_content(title: str, text: str) -> str:
     """Format text content with proper HTML structure"""
     if not text:
         return ""
-        
+    
     # Split by bullet points (both • and -)
     lines = text.split('\n')
     formatted_lines = []
@@ -32,68 +32,56 @@ def format_content(text: str) -> str:
         html += line
     if in_list:
         html += "</ul>"
-    return html
+    formatted_html = f""" 
+            <div class="story-content">
+                <h3>{title}</h3>
+                <div class="content-section">{html}</div>
+            </div>
+    """
+    return formatted_html
 
+def _format_story_meta(story) -> str:
+    url = story.url if story.url.startswith('http') else f'https://{story.url}'
+    hn_url = story.hn_url if story.hn_url.startswith('http') else f'https://{story.hn_url}'
+    safe_url = quote(url, safe=':/?=&')
+    safe_hn_url = quote(hn_url, safe=':/?=&')
+    hn_discussion_html = f"• HN Discussion: <a href=\"{safe_hn_url}\" class=\"hn-link\">{story.hn_url}</a> <br>" if story.hn_url else ""
+    score_html = f"• Score: {story.score} <br>" if int(story.score) > 0 else ""
+    audio_html = f"• Text-to-Speech audio: <a href=\"{story.speech_url}\" class=\"story-link\">Listen</a> <br>" if story.speech_url else ""
+    podcast_html = f"• AI-generated podcast: <a href=\"{story.notebooklm_url}\" class=\"story-link\">Listen</a> <br>" if story.notebooklm_url else ""
+    return f"""
+                    • Article: <a href="{safe_url}" class="story-link">{story.url}</a> <br>
+                    {hn_discussion_html}
+                    {score_html}
+                    {audio_html}
+                    {podcast_html}
+    """
 # get the email template
 @task(log_prints=True, cache_key_fn=None)
-def get_hn_email_template(subject: str, stories) -> str:
+def get_email_html(subject: str, stories) -> str:
     if not stories or len(stories) == 0:
         return ""
     stories_html = ""
     for story in stories:
         # Ensure URLs are absolute and properly encoded
-        url = story.url if story.url.startswith('http') else f'https://{story.url}'
-        hn_url = story.hn_url if story.hn_url.startswith('http') else f'https://{story.hn_url}'
-        safe_url = quote(url, safe=':/?=&')
-        safe_hn_url = quote(hn_url, safe=':/?=&')
-        summary_html = format_content(story.summary)
-        comments_html = format_content(story.comments_summary)
+        story_meta_html = _format_story_meta(story)
+        summary_html = _format_content("Article Summary:", story.summary)
+        comments_html = _format_content("Discussion Highlights:", story.comments_summary)
         stories_html += f"""
         <div class="section">
             <div class="header">{story.title}</div>
             <div class="story-meta">
-                    • Article: <a href="{safe_url}" class="story-link">{story.url}</a> <br>
-                    • HN Discussion: <a href="{safe_hn_url}" class="hn-link">{story.hn_url}</a> <br>
-                    • Score: {story.score}
+                {story_meta_html}
+                <div> You can listen to the audio and podcast with better experience on <a href="https://aicrafter.info" class="story-link">aicrafter.info</a>.</div>
             </div>
-            
-            <div class="story-content">
-                <h3>Article Highlights:</h3>
-                <div class="content-section">{summary_html}</div>
-                
-                <h3>Discussion Highlights:</h3>
-                <div class="content-section">{comments_html}</div>
-            </div>
+            {summary_html}
+            {comments_html}
         </div>
         <hr class="story-divider">
         """
-    return get_email_html(subject, stories_html)
+    return _get_email_html(subject, stories_html)
 
-@task(log_prints=True, cache_key_fn=None)
-def get_tc_email_template(subject: str, stories) -> str:
-    if not stories or len(stories) == 0:
-        return ""
-    stories_html = ""
-    for story in stories:
-        formatted_content = format_content(story.summary)
-        summary_html = formatted_content
-        stories_html += f"""
-        <div class="section">
-            <div class="header">{story.title}</div>
-            <div class="story-meta">
-                Article: <a href="{story.url}" class="story-link">{story.url}</a>
-            </div>
-            
-            <div class="story-content">
-                <h3>Article Highlights:</h3>
-                <div class="content-section">{summary_html}</div>
-            </div>
-        </div>
-        <hr class="story-divider">
-        """
-    return get_email_html(subject, stories_html)
-
-def get_email_html(subject: str, stories_html: str) -> str:
+def _get_email_html(subject: str, stories_html: str) -> str:
     return f"""
     <!DOCTYPE html>
     <html lang="en">

@@ -32,20 +32,19 @@
 - TailwindCSS
 
 ### Backend
-- Prefect (Workflow orchestration)
-- Supabase (Database + Audio Storage)
-- Cloudflare Page Functions (Backend APIs)
-- Azure
-  - Azure Container Registry (Docker Images for Prefect Workers Pool)
-  - Azure AI Services (LLMs)
-  - Azure TTS (Text-to-Speech)
-- Jina Reader (URL to markdown)
-- NotebookLM (Article to Podcast)
-    - Credits to [NotebookLlama](https://github.com/meta-llama/llama-recipes/blob/main/recipes/quickstart/NotebookLlama/README.md) for transcript generation, and [PodCastLM](https://github.com/YOYZHANG/PodCastLM/blob/master/backend/utils.py) for audio generation.
-    - Transcript generation model: Azure AI Services (gpt-4o-mini)
-    - Audio generation: Azure TTS
-- OpenRouter (LLMs)
-- Resend (Email)
+- LLMs
+    - Azure AI Services: gpt-4o-mini, Mistral-large
+    - OpenRouter: claude-3.5-sonet, mistral-7b-instruct
+- Jina Reader: URL to LLM-friendly input.
+- NotebookLM: article to Podcast
+    - Credits to [NotebookLlama](https://github.com/meta-llama/llama-recipes/blob/main/recipes/quickstart/NotebookLlama/README.md) for podcast transcript generation, and [PodCastLM](https://github.com/YOYZHANG/PodCastLM/blob/master/backend/utils.py) for audio generation.
+    - Transcript generation model: gpt-4o-mini (Azure AI Services)
+    - Audio generation: Azure TTS (Text-to-Speech)
+- Prefect: Workflow orchestration
+    - Prefect Workers Pool: Azure Container Registry
+- Supabase: Database + Audio Storage
+- Cloudflare Page Functions: Backend APIs
+- Resend: Email
 
 ## Getting Started
 

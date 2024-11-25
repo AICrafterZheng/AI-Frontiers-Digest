@@ -10,7 +10,7 @@ import pytz
 from typing import List
 from src.utils.llm_client import LLMClient
 from src.services.models import Story
-from src.utils.email_templates import get_tc_email_template
+from src.utils.email_templates import get_email_html
 from src.utils.email_sender import send_emails
 from src.config import HACKER_NEWS_DISCORD_WEBHOOK, TC_SOURCE_NAME, AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK, DISCORD_FOOTER
 from src.utils.helpers import save_to_supabase, update_supabase_row
@@ -94,11 +94,11 @@ class TechCrunchService:
         return stories
 
     @task(log_prints=True, cache_key_fn=None)
-    async def send_newsletter(self, stories: List[Story], to_emails: List[str] = None) -> None:
+    async def send_emails(self, stories: List[Story], to_emails: List[str] = None) -> None:
         """Send email newsletter"""
         logger = get_run_logger()
         try:
-            message = get_tc_email_template(self.header, stories)
+            message = get_email_html(self.header, stories)
             await send_emails(self.header, message, to_emails)
         except Exception as e:
             logger.error(f"Error sending emails: {e}")
@@ -107,7 +107,7 @@ class TechCrunchService:
         print(f"Formatted date: {self.formatted_date}")
         urls = self.get_ai_urls_from_tc()
         stories = await self.process_urls(urls)
-        await self.send_newsletter(stories)
+        await self.send_emails(stories)
         save_to_supabase(stories)
 
 
@@ -139,6 +139,6 @@ async def run_test_tc_flow():
     service.discord_webhooks = []
     stories = await service.process_urls(urls)
     print(f"processed {len(stories)} stories")
-    # await service.send_newsletter(stories, to_emails=["aicrafter.ai@gmail.com"])
+    # await service.send_emails(stories, to_emails=["aicrafter.ai@gmail.com"])
     # save_to_supabase(stories)
     update_supabase_row(stories, "url", columns_to_update)
