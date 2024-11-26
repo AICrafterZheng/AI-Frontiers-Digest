@@ -12,14 +12,8 @@ if __name__ == "__main__":
                 )
 
     # # TechCrunch AI Article Summary flow
-    run_tc_flow.deploy(name="TC-Summary-1",
+    run_tc_flow.deploy(name="TC-Summary",
             work_pool_name="my-aci-pool",
             image= DockerImage(name="tc-summary-image:v1.0.0", platform="linux/amd64", dockerfile="Dockerfile"),
             schedules= [CronSchedule(cron="0 9 * * *", timezone="America/Los_Angeles")]
-            )
-    # TechCrunch keep posting new articles during the day
-    run_tc_flow.deploy(name="TC-Summary-2",
-            work_pool_name="my-aci-pool",
-            image= DockerImage(name="tc-summary-image:v1.0.0", platform="linux/amd64", dockerfile="Dockerfile"),
-            schedules= [CronSchedule(cron="0 23 * * *", timezone="America/Los_Angeles")]
             )

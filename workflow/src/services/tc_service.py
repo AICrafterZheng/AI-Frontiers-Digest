@@ -2,7 +2,7 @@ import requests
 from prefect import task, flow, get_run_logger
 from prefect.variables import Variable
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from src.utils.discord import split_messages_to_send_discord
 from src.summarizer.agentic_summarizer import ContentSummarizer
 from urllib.parse import urlparse
@@ -21,7 +21,16 @@ class TechCrunchService:
         self.base_url = "https://techcrunch.com/category/artificial-intelligence/"
         self.llm_client = LLMClient(use_azure_mistral=True, model="large")
         self.header = "AI Frontiers on TechCrunch"
-        self.formatted_date = datetime.now(pytz.timezone('America/Los_Angeles')).strftime("%Y/%m/%d")
+        
+        # Get current date in PST
+        today = datetime.now(pytz.timezone('America/Los_Angeles'))
+        # Get yesterday's date
+        yesterday = today - timedelta(days=1)
+        # Format both dates
+        self.formatted_dates = [
+            today.strftime("%Y/%m/%d"),
+            yesterday.strftime("%Y/%m/%d")
+        ]
         self.discord_webhooks = []
         self.columns_to_update = []
     @classmethod
@@ -53,7 +62,12 @@ class TechCrunchService:
         input_text = response.text
         url_pattern = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
         urls = re.findall(url_pattern, input_text)
-        urls = [url for url in urls if self.formatted_date in url and not self.is_image_url(url) and not self.check_if_exists_in_supabase(url)]
+        urls = [
+            url for url in urls 
+            if any(date in url for date in self.formatted_dates) 
+            and not self.is_image_url(url) 
+            and not self.check_if_exists_in_supabase(url)
+        ]
         urls = list(set(urls))
         print(f"Found {len(urls)} URLs: \n{urls}")
         return urls
@@ -104,7 +118,7 @@ class TechCrunchService:
             logger.error(f"Error sending emails: {e}")
 
     async def run_flow(self):
-        print(f"Formatted date: {self.formatted_date}")
+        print(f"Formatted date: {self.formatted_dates}")
         urls = self.get_ai_urls_from_tc()
         stories = await self.process_urls(urls)
         await self.send_emails(stories)
@@ -134,7 +148,7 @@ async def run_test_tc_flow():
     # columns_to_update.append("notebooklm_url")
     columns_to_update.append("story_id")
     service.columns_to_update = columns_to_update
-    service.formatted_date = "2024/11/19"
+    service.formatted_dates = ["2024/11/19", "2024/11/20"]
     # urls = service.get_ai_urls_from_tc()
     service.discord_webhooks = []
     stories = await service.process_urls(urls)
