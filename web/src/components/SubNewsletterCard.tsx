@@ -35,7 +35,7 @@ export function SubscribeNewsletterCard() {
     };
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 shadow-lg">
+    <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg">
       <div className="flex items-center gap-3 mb-4">
         <Send className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
         <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Newsletter</h2>

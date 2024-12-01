@@ -54,7 +54,6 @@ const summaryStyles = `
   .digest-list li {
     margin: 0.5rem 0;
     line-height: 1.5;
-    color: #374151;
   }
   .digest-list li[style*="list-style: none"] {
     margin-left: -1.5rem;
@@ -225,14 +224,14 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
                 {story.summary && (
                   <div className="text-gray-700 dark:text-gray-300">
                     <h3 className="font-semibold text-lg mb-3">Article Summary</h3>
-                    <div 
+                    <div
                       dangerouslySetInnerHTML={{ __html: formatSummary(story.summary) }} 
                     />
                   </div>
                 )}
                 
                 {story.comments_summary && (
-                  <div className="text-gray-700 ">
+                  <div className="text-gray-700 dark:text-gray-300">
                     <h3 className="font-semibold text-lg mb-3">Discussion Highlights</h3>
                     <div 
                       dangerouslySetInnerHTML={{ __html: formatSummary(story.comments_summary) }} 
