@@ -10,7 +10,7 @@ export default function Layout() {
   const [showDiscord, setShowDiscord] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100">
     <Header 
       onSubscribeClick={() => setShowSubscribe(true)}
       onDiscordClick={() => setShowDiscord(true)}

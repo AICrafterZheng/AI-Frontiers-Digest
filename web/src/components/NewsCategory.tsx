@@ -23,7 +23,7 @@ export default function NewsCategory({ title, icon, lastUpdate, backgroundColor,
   };
 
   return (
-    <div className={`rounded-xl p-4 ${backgroundColor}`}>
+    <div className={`rounded-xl p-4 ${backgroundColor} dark:bg-opacity-90`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           {icon}
@@ -37,9 +37,9 @@ export default function NewsCategory({ title, icon, lastUpdate, backgroundColor,
           <button
             key={item.id}
             onClick={() => handleItemClick(item.id, item.slug)}
-            className="w-full flex items-start gap-3 hover:bg-white/10 p-2 rounded-lg transition-colors text-left"
+            className="w-full flex items-start gap-3 hover:bg-white/10 dark:hover:bg-white/5 p-2 rounded-lg transition-colors text-left"
           >
-            <span className="text-white/70 min-w-[1.5rem]">{item.id}</span>
+            <span className="text-white/70">{item.id}</span>
             <div className="flex-1">
               <p className="text-white">{item.title}</p>
               <div className="flex items-center gap-2">

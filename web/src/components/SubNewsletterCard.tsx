@@ -35,12 +35,12 @@ export function SubscribeNewsletterCard() {
     };
 
   return (
-    <div className="bg-white rounded-3xl p-8 shadow-lg">
+    <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 shadow-lg">
       <div className="flex items-center gap-3 mb-4">
-        <Send className="w-6 h-6 text-indigo-600" />
-        <h2 className="text-2xl font-semibold text-gray-900">Newsletter</h2>
+        <Send className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Newsletter</h2>
       </div>
-      <p className="text-gray-600 mb-6">
+      <p className="text-gray-600 dark:text-gray-400 mb-6">
         Get exclusive content, updates, and insights delivered straight to your inbox.
       </p>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -49,19 +49,19 @@ export function SubscribeNewsletterCard() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-gray-800"
           required
         />
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
+          className="w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
         >
           Subscribe Now
           <Send className="w-5 h-5" />
         </button>
         {message && (
-        <p className={`text-sm ${status === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+        <p className={`text-sm ${status === 'success' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
           {message}
           </p>
         )}

@@ -3,12 +3,12 @@ import { DISCORD_SERVER_INVITE } from '../lib/constants';
 
 export function DiscordCard() {
   return (
-    <div className="bg-white rounded-3xl p-8 text-gray-900 shadow-lg">
+    <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 text-gray-900 dark:text-white shadow-lg">
       <div className="flex items-center gap-3 mb-4">
         <MessageSquare className="w-6 h-6 text-[#5865F2]" />
         <h2 className="text-2xl font-semibold">Discord Community</h2>
       </div>
-      <p className="text-gray-600 mb-8">
+      <p className="text-gray-700 dark:text-gray-300 mb-8">
         Join our vibrant Discord community to connect, share, and grow with fellow members.
       </p>
       <div className="mb-8">
@@ -21,7 +21,7 @@ export function DiscordCard() {
           ].map((benefit, index) => (
             <li key={index} className="flex items-center gap-3">
               <Check className="w-5 h-5 text-[#5865F2]" />
-              <span className="text-gray-600">{benefit}</span>
+              <span className="text-gray-700 dark:text-gray-300">{benefit}</span>
             </li>
           ))}
         </ul>

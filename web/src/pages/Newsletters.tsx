@@ -25,21 +25,23 @@ interface NewsletterProps {
 
 // Card components
 const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <div className={`bg-white shadow-md rounded-lg overflow-hidden ${className}`}>
+  <div className={`bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden ${className}`}>
     {children}
   </div>
 )
 
 const CardHeader = ({ children }: { children: React.ReactNode }) => (
-  <div className="px-6 py-4 border-b border-gray-200">{children}</div>
+  <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">{children}</div>
 )
 
 const CardTitle = ({ children }: { children: React.ReactNode }) => (
-  <h3 className="text-xl font-semibold">{children}</h3>
+  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{children}</h3>
 )
 
 const CardContent = ({ children }: { children: React.ReactNode }) => (
-  <div className="px-6 py-4">{children}</div>
+  <div className="px-6 py-4 prose dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-img:rounded-lg">
+    {children}
+  </div>
 )
 
 // Add this CSS class to your global styles or component
@@ -159,7 +161,7 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
   }
 
   if (error) {
-    return <div className="text-center py-8 text-red-600">Error: {error}</div>
+    return <div className="text-center py-8 text-red-600 dark:text-red-400">{error}</div>
   }
 
   return (
@@ -167,16 +169,16 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
       {/* Add the styles to the component */}
       <style>{summaryStyles}</style>
       
-      <h1 className="text-4xl font-bold text-center text-blue-600 mb-2">
+      <h1 className="text-4xl font-bold text-center text-blue-600 dark:text-blue-400 mb-2">
         {source ? `${source} News` : 'Latest AI News'}
       </h1>
-      <p className="text-center text-gray-600">{date ? new Date(date).toLocaleDateString() : new Date().toLocaleDateString()}</p>
+      <p className="text-center text-gray-600 dark:text-gray-300">{date ? new Date(date).toLocaleDateString() : new Date().toLocaleDateString()}</p>
       <p className="text-center">
         {stories.length > 0 && getSubtitle(countBySource)}
       </p>
       <p className="text-center mb-8">{stories.length > 0 ? 'Please enjoy the GPT-4o-mini summaries and AI-generated podcasts 🎧✨' : ''}</p>
       {stories.length === 0 ? (
-        <p className="text-center text-gray-600">No stories found</p>
+        <p className="text-center text-gray-600 dark:text-gray-300">No stories found</p>
       ) : (
         stories.map((story) => (
           <Card key={story.story_id} className="mb-8">
@@ -188,21 +190,21 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
             
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 px-6 py-2">
               <div className="flex flex-wrap items-center gap-2">
-                <a href={story.url} className="text-blue-600 hover:underline cursor-pointer">
+                <a href={story.url} className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
                   Original Article
                 </a>
                 {story.hn_url && (
                   <>
                     <span>•</span>
-                    <a href={story.hn_url} className="text-blue-600 hover:underline cursor-pointer">
+                    <a href={story.hn_url} className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
                       HN Discussion
                     </a>
                     <span>•</span>
-                    <span className="text-gray-600">Score: {story.score}</span>
+                    <span className="text-gray-600 dark:text-gray-300">Score: {story.score}</span>
                   </>
                 )}
                 <span>•</span>
-                <span className="text-gray-600">{new Date(story.created_at).toLocaleTimeString()}</span>
+                <span className="text-gray-600 dark:text-gray-300">{new Date(story.created_at).toLocaleTimeString()}</span>
               </div>
               <div className="w-full sm:w-auto sm:ml-auto flex justify-start gap-2">
                 {story.speech_url && (
@@ -221,20 +223,18 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
             <CardContent>
               <div className="space-y-6">
                 {story.summary && (
-                  <div className="prose prose-sm max-w-none">
+                  <div className="text-gray-700 dark:text-gray-300">
                     <h3 className="font-semibold text-lg mb-3">Article Summary</h3>
                     <div 
-                      className="text-gray-700"
                       dangerouslySetInnerHTML={{ __html: formatSummary(story.summary) }} 
                     />
                   </div>
                 )}
                 
                 {story.comments_summary && (
-                  <div className="prose prose-sm max-w-none">
+                  <div className="text-gray-700 ">
                     <h3 className="font-semibold text-lg mb-3">Discussion Highlights</h3>
                     <div 
-                      className="text-gray-700"
                       dangerouslySetInnerHTML={{ __html: formatSummary(story.comments_summary) }} 
                     />
                   </div>
