@@ -35,6 +35,8 @@ dist-ssr
 
 # Temp files
 tmp/*
+
+# Test
 /test-results/
 /playwright-report/
 /blob-report/

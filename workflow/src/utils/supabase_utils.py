@@ -2,6 +2,7 @@ from supabase import create_client, Client
 from pathlib import Path
 from src.config import SUPABASE_URL, SUPABASE_KEY, SUPABASE_BUCKET_NAME, SUPABASE_TABLE
 from prefect import task, get_run_logger
+from datetime import datetime, timedelta, timezone
 # Initialize Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -14,7 +15,6 @@ def searchRow(tableName: str, searchColumn: str, searchValue: any, filter_column
     """Search for a row in the database."""
     try:
         query = supabase.table(tableName).select("*").eq(searchColumn, searchValue).order("created_at", desc=True)
-        
         # If filtering for NULL values
         if filter_column and filter_value is None:
             query = query.is_(filter_column, 'null')
@@ -87,3 +87,43 @@ def upload_audio_file(file_path: str, bucket_name: str = SUPABASE_BUCKET_NAME) -
         # delete the file from local storage
         if Path(file_path).exists():
             Path(file_path).unlink()
+
+@task(log_prints=True, cache_key_fn=None)
+def delete_audio_files(bucket_name: str = SUPABASE_BUCKET_NAME, days_threshold: int = 10):
+    """
+    Delete files older than specified days from Supabase storage.
+    
+    Args:
+        bucket_name: Name of the Supabase storage bucket
+        days_threshold: Number of days after which files should be deleted
+    """
+    logger = get_run_logger()
+    try:
+        # List all files in the bucket, ordered by creation date
+        files = supabase.storage.from_(bucket_name).list(
+            options={
+                'sortBy': {'column': 'created_at', 'order': 'asc'}
+            }
+        )
+        # Calculate the cutoff date (now using UTC timezone)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_threshold)
+        deleted_count = 0
+        for file in files:
+            # Convert created_at string to datetime (already UTC)
+            created_at = datetime.fromisoformat(file['created_at'].replace('Z', '+00:00'))
+
+            if created_at < cutoff_date:
+                try:
+                    # Delete the file
+                    supabase.storage.from_(bucket_name).remove([file['name']])
+                    logger.info(f"Deleted audio file: {file['name']}, created_at: {file['created_at']}, cutoff_date: {cutoff_date}")
+                    deleted_count += 1
+                except Exception as e:
+                    logger.error(f"Error deleting file {file['name']}: {e}")
+                    
+        logger.info(f"Cleanup complete. Deleted {deleted_count} files older than {days_threshold} days")
+        return deleted_count
+        
+    except Exception as error:
+        logger.error(f"Error during storage cleanup: {error}")
+        raise error
