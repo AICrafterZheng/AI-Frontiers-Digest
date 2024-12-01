@@ -7,7 +7,7 @@ interface SourceStats {
 // Add this date handling logic to match news.ts
 const getDateRange = (endDate: Date) => {
   const startDate = new Date(endDate);
-  startDate.setDate(startDate.getDate() - 11);
+  startDate.setDate(startDate.getDate() - 10);
   
   const startOfDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).toISOString();
   const endOfDay = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1).toISOString();
@@ -83,9 +83,13 @@ export async function onRequest(context: any) {
       stats[date][source] += 1;
     });
 
-    // Sort by date in descending order
+    // Sort by date in descending order using Date objects
     const sortedStats = Object.fromEntries(
-      Object.entries(stats).sort(([a], [b]) => b.localeCompare(a))
+      Object.entries(stats).sort(([a], [b]) => {
+        const dateA = new Date(a);
+        const dateB = new Date(b);
+        return dateB.getTime() - dateA.getTime();
+      })
     );
 
     return new Response(JSON.stringify(sortedStats), {
