@@ -1,5 +1,5 @@
 import { MessageSquare, Check } from 'lucide-react';
-import { DISCORD_SERVER_INVITE } from '../utils/constants';
+import { DISCORD_SERVER_INVITE } from '../lib/constants';
 
 export function DiscordCard() {
   return (

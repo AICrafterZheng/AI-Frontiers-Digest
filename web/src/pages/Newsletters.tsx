@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { formatSummary } from '../utils/formatSummary'
+import { formatSummary } from '../lib/formatSummary'
 import { useSearchParams } from 'react-router-dom';
 import AudioButton from '../components/AudioButton';
 // Types

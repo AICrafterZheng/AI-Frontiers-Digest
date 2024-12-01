@@ -13,11 +13,14 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.x.x",
+    "clsx": "^2.1.1",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^9.0.1",
-    "react-router-dom": "^6.28.0"
+    "react-router-dom": "^6.28.0",
+    "tailwind-merge": "^2.5.5",
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
