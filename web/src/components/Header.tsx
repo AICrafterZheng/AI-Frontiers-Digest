@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Send, MessageSquare, Github, Archive } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import { ThemeToggle } from './ThemeToggle';
 
 interface GitHubStats {
   stars: number;
@@ -39,15 +40,17 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 border-b border-gray-200">
+    <header className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 border-b border-gray-200 dark:border-gray-800">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link to="/" className="hover:opacity-80 transition-opacity">
-            <h1 className="text-xl font-bold text-gray-900">AI Frontiers</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">AI Frontiers</h1>
           </Link>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4">
+          <ThemeToggle />
+          
           <button
             onClick={onSubscribeClick}
             className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-[#5865F2] text-white hover:bg-[#4752C4] transition-colors text-xs sm:text-base"
@@ -66,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
 
           <button
             onClick={onArchiveClick}
-            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-xs sm:text-base"
+            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-xs sm:text-base dark:text-white"
           >
             <Archive className="w-3 h-3 sm:w-4 sm:h-4 hidden sm:block" />
             <span>Archive</span>
@@ -76,20 +79,17 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
             href="https://github.com/AICrafterZheng/AI-Frontiers-Digest"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 sm:gap-3 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-xs sm:text-base"
+            className="flex items-center gap-1 sm:gap-3 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-xs sm:text-base dark:text-white"
           >
             <Github className="w-3 h-3 sm:w-4 sm:h-4 hidden sm:block" />
             <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
               <span className="flex items-center gap-1">
                 <span>★</span> {githubStats.stars}
               </span>
-              {/* <span className="flex items-center gap-1">
-                <span>𝝙</span> {githubStats.forks}
-              </span> */}
             </div>
           </a>
         </div>
       </div>
     </header>
   );
-}
+};
