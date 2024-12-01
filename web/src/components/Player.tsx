@@ -45,7 +45,7 @@ export function Player() {
   if (!currentTrack) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 p-4">
+    <div className="fixed bottom-0 left-0 right-0 bg-gray-900 dark:bg-gray-950 border-t border-gray-800 dark:border-gray-700 p-4">
       <audio
         ref={audioRef}
         src={currentTrack.audioUrl}
@@ -67,18 +67,18 @@ export function Player() {
 
         <div className="flex-1 flex flex-col items-center">
           <div className="flex items-center space-x-4">
-            <SkipBack className="w-5 h-5 text-gray-400 cursor-pointer" />
+            <SkipBack className="w-5 h-5 text-gray-400 cursor-pointer hover:text-white transition-colors" />
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="p-2 rounded-full bg-white hover:bg-gray-200"
+              className="p-2 rounded-full bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               {isPlaying ? (
-                <Pause className="w-6 h-6 text-black" />
+                <Pause className="w-6 h-6 text-black dark:text-white" />
               ) : (
-                <Play className="w-6 h-6 text-black" />
+                <Play className="w-6 h-6 text-black dark:text-white" />
               )}
             </button>
-            <SkipForward className="w-5 h-5 text-gray-400 cursor-pointer" />
+            <SkipForward className="w-5 h-5 text-gray-400 cursor-pointer hover:text-white transition-colors" />
           </div>
           
           <div className="w-full flex items-center space-x-2">
@@ -89,7 +89,7 @@ export function Player() {
               max={duration || 0}
               value={currentTime}
               onChange={handleSeek}
-              className="flex-1 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+              className="flex-1 h-1 bg-gray-600 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
             />
             <span className="text-xs text-gray-400">{formatTime(duration)}</span>
           </div>
@@ -104,7 +104,7 @@ export function Player() {
             step={0.1}
             value={volume}
             onChange={handleVolumeChange}
-            className="w-24 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+            className="w-24 h-1 bg-gray-600 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
           />
         </div>
       </div>

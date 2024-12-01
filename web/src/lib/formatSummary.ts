@@ -17,7 +17,7 @@ export function formatSummary(text: string): string {
   // Split the text into lines and filter out empty lines
   const lines = text.split('\n').filter(line => line.trim());
 
-  let html = '<ul class="digest-list">';
+  let html = '<ul class="digest-list dark:text-gray-300">';
   let inSubList = false;
 
   for (const line of lines) {
@@ -34,7 +34,7 @@ export function formatSummary(text: string): string {
     } else if (trimmedLine.startsWith('-')) {
       // Handle sub-points
       if (!inSubList) {
-        html += '<ul class="nested-list">';
+        html += '<ul class="nested-list dark:text-gray-300">';
         inSubList = true;
       }
       html += `<li>${cleanText(trimmedLine)}</li>`;

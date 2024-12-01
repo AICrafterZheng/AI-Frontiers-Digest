@@ -22,12 +22,12 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
           />
 
           {/* Modal panel */}
-          <div className="relative z-[10000] w-full max-w-lg transform rounded-lg bg-white shadow-xl transition-all">
+          <div className="relative z-[10000] w-full max-w-lg transform rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-xl transition-all">
             <button
               onClick={onClose}
-              className="absolute right-2 top-2 p-2 rounded-full hover:bg-gray-100"
+              className="absolute right-2 top-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             >
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="w-5 h-5" />
             </button>
             {children}
           </div>

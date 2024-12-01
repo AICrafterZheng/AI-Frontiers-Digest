@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { Volume2, Volume1, VolumeX } from 'lucide-react';
 
 interface AudioButtonProps {
   speechUrl: string;
   name: string;
+  className?: string;
 }
 
-export default function AudioButton({ speechUrl, name }: AudioButtonProps) {
+export default function AudioButton({ speechUrl, name, className = '' }: AudioButtonProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState<number | null>(null);
+  const [volume, setVolume] = useState(0.5);
   const audioRef = React.useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -36,11 +39,18 @@ export default function AudioButton({ speechUrl, name }: AudioButtonProps) {
     }
   };
 
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVolume(parseFloat(e.target.value));
+    if (audioRef.current) {
+      audioRef.current.volume = parseFloat(e.target.value);
+    }
+  };
+
   return (
-    <div className="flex items-center gap-2">
+    <div className={`flex items-center gap-2 ${className}`}>
       <button
         onClick={togglePlay}
-        className="flex items-center gap-2 px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+        className={`flex items-center gap-2 px-3 py-1 text-sm bg-blue-600 dark:bg-blue-800 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-900 transition-colors`}
       >
         {isPlaying ? (
           <>
@@ -59,11 +69,23 @@ export default function AudioButton({ speechUrl, name }: AudioButtonProps) {
           </>
         )}
       </button>
+      <div className="absolute hidden group-hover:block right-0 bottom-full mb-2 p-2 bg-white dark:bg-gray-900 rounded-lg shadow-lg">
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.1"
+          value={volume}
+          onChange={handleVolumeChange}
+          className="w-24 h-1 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer"
+        />
+      </div>
       <audio
         ref={audioRef}
         src={speechUrl}
         onEnded={() => setIsPlaying(false)}
+        volume={volume}
       />
     </div>
   );
-}; 
+}
