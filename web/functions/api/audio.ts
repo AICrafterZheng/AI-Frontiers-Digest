@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { create } from 'zustand';
+import { Track } from '../../src/types/audio';
 
 export async function onRequest(context: any) {
   const supabase = createClient(
@@ -10,7 +10,7 @@ export async function onRequest(context: any) {
   try {
     const { data: stories, error } = await supabase
       .from(context.env.SUPABASE_TABLE_STORIES)
-      .select('story_id, title, speech_url, notebooklm_url, created_at')
+      .select('story_id, title, speech_url, notebooklm_url, created_at, source')
       .order('created_at', { ascending: false })
       .not('speech_url', 'is', null)
       .not('notebooklm_url', 'is', null);
@@ -18,16 +18,33 @@ export async function onRequest(context: any) {
     if (error) {
       throw error;
     }
-
-    const tracks = stories.map((story: any, index: number) => ({
-      id: story.story_id.toString(),
-      title: story.title,
-      artist: 'AI Frontiers Digest',
-      cover: 'https://images.unsplash.com/photo-1677442136019-21780ecad995', // AI/tech themed image
-      audioUrl: story.speech_url,
-      notebookUrl: story.notebooklm_url,
-      createdAt: story.created_at
-    }));
+    
+    
+    // Define tracks array with type
+    const tracks: Track[] = [];
+    stories.forEach((story: any) => {
+      // Push speech URL track
+      if (story.speech_url) {
+        tracks.push({
+          id: story.story_id.toString() + "_audio",
+          title: story.title,
+          type: story.source + " audio",
+          audioUrl: story.speech_url,
+          createdAt: story.created_at
+        });
+      }
+      
+      // Push notebook URL track
+      if (story.notebooklm_url) {
+        tracks.push({
+          id: story.story_id.toString() + "_podcast",
+          title: story.title,
+          type: story.source + " podcast",
+          audioUrl: story.notebooklm_url,
+          createdAt: story.created_at,
+        });
+      }
+    });
 
     return new Response(JSON.stringify({ tracks }), {
       headers: {

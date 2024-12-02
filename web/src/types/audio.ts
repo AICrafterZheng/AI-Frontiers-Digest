@@ -1,9 +1,7 @@
 export interface Track {
   id: string;
   title: string;
-  artist: string;
-  cover: string;
+  type: string;
   audioUrl: string;
-  notebookUrl?: string;
   createdAt: string;
 }
