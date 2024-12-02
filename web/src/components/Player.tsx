@@ -51,21 +51,37 @@ export function Player() {
       />
       
       <div className="max-w-screen-lg mx-auto flex flex-col sm:flex-row items-center gap-4">
-        <div className="flex items-center gap-4 w-full sm:w-auto">
+        <div className="flex items-center gap-4 w-full sm:w-auto pr-8 sm:pr-0">
+          {/* Cover image - hidden on mobile */}
           <img
             src={currentTrack.cover}
             alt={currentTrack.title}
-            className="w-12 h-12 sm:w-16 sm:h-16 rounded object-cover"
+            className="hidden sm:block w-16 h-16 rounded object-cover"
           />
           
           <div className="flex-1 sm:flex-initial min-w-0">
             <h3 className="font-semibold text-white truncate">{currentTrack.title}</h3>
             <p className="text-sm text-gray-400 truncate">{currentTrack.type}</p>
           </div>
+
+          {/* Mobile play button */}
+          <div className="sm:hidden">
+            <button
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="p-2 rounded-full bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            >
+              {isPlaying ? (
+                <Pause className="w-6 h-6 text-black dark:text-white" />
+              ) : (
+                <Play className="w-6 h-6 text-black dark:text-white" />
+              )}
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 flex flex-col items-center w-full sm:w-auto">
-          <div className="flex items-center space-x-4 mb-2">
+          {/* Desktop controls */}
+          <div className="hidden sm:flex items-center space-x-4 mb-2">
             <SkipBack className="w-5 h-5 text-gray-400 cursor-pointer hover:text-white transition-colors" />
             <button
               onClick={() => setIsPlaying(!isPlaying)}
