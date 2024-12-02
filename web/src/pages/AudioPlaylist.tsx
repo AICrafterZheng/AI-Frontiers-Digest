@@ -4,17 +4,20 @@ import { Player } from '../components/Player';
 import { useEffect, useState } from 'react';
 import { Track } from '../types/audio';
 import { fetchTracks } from '../services/audioService';
+import { usePlayerStore } from '../store/usePlayerStore';
 
 function AudioPlaylist() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const setPlaylist = usePlayerStore(state => state.setPlaylist);
 
   useEffect(() => {
     async function loadTracks() {
       try {
         const fetchedTracks = await fetchTracks();
         setTracks(fetchedTracks);
+        setPlaylist(fetchedTracks); // Set playlist in store
       } catch (err) {
         setError('Failed to load audio tracks');
         console.error('Error loading tracks:', err);
@@ -23,7 +26,7 @@ function AudioPlaylist() {
       }
     }
     loadTracks();
-  }, []);
+  }, [setPlaylist]);
 
   const content = loading ? (
     <div className="text-center text-gray-600 dark:text-gray-400">Loading tracks...</div>
@@ -53,6 +56,7 @@ function AudioPlaylist() {
           {content}
         </div>
       </div>
+      
       <Player />
     </div>
   );
