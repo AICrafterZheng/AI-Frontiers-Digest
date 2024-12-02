@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { formatTime } from '../lib/utils';
-
+import audio_img from '../data/audio.svg';
 export function Player() {
   const { currentTrack, isPlaying, setIsPlaying } = usePlayerStore();
   const [currentTime, setCurrentTime] = useState(0);
@@ -48,14 +48,14 @@ export function Player() {
       <div className="max-w-screen-lg mx-auto flex flex-col sm:flex-row items-center gap-4">
         <div className="flex items-center gap-4 w-full sm:w-auto">
           <img
-            src={currentTrack.cover}
+            src={audio_img}
             alt={currentTrack.title}
             className="w-12 h-12 sm:w-16 sm:h-16 rounded object-cover"
           />
           
           <div className="flex-1 sm:flex-initial min-w-0">
             <h3 className="font-semibold text-white truncate">{currentTrack.title}</h3>
-            <p className="text-sm text-gray-400 truncate">{currentTrack.artist}</p>
+            <p className="text-sm text-gray-400 truncate">{currentTrack.type}</p>
           </div>
         </div>
 
