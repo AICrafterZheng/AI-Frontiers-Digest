@@ -79,6 +79,11 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
           <Link 
             to="/" 
             className="hover:opacity-80 transition-opacity"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate('/', { replace: true });
+              window.location.reload();
+            }}
           >
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">AI Frontiers</h1>
           </Link>
