@@ -83,10 +83,6 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
     fetchStories()
   }, [source, limit, setPlaylist])
 
-  // const filteredStories = selectedSource === 'all' 
-  //   ? stories 
-  //   : stories.filter(story => story.source.toLowerCase() === selectedSource.toLowerCase());
-
   const content = loading ? (
     <div className="text-center py-8">Loading...</div>
   ) : error ? (

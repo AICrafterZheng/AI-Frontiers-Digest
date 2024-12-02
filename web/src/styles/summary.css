@@ -1,0 +1,19 @@
+.digest-list {
+  @apply list-disc pl-6 space-y-2;
+}
+
+.digest-list li {
+  @apply leading-relaxed;
+}
+
+.digest-list li[style*="list-style: none"] {
+  @apply -ml-6;
+}
+
+.nested-list {
+  @apply list-[circle] pl-6 mt-2 space-y-1;
+}
+
+.nested-list li {
+  @apply leading-relaxed;
+}
