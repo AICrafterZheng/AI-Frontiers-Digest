@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, MessageSquare, Github, Archive, Menu, X, Sun, Moon } from 'lucide-react';
+import { Send, MessageSquare, Github, Archive, Menu, X, Sun, Moon, ListMusic } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeProvider';
 
@@ -61,7 +61,10 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
 
   const onArchiveClick = () => {
     navigate('/archive');
-    setIsMenuOpen(false);
+  };
+
+  const onPlaylistClick = () => {
+    navigate('/playlist');
   };
 
   const handleNavItemClick = (callback?: () => void) => {
@@ -109,7 +112,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
 
           <button
             onClick={onDiscordClick}
-            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-[#5865F2] text-white hover:bg-[#4752C4] transition-colors text-xs sm:text-base"
+            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-xs sm:text-base dark:text-white"
           >
             <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4 hidden sm:block" />
             <span>Discord</span>
@@ -121,6 +124,14 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
           >
             <Archive className="w-3 h-3 sm:w-4 sm:h-4 hidden sm:block" />
             <span>Archive</span>
+          </button>
+
+          <button
+            onClick={onPlaylistClick}
+            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-xs sm:text-base dark:text-white"
+          >
+            <ListMusic className="w-3 h-3 sm:w-4 sm:h-4 hidden sm:block" />
+            <span>Playlist</span>
           </button>
 
           <a
@@ -164,7 +175,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
 
               <button
                 onClick={() => handleNavItemClick(onDiscordClick)}
-                className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#5865F2] text-white hover:bg-[#4752C4] transition-colors"
+                className="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors dark:text-white"
               >
                 <span>Discord</span>
                 <MessageSquare className="w-4 h-4" />
@@ -176,6 +187,14 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
               >
                 <span>Archive</span>
                 <Archive className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => handleNavItemClick(onPlaylistClick)}
+                className="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors dark:text-white"
+              >
+                <span>Playlist</span>
+                <ListMusic className="w-4 h-4" />
               </button>
 
               <a
