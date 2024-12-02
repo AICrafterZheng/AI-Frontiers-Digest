@@ -1,8 +1,8 @@
 import AudioButton from "./AudioButton";
 import { getSourcePrefix } from "../lib/utils";
 import { formatSummary } from '../lib/formatSummary'
-import {  NewsletterCardProps } from "../types/types";
-
+import { NewsletterCardProps } from "../types/types";
+import '../styles/summary.css';
 
 // Card components
 const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
@@ -20,7 +20,7 @@ const CardTitle = ({ children }: { children: React.ReactNode }) => (
 )
 
 const CardContent = ({ children }: { children: React.ReactNode }) => (
-  <div className="px-6 py-4 prose dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-img:rounded-lg">
+  <div className="px-6 py-4 prose dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-img:rounded-lg prose-ul:list-disc prose-ul:pl-6">
     {children}
   </div>
 )
