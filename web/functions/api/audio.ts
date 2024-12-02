@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { Track } from '../../src/types/audio';
+import { Track } from '../../src/types/types';
 
 export async function onRequest(context: any) {
   const supabase = createClient(

@@ -10,3 +10,13 @@ export function formatTime(seconds: number): string {
   const remainingSeconds = Math.floor(seconds % 60);
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
+
+export function getSourcePrefix(source: string) {
+  const prefixes: Record<string, string> = {
+    'hackernews': '[Hacker News] ',
+    'techcrunch': '[TechCrunch] ',
+    'arxiv': '[Arxiv] ',
+    'latentspace': '[Latent Space]'
+  };
+  return prefixes[source.toLowerCase()] || '';
+};

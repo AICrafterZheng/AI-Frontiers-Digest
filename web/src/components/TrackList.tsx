@@ -1,5 +1,5 @@
 import { Play } from 'lucide-react';
-import { Track } from '../types/audio';
+import { Track } from '../types/types';
 import { usePlayerStore } from '../store/usePlayerStore';
 interface TrackListProps {
   tracks: Track[];

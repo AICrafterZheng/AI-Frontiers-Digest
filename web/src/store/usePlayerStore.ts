@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Track } from '../types/audio';
+import { Track } from '../types/types';
 
 interface PlayerState {
   currentTrack: Track | null;
