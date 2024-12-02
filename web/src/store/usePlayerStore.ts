@@ -13,6 +13,7 @@ interface PlayerState {
   setVolume: (volume: number) => void;
   setIsVisible: (isVisible: boolean) => void;
   playNext: () => void;
+  playPrevious: () => void;
   close: () => void;
 }
 
@@ -41,6 +42,21 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
     // Play next track
     const nextTrack = playlist[currentIndex + 1];
     set({ currentTrack: nextTrack, isPlaying: true });
+  },
+  playPrevious: () => {
+    const { currentTrack, playlist } = get();
+    if (!currentTrack || playlist.length === 0) return;
+    
+    const currentIndex = playlist.findIndex(track => track.id === currentTrack.id);
+    if (currentIndex === -1 || currentIndex === 0) {
+      // If first track or track not found, just restart current track
+      set({ isPlaying: true });
+      return;
+    }
+    
+    // Play previous track
+    const previousTrack = playlist[currentIndex - 1];
+    set({ currentTrack: previousTrack, isPlaying: true });
   },
   close: () => set({ currentTrack: null, isPlaying: false, isVisible: false }),
 }));

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom';
 import { NewsletterCard } from '../components/NewsletterCard';
 import {  Story, NewsletterProps } from "../types/types";
+import { usePlayerStore } from '../store/usePlayerStore';
 
 const getSubtitle = (countBySource: Record<string, number>) => {
   let subtitle = 'Today, our AI agents found '
@@ -27,6 +28,7 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
   const [countBySource, setCountBySource] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const setPlaylist = usePlayerStore(state => state.setPlaylist);
 
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_BACKEND_API_URL;
@@ -70,6 +72,7 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
 
         setStories(data.stories)
         setCountBySource(data.countBySource)
+        setPlaylist(data.audioTracks)
       } catch (err) {
         console.error('Fetch error:', err)
         setError(err instanceof Error ? err.message : 'An error occurred while fetching stories')
@@ -78,7 +81,7 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
       }
     }
     fetchStories()
-  }, [source, limit])
+  }, [source, limit, setPlaylist])
 
   // const filteredStories = selectedSource === 'all' 
   //   ? stories 
