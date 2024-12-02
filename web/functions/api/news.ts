@@ -145,7 +145,19 @@ export async function onRequest(context: any) {
       return acc;
     }, {});
 
-    const result = {stories: data || [], countBySource: countBySource}
+    // add cover to each story
+    const stories = data?.map((story: any) => {
+      if (story.source.toLowerCase() === 'hackernews') {
+        story.cover = 'https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/yc.png';
+      } else if (story.source.toLowerCase() === 'techcrunch') {
+        story.cover = 'https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/tc.png';
+      } else {
+        story.cover = 'https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/ai.svg';
+      }
+      return story;
+    });
+
+    const result = {stories: stories || [], countBySource: countBySource}
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: {

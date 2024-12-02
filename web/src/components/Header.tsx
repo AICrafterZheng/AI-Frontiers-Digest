@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Send, MessageSquare, Github, Archive, Menu, X, Sun, Moon, ListMusic } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeProvider';
+import { usePlayerStore } from '../store/usePlayerStore';
 
 interface HeaderProps {
   onSubscribeClick: () => void;
@@ -17,6 +18,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [githubStats, setGithubStats] = useState<GitHubStats>({ stars: 0, forks: 0 });
   const { theme, toggleTheme } = useTheme();
+  const { close } = usePlayerStore();
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -64,6 +66,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
   };
 
   const onPlaylistClick = () => {
+    close();
     navigate('/playlist');
   };
 
