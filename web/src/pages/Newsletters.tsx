@@ -6,6 +6,7 @@ import AudioButton from '../components/AudioButton';
 interface Story {
   story_id: number
   title: string
+  cover: string
   url: string
   hn_url?: string
   score?: number
@@ -208,12 +209,28 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
               <div className="w-full sm:w-auto sm:ml-auto flex justify-start gap-2">
                 {story.speech_url && (
                   <div>
-                    <AudioButton speechUrl={story.speech_url} name="Audio" />
+                    <AudioButton 
+                      speechUrl={story.speech_url} 
+                      name="Audio" 
+                      id={`${story.story_id}_audio`}
+                      title={story.title}
+                      type="Article audio"
+                      createdAt={story.created_at}
+                      cover={story.cover}
+                    />
                   </div>
                 )}
                 {story.notebooklm_url && (
                   <div>
-                    <AudioButton speechUrl={story.notebooklm_url} name="NotebookLM" />
+                    <AudioButton 
+                      speechUrl={story.notebooklm_url} 
+                      name="NotebookLM" 
+                      id={`${story.story_id}_podcast`}
+                      title={story.title}
+                      type="AI-generated podcast"
+                      createdAt={story.created_at}
+                      cover={story.cover}
+                    />
                   </div>
                 )}
               </div>

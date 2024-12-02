@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, X } from 'lucide-react';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { formatTime } from '../lib/utils';
 
 export function Player() {
-  const { currentTrack, isPlaying, setIsPlaying, playNext } = usePlayerStore();
+  const { currentTrack, isPlaying, isVisible, setIsPlaying, playNext, close } = usePlayerStore();
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -39,7 +39,7 @@ export function Player() {
     playNext();
   };
 
-  if (!currentTrack) return null;
+  if (!currentTrack || !isVisible) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-gray-900 dark:bg-gray-950 border-t border-gray-800 dark:border-gray-700 p-4">
@@ -96,6 +96,15 @@ export function Player() {
             <span className="text-xs text-gray-400 min-w-[40px]">{formatTime(duration)}</span>
           </div>
         </div>
+
+        {/* Close button */}
+        <button
+          onClick={close}
+          className="absolute top-2 right-4 text-gray-400 hover:text-white transition-colors"
+          aria-label="Close player"
+        >
+          <X className="w-5 h-5" />
+        </button>
       </div>
     </div>
   );
