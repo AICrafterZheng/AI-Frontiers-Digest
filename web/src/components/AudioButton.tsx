@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, Volume1, VolumeX } from 'lucide-react';
+import { Volume2, Volume1 } from 'lucide-react';
+import { useAudioContext } from '../store/useAudioContext';
 
 interface AudioButtonProps {
   speechUrl: string;
@@ -10,8 +11,8 @@ interface AudioButtonProps {
 export default function AudioButton({ speechUrl, name, className = '' }: AudioButtonProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState<number | null>(null);
-  const [volume, setVolume] = useState(0.5);
   const audioRef = React.useRef<HTMLAudioElement>(null);
+  const { currentlyPlayingUrl, setCurrentlyPlaying } = useAudioContext();
 
   useEffect(() => {
     // Create temporary audio element to get duration
@@ -20,6 +21,16 @@ export default function AudioButton({ speechUrl, name, className = '' }: AudioBu
       setDuration(audio.duration);
     });
   }, [speechUrl]);
+
+  // Stop playing if another audio starts
+  useEffect(() => {
+    if (currentlyPlayingUrl && currentlyPlayingUrl !== speechUrl && isPlaying) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+    }
+  }, [currentlyPlayingUrl, speechUrl, isPlaying]);
 
   // Format duration to MM:SS
   const formatTime = (time: number): string => {
@@ -32,17 +43,19 @@ export default function AudioButton({ speechUrl, name, className = '' }: AudioBu
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
+        setCurrentlyPlaying(null);
       } else {
+        // Stop any currently playing audio
+        if (currentlyPlayingUrl && currentlyPlayingUrl !== speechUrl) {
+          const currentAudio = document.querySelector(`audio[src="${currentlyPlayingUrl}"]`) as HTMLAudioElement;
+          if (currentAudio) {
+            currentAudio.pause();
+          }
+        }
         audioRef.current.play();
+        setCurrentlyPlaying(speechUrl);
       }
       setIsPlaying(!isPlaying);
-    }
-  };
-
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setVolume(parseFloat(e.target.value));
-    if (audioRef.current) {
-      audioRef.current.volume = parseFloat(e.target.value);
     }
   };
 
@@ -50,41 +63,20 @@ export default function AudioButton({ speechUrl, name, className = '' }: AudioBu
     <div className={`flex items-center gap-2 ${className}`}>
       <button
         onClick={togglePlay}
-        className={`flex items-center gap-2 px-3 py-1 text-sm bg-blue-600 dark:bg-blue-800 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-900 transition-colors`}
+        className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
       >
-        {isPlaying ? (
-          <>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6" />
-            </svg>
-            Pause
-          </>
-        ) : (
-          <>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {name} {duration && `(${formatTime(duration)})`}
-          </>
-        )}
+        {isPlaying ? <Volume2 className="w-4 h-4" /> : <Volume1 className="w-4 h-4" />}
+        <span>{name}</span>
+        {duration && <span className="text-xs text-gray-500">({formatTime(duration)})</span>}
       </button>
-      <div className="absolute hidden group-hover:block right-0 bottom-full mb-2 p-2 bg-white dark:bg-gray-900 rounded-lg shadow-lg">
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.1"
-          value={volume}
-          onChange={handleVolumeChange}
-          className="w-24 h-1 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer"
-        />
-      </div>
+
       <audio
         ref={audioRef}
         src={speechUrl}
-        onEnded={() => setIsPlaying(false)}
-        volume={volume}
+        onEnded={() => {
+          setIsPlaying(false);
+          setCurrentlyPlaying(null);
+        }}
       />
     </div>
   );

@@ -20,7 +20,8 @@
 4. **Discord Delivery:** Deliver summaries to our [Discord community](https://discord.gg/Ukbeb8rDmm)
 5. **Web App:** View summaries and explore AI news on [aicrafter.info](https://aicrafter.info)
 6. **Audio:** Generate audio from article.
-6. **Podcast:** Generate podcasts from article.
+7. **Podcast:** Generate podcasts from article.
+8. **Audio Playlist:** Playlists of audio and podcasts, which allows you to listen all the audios in one place.
 
 
 ## Tech Stack
