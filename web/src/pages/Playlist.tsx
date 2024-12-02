@@ -1,11 +1,11 @@
 import { Music2 } from 'lucide-react';
 import { TrackList } from '../components/TrackList';
 import { useEffect, useState } from 'react';
-import { Track } from '../types/audio';
+import { Track } from '../types/types';
 import { fetchTracks } from '../services/audioService';
 import { usePlayerStore } from '../store/usePlayerStore';
 
-function AudioPlaylist() {
+function Playlist() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,4 +57,4 @@ function AudioPlaylist() {
   );
 }
 
-export default AudioPlaylist;
+export default Playlist;

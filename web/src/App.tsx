@@ -2,10 +2,10 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import AIFrontiersArticles from './pages/Newsletters';
 import { ArchiveList } from './pages/ArchiveList';
-import AudioPlaylist from './pages/AudioPlaylist';
+import Playlist from './pages/Playlist';
 import { ThemeProvider } from './context/ThemeProvider';
 
-function App() {
+function App() {  
   return (
     <ThemeProvider>
       <BrowserRouter>
@@ -14,7 +14,7 @@ function App() {
             <Route path="/" element={<AIFrontiersArticles limit={20}/>} />
             <Route path="/articles" element={<AIFrontiersArticles limit={20}/>} />
             <Route path="/archive" element={<ArchiveList />} />
-            <Route path="/playlist" element={<AudioPlaylist />} />
+            <Route path="/playlist" element={<Playlist />} />
           </Route>
         </Routes>
       </BrowserRouter>

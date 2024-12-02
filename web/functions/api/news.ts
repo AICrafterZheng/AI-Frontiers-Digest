@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { Track } from '../../src/types/types';
 
 async function getHNScore(id: string): Promise<number> {
   try {
@@ -28,6 +29,16 @@ async function getLastRecordDate(supabase: any, tableName: string): Promise<stri
   } catch (error) {
     console.error('Error in getLastRecordDate:', error);
     return null;
+  }
+}
+
+function getTrackCover(source: string): string {
+  if (source.toLowerCase() === "techcrunch") {
+    return "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/tc.png";
+  } else if (source.toLowerCase() === "hackernews") {
+    return "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/yc.png";
+  } else {
+    return "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/ai.svg";
   }
 }
 
@@ -147,17 +158,39 @@ export async function onRequest(context: any) {
 
     // add cover to each story
     const stories = data?.map((story: any) => {
-      if (story.source.toLowerCase() === 'hackernews') {
-        story.cover = 'https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/yc.png';
-      } else if (story.source.toLowerCase() === 'techcrunch') {
-        story.cover = 'https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/tc.png';
-      } else {
-        story.cover = 'https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/ai.svg';
-      }
+      story.cover = getTrackCover(story.source);
       return story;
     });
 
-    const result = {stories: stories || [], countBySource: countBySource}
+    const tracks: Track[] = [];
+    data?.forEach((story: any) => {
+      // Push speech URL track
+      const cover = getTrackCover(story.source);
+      if (story.speech_url) {
+        tracks.push({
+          id: story.story_id.toString() + "_audio",
+          cover: cover,
+          title: story.title,
+          type: "Article audio",
+          audioUrl: story.speech_url,
+          createdAt: story.created_at
+        });
+      }
+      
+      // Push notebook URL track
+      if (story.notebooklm_url) {
+        tracks.push({
+          id: story.story_id.toString() + "_podcast",
+          cover: cover,
+          title: story.title,
+          type: "AI-generated podcast",
+          audioUrl: story.notebooklm_url,
+          createdAt: story.created_at,
+        });
+      }
+    });
+
+    const result = {stories: stories || [], audioTracks: tracks || [], countBySource: countBySource}
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: {
