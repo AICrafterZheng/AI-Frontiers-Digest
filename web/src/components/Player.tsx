@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2 } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { formatTime } from '../lib/utils';
 
 export function Player() {
-  const { currentTrack, isPlaying, setIsPlaying, volume, setVolume } = usePlayerStore();
+  const { currentTrack, isPlaying, setIsPlaying } = usePlayerStore();
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -34,14 +34,6 @@ export function Player() {
     }
   };
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = Number(e.target.value);
-    setVolume(newVolume);
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume;
-    }
-  };
-
   if (!currentTrack) return null;
 
   return (
@@ -53,20 +45,22 @@ export function Player() {
         onEnded={() => setIsPlaying(false)}
       />
       
-      <div className="max-w-screen-lg mx-auto flex items-center space-x-4">
-        <img
-          src={currentTrack.cover}
-          alt={currentTrack.title}
-          className="w-16 h-16 rounded object-cover"
-        />
-        
-        <div className="flex-1">
-          <h3 className="font-semibold text-white">{currentTrack.title}</h3>
-          <p className="text-sm text-gray-400">{currentTrack.artist}</p>
+      <div className="max-w-screen-lg mx-auto flex flex-col sm:flex-row items-center gap-4">
+        <div className="flex items-center gap-4 w-full sm:w-auto">
+          <img
+            src={currentTrack.cover}
+            alt={currentTrack.title}
+            className="w-12 h-12 sm:w-16 sm:h-16 rounded object-cover"
+          />
+          
+          <div className="flex-1 sm:flex-initial min-w-0">
+            <h3 className="font-semibold text-white truncate">{currentTrack.title}</h3>
+            <p className="text-sm text-gray-400 truncate">{currentTrack.artist}</p>
+          </div>
         </div>
 
-        <div className="flex-1 flex flex-col items-center">
-          <div className="flex items-center space-x-4">
+        <div className="flex-1 flex flex-col items-center w-full sm:w-auto">
+          <div className="flex items-center space-x-4 mb-2">
             <SkipBack className="w-5 h-5 text-gray-400 cursor-pointer hover:text-white transition-colors" />
             <button
               onClick={() => setIsPlaying(!isPlaying)}
@@ -82,7 +76,7 @@ export function Player() {
           </div>
           
           <div className="w-full flex items-center space-x-2">
-            <span className="text-xs text-gray-400">{formatTime(currentTime)}</span>
+            <span className="text-xs text-gray-400 min-w-[40px] text-right">{formatTime(currentTime)}</span>
             <input
               type="range"
               min={0}
@@ -91,21 +85,8 @@ export function Player() {
               onChange={handleSeek}
               className="flex-1 h-1 bg-gray-600 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
             />
-            <span className="text-xs text-gray-400">{formatTime(duration)}</span>
+            <span className="text-xs text-gray-400 min-w-[40px]">{formatTime(duration)}</span>
           </div>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Volume2 className="w-5 h-5 text-gray-400" />
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.1}
-            value={volume}
-            onChange={handleVolumeChange}
-            className="w-24 h-1 bg-gray-600 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
-          />
         </div>
       </div>
     </div>
