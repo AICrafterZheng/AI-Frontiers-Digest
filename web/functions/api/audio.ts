@@ -24,11 +24,20 @@ export async function onRequest(context: any) {
     const tracks: Track[] = [];
     stories.forEach((story: any) => {
       // Push speech URL track
+      let cover;
+      if (story.source.toLowerCase()   === "techcrunch") {
+        cover = "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/tc.png";
+      } else if (story.source.toLowerCase() === "hackernews") {
+        cover = "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/yc.png";
+      } else {
+        cover = "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/ai.svg";
+      }
       if (story.speech_url) {
         tracks.push({
           id: story.story_id.toString() + "_audio",
+          cover: cover,
           title: story.title,
-          type: story.source + " audio",
+          type: "Article audio",
           audioUrl: story.speech_url,
           createdAt: story.created_at
         });
@@ -38,8 +47,9 @@ export async function onRequest(context: any) {
       if (story.notebooklm_url) {
         tracks.push({
           id: story.story_id.toString() + "_podcast",
+          cover: cover,
           title: story.title,
-          type: story.source + " podcast",
+          type: "AI-generated podcast",
           audioUrl: story.notebooklm_url,
           createdAt: story.created_at,
         });
