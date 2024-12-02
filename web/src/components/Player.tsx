@@ -3,8 +3,9 @@ import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { formatTime } from '../lib/utils';
 import audio_img from '../data/audio.svg';
+
 export function Player() {
-  const { currentTrack, isPlaying, setIsPlaying } = usePlayerStore();
+  const { currentTrack, isPlaying, setIsPlaying, playNext } = usePlayerStore();
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -34,6 +35,11 @@ export function Player() {
     }
   };
 
+  const handleEnded = () => {
+    setIsPlaying(false);
+    playNext();
+  };
+
   if (!currentTrack) return null;
 
   return (
@@ -42,7 +48,7 @@ export function Player() {
         ref={audioRef}
         src={currentTrack.audioUrl}
         onTimeUpdate={handleTimeUpdate}
-        onEnded={() => setIsPlaying(false)}
+        onEnded={handleEnded}
       />
       
       <div className="max-w-screen-lg mx-auto flex flex-col sm:flex-row items-center gap-4">
@@ -72,7 +78,10 @@ export function Player() {
                 <Play className="w-6 h-6 text-black dark:text-white" />
               )}
             </button>
-            <SkipForward className="w-5 h-5 text-gray-400 cursor-pointer hover:text-white transition-colors" />
+            <SkipForward 
+              onClick={playNext}
+              className="w-5 h-5 text-gray-400 cursor-pointer hover:text-white transition-colors" 
+            />
           </div>
           
           <div className="w-full flex items-center space-x-2">
