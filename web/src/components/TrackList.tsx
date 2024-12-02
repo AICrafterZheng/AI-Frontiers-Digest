@@ -1,7 +1,6 @@
 import { Play } from 'lucide-react';
 import { Track } from '../types/audio';
 import { usePlayerStore } from '../store/usePlayerStore';
-import audio_img from '../data/audio.svg'
 interface TrackListProps {
   tracks: Track[];
 }
@@ -25,7 +24,7 @@ export function TrackList({ tracks }: TrackListProps) {
           onClick={() => handlePlay(track)}
         >
           <img
-            src={audio_img}
+            src={track.cover}
             alt={track.title}
             className="w-12 h-12 rounded object-cover"
           />
