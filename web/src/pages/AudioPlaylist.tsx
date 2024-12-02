@@ -1,6 +1,5 @@
 import { Music2 } from 'lucide-react';
 import { TrackList } from '../components/TrackList';
-import { Player } from '../components/Player';
 import { useEffect, useState } from 'react';
 import { Track } from '../types/audio';
 import { fetchTracks } from '../services/audioService';
@@ -49,15 +48,11 @@ function AudioPlaylist() {
       <div className="sm:hidden">
         {content}
       </div>
-      
-      {/* Desktop view with background */}
-      <div className="hidden sm:block bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
-        <div className="p-6">
-          {content}
-        </div>
+
+      {/* Desktop view */}
+      <div className="hidden sm:block">
+        {content}
       </div>
-      
-      <Player />
     </div>
   );
 }

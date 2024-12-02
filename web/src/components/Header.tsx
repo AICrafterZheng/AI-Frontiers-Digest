@@ -83,7 +83,11 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
     }`}>
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link to="/" className="hover:opacity-80 transition-opacity">
+          <Link 
+            to="/" 
+            className="hover:opacity-80 transition-opacity"
+            onClick={close}
+          >
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">AI Frontiers</h1>
           </Link>
         </div>
