@@ -1,4 +1,4 @@
-import { Track } from '../types/audio';
+import { Track } from '../types/types';
 
 export async function fetchTracks(): Promise<Track[]> {
   try {
