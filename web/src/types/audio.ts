@@ -4,4 +4,6 @@ export interface Track {
   artist: string;
   cover: string;
   audioUrl: string;
+  notebookUrl?: string;
+  createdAt: string;
 }

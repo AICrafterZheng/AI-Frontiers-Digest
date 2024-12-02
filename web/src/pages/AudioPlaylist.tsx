@@ -1,20 +1,56 @@
 import { Music2 } from 'lucide-react';
 import { TrackList } from '../components/TrackList';
 import { Player } from '../components/Player';
-import { tracks } from '../data/tracks';
+import { useEffect, useState } from 'react';
+import { Track } from '../types/audio';
+import { fetchTracks } from '../services/audioService';
 
 function AudioPlaylist() {
-  return (
-    <div className="min-h-screen bg-gray-900 dark:bg-gray-950 text-white">
-      <div className="max-w-screen-lg mx-auto p-8">
-        <div className="flex items-center space-x-4 mb-8">
-          <Music2 className="w-8 h-8 text-green-500" />
-          <h1 className="text-2xl font-bold text-white">Audio Player</h1>
-        </div>
+  const [tracks, setTracks] = useState<Track[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-        <div className="mb-24">
-          <h2 className="text-xl font-semibold mb-4 text-white">Featured Tracks</h2>
-          <TrackList tracks={tracks} />
+  useEffect(() => {
+    async function loadTracks() {
+      try {
+        const fetchedTracks = await fetchTracks();
+        setTracks(fetchedTracks);
+      } catch (err) {
+        setError('Failed to load audio tracks');
+        console.error('Error loading tracks:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadTracks();
+  }, []);
+
+  const content = loading ? (
+    <div className="text-center text-gray-600 dark:text-gray-400">Loading tracks...</div>
+  ) : error ? (
+    <div className="text-center text-red-600 dark:text-red-400">{error}</div>
+  ) : tracks.length === 0 ? (
+    <div className="text-center text-gray-600 dark:text-gray-400">No audio tracks available</div>
+  ) : (
+    <TrackList tracks={tracks} />
+  );
+
+  return (
+    <div className="container mx-auto px-4">
+      <div className="flex items-center gap-2 mb-6">
+        <Music2 className="w-6 h-6 text-gray-900 dark:text-white" />
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Audio Playlist</h1>
+      </div>
+      
+      {/* Mobile view */}
+      <div className="sm:hidden">
+        {content}
+      </div>
+      
+      {/* Desktop view with background */}
+      <div className="hidden sm:block bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+        <div className="p-6">
+          {content}
         </div>
       </div>
       <Player />
