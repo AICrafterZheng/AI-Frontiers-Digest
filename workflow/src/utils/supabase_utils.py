@@ -27,7 +27,7 @@ def searchRow(tableName: str, searchColumn: str, searchValue: any, filter_column
         print(f"Error searching for a row: {error}")
         raise error
 
-@task(log_prints=True, cache_key_fn=None)
+@task(log_prints=True, cache_policy=None)
 def insertRow(row):
     """Insert a row into the database."""
     try:
@@ -56,7 +56,7 @@ def updateRow(updates: dict, searchColumn: str, searchValue: int):
         print(f"Error updating a row: {error}")
         raise error
 
-@task(log_prints=True, cache_key_fn=None)
+@task(log_prints=True, cache_policy=None)
 def upload_audio_file(file_path: str, bucket_name: str = SUPABASE_BUCKET_NAME) -> str:
     """
     Upload an audio file to Supabase storage and return the public URL.
@@ -88,7 +88,7 @@ def upload_audio_file(file_path: str, bucket_name: str = SUPABASE_BUCKET_NAME) -
         if Path(file_path).exists():
             Path(file_path).unlink()
 
-@task(log_prints=True, cache_key_fn=None)
+@task(log_prints=True, cache_policy=None)
 def delete_audio_files(bucket_name: str = SUPABASE_BUCKET_NAME, days_threshold: int = 10):
     """
     Delete files older than specified days from Supabase storage.

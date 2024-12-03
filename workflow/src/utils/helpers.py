@@ -1,6 +1,9 @@
 import re
 from prefect import task, get_run_logger
 from src.utils.supabase_utils import insertRow, updateRow
+from src.utils.r2_client import R2Client
+from pathlib import Path
+from src.config import CLOUDFLARE_AUDIO_URL 
 
 def extract_llm_response(text: str, tag: str):
     # Try to match <mermaid> tags first
@@ -33,7 +36,7 @@ def has_mentioned_keywords(story, keywords):
                     return True
     return False
 
-@task(log_prints=True, cache_key_fn=None)
+@task(log_prints=True, cache_policy=None)
 def save_to_supabase(stories):
     logger = get_run_logger()
     for story in stories:
@@ -56,7 +59,7 @@ def save_to_supabase(stories):
         except Exception as e:
             logger.error(f"Error saving story {story.title}: {e}")
 
-@task(log_prints=True, cache_key_fn=None)
+@task(log_prints=True, cache_policy=None)
 def update_supabase_row(stories, key_column: str, columns: list[str]):
     logger = get_run_logger()
     if len(columns) == 0:
@@ -86,3 +89,20 @@ def update_supabase_row(stories, key_column: str, columns: list[str]):
             logger.error(f"Story missing attribute: {e}")
         except Exception as e:
             logger.error(f"Error updating story {story.url}: {e}")
+
+@task(log_prints=True, cache_policy=None)
+def upload_file_to_r2(file: str) -> str:
+    logger = get_run_logger()
+    try:
+        # Upload file
+        logger.info(f"Uploading {file}")
+        file_path = Path(file)
+        key = file_path.name
+        uploaded_key = R2Client().upload_file(file_path, key=key)
+        logger.info(f"File uploaded successfully: {uploaded_key}")
+        public_url = f"{CLOUDFLARE_AUDIO_URL}/{uploaded_key}"
+        logger.info(f"Public URL: {public_url}")
+        return public_url
+    except Exception as e:
+        logger.error(f"Error uploading {file}: {e}")
+        return None

@@ -83,3 +83,10 @@ HOST_VOICE = "en-US-AvaMultilingualNeural"
 # GUEST_VOICE = "en-US-BrianMultilingualNeural"
 GUEST_VOICE = "en-US-AndrewMultilingualNeural"
 
+
+# Cloudflare
+CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
+CLOUDFLARE_ACCESS_KEY_ID = os.getenv("CLOUDFLARE_ACCESS_KEY_ID", "")
+CLOUDFLARE_ACCESS_KEY_SECRET = os.getenv("CLOUDFLARE_ACCESS_KEY_SECRET", "")
+CLOUDFLARE_BUCKET_NAME = os.getenv("CLOUDFLARE_BUCKET_NAME", "")
+CLOUDFLARE_AUDIO_URL = os.getenv("CLOUDFLARE_AUDIO_URL", "")

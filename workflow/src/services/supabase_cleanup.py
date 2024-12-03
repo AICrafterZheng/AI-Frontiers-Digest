@@ -31,7 +31,7 @@ def get_target_day_records(days: int = 10):
         logger.error(f"Error retrieving target day records: {error}")
         raise error
 
-@task(log_prints=True, cache_key_fn=None)
+@task(log_prints=True, cache_policy=None)
 def extract_filename_from_url(url: str) -> str:
     """
     Extract filename from Supabase storage URL.
@@ -40,7 +40,7 @@ def extract_filename_from_url(url: str) -> str:
         return None
     return os.path.basename(urlparse(url).path)
 
-@task(log_prints=True, cache_key_fn=None)
+@task(log_prints=True, cache_policy=None)
 def delete_storage_file(filename: str):
     """
     Delete a file from Supabase storage.
@@ -54,7 +54,7 @@ def delete_storage_file(filename: str):
     except Exception as error:
         logger.error(f"Error deleting file {filename}: {error}")
 
-@task(log_prints=True, cache_key_fn=None)
+@task(log_prints=True, cache_policy=None)
 def update_record_urls(record_id: int):
     """
     Set speech_url and notebooklm_url to null for a record.

@@ -8,7 +8,7 @@ import uuid
 import os
 from pydub import AudioSegment
 
-@task(log_prints=True, cache_key_fn=None)
+@task(log_prints=True, cache_policy=None)
 def text_to_speech(text: str, output_file: str = "output.mp3"):
     """
     Convert text to speech and save to a file

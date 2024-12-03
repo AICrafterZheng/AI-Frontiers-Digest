@@ -57,7 +57,7 @@ def _format_story_meta(story) -> str:
                     {podcast_html}
     """
 # get the email template
-@task(log_prints=True, cache_key_fn=None)
+@task(log_prints=True, cache_policy=None)
 def get_email_html(subject: str, stories) -> str:
     if not stories or len(stories) == 0:
         return ""

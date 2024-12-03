@@ -41,7 +41,7 @@ class HNCommentsSummarizer:
     def __init__(self, llm_client: LLMClient):
         self.llm_client = llm_client
 
-    @task(log_prints=True, cache_key_fn=None)
+    @task(log_prints=True, cache_policy=None)
     def organize_comments_for_llm(self, comments: List[Comment], max_tokens=4000) -> List[str]:
         """
         Organize comments into chunks suitable for LLM processing
@@ -64,7 +64,7 @@ class HNCommentsSummarizer:
             discussion_threads.append(current_thread)
         return discussion_threads
 
-    @task(log_prints=True, cache_key_fn=None)
+    @task(log_prints=True, cache_policy=None)
     async def fetch_comments(self, item_id: str) -> list:
         """Fetch comments for a Hacker News item"""
         async with aiohttp.ClientSession() as session:
@@ -110,7 +110,7 @@ class HNCommentsSummarizer:
                 return comment
 
 
-    @task(log_prints=True, cache_key_fn=None)
+    @task(log_prints=True, cache_policy=None)
     async def get_comments_for_llm(self, story_id: str) -> dict:
         """Fetch and organize comments for summarization"""
         raw_comments = await self.fetch_comments(story_id)
@@ -190,7 +190,7 @@ class HNCommentsSummarizer:
             'llm_path': llm_path
         }
 
-    @task(log_prints=True, cache_key_fn=None)
+    @task(log_prints=True, cache_policy=None)
     def get_full_discussion_summary(self, comments: str) -> str:
         """Get a full summary of the discussion using an LLM"""
         user_input = SUMMARIZE_COMMENTS_USER_PROMPT.format(HN_COMMENTS=comments)
