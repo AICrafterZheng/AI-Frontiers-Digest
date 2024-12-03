@@ -56,13 +56,14 @@ class HackerNewsService:
     async def processStories(self, stories):
         results = []
         async def processStory(id):
+            story = await self.fetchStory(id)
+            if story is None:
+                return
+
             # Check if story exists
             if len(self.columns_to_update) == 0 and checkIfExists('story_id', id):
-                # print(f"Story {id} already exists")
-                return
-            story = await self.fetchStory(id)
-            # print(f"Fetched story: {story}")
-            if story is None:
+                # Update score for existing story
+                update_supabase_row([story], 'story_id', ['score'])
                 return
             # If any keywords are mentioned in the story title
             if has_mentioned_keywords(story, self.discord_keywords) and int(story.score) > self.score:
@@ -161,16 +162,16 @@ async def run_test_hn_flow():
     columns_to_update.append("comments_summary")
     columns_to_update.append("speech_url") 
     columns_to_update.append("notebooklm_url")
-    service.columns_to_update = columns_to_update
+    # service.columns_to_update = columns_to_update
     # service.llm_client = llm_client
     service.discord_webhooks = []
     # service.discord_keywords = ['Y']
     # service.score = 0
-    # storieIds = await service.fetchTopStoryIds()
-    storieIds = ["42136711"]
+    storieIds = await service.fetchTopStoryIds()
+    # storieIds = ["42250773"]
     stories = await service.top_hn_flow(storieIds)
     print(f"Found {len(stories)} stories")
     # await service.send_emails(stories, ["aicrafter.ai@gmail.com"])
     # save_to_supabase(stories)
 
-    update_supabase_row(stories, "story_id", columns_to_update)
+    # update_supabase_row(stories, "story_id", columns_to_update)
