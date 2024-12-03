@@ -68,10 +68,6 @@ def update_supabase_row(stories, key_column: str, columns: list[str]):
     logger.info(f"Updating {len(stories)} stories")
     for story in stories:
         try:
-            # Use getattr to access object attributes
-            # fields = {
-            #     column: getattr(story, column) for column in columns
-            # }
             fields = {}
             for column in columns:
                 if column == "story_id":

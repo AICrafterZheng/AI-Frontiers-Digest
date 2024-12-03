@@ -1,17 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { Track } from '../../src/types/types';
 
-async function getHNScore(id: string): Promise<number> {
-  try {
-    const response = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`);
-    const data = await response.json();
-    return data.score || 0;
-  } catch (error) {
-    console.error('Error fetching HN score:', error);
-    return 0;
-  }
-}
-
 async function getLastRecordDate(supabase: any, tableName: string): Promise<string | null> {
   try {
     const { data, error } = await supabase
@@ -117,6 +106,7 @@ export async function onRequest(context: any) {
       .not('source', 'is', null)
       // .order('created_at', { ascending: false })
       .order('source', { ascending: true })
+      .order('score', { ascending: false })
       .limit(limit ? parseInt(limit) : 30)
 
     if (error) {
@@ -128,27 +118,6 @@ export async function onRequest(context: any) {
         }
       })
     }
-
-    // If source is HN, update scores before returning
-    // if (data && data.length > 0) {
-    //   const updatedData = await Promise.all(
-    //     data.map(async (story: any) => {
-    //       if (story.source.toLowerCase() === 'hackernews') {
-    //         const score = await getHNScore(story.story_id);
-    //         // Update the score in database if it changed
-    //         if (score !== story.score) {
-    //           await supabase
-    //             .from(context.env.SUPABASE_TABLE_STORIES!)
-    //             .update({ score })
-    //             .eq('id', story.id);
-    //         }
-    //         return { ...story, score };
-    //       }
-    //       return story;
-    //     })
-    //   );
-    //   data = updatedData;
-    // }
 
     // Count by source
     const countBySource = data?.reduce((acc: any, story: any) => {
