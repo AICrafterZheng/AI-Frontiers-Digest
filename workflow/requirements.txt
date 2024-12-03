@@ -11,3 +11,4 @@ azure-cognitiveservices-speech
 requests
 pydub
 tenacity
+boto3

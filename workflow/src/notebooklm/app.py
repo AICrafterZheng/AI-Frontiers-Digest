@@ -1,7 +1,7 @@
 from prefect import task, flow
 from src.utils.llm_client import LLMClient
 from src.utils.tts import generate_podcast_audio
-from src.utils.supabase_utils import upload_audio_file
+from src.utils.helpers import upload_file_to_r2
 
 from .prompts import (
     SYS_PROMPT_PREPROCESS,
@@ -46,6 +46,6 @@ class NotebookLM:
         transcript = self.write_transcript(preprocessed)
         tts_transcript = self.rewrite_transcript(transcript)
         audio_path = await self.transcript_to_podcast(tts_transcript)
-        public_url = upload_audio_file(audio_path)
+        public_url = upload_file_to_r2(audio_path)
         print(f"generate_upload_podcast - Public URL: {public_url}")
         return public_url

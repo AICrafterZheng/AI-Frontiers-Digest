@@ -44,7 +44,7 @@ class HackerNewsService:
         instance.discord_webhooks.append(AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK)
         return instance
 
-    @task(log_prints=True, cache_key_fn=None)
+    @task(log_prints=True, cache_policy=None)
     async def fetchTopStoryIds(self):
         async with aiohttp.ClientSession() as session:
             async with session.get(f"{HN_API_BASE}/topstories.json") as response:
@@ -52,7 +52,7 @@ class HackerNewsService:
         return data
 
     # Check if new and mentioned in keywords
-    @task(log_prints=True, name="top-hn-processStories", cache_key_fn=None)
+    @task(log_prints=True, name="top-hn-processStories", cache_policy=None)
     async def processStories(self, stories):
         results = []
         async def processStory(id):
@@ -82,7 +82,7 @@ class HackerNewsService:
                 else:
                     return None
 
-    @task(log_prints=True, cache_key_fn=None)
+    @task(log_prints=True, cache_policy=None)
     async def send_emails(self, stories, to_emails: List[str] = None):
         logger = get_run_logger()
         try:
@@ -91,7 +91,7 @@ class HackerNewsService:
         except Exception as e:
             logger.error(f"Error sending emails: {e}")
 
-    @task(log_prints=True, cache_key_fn=None)
+    @task(log_prints=True, cache_policy=None)
     async def top_hn_flow(self, storieIds: list[str]):
         logger = get_run_logger()
         stories = await self.processStories(storieIds)

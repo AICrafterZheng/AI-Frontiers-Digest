@@ -16,7 +16,7 @@ divider_options = {
 discord_limit = 1800
 # Discord has 2000 character limit, so split the message
 # needs to have async to be able to send in parallel
-@task(log_prints=True, cache_key_fn=None)
+@task(log_prints=True, cache_policy=None)
 def split_messages_to_send_discord(discord_webhook, message, divider_style: str = "none"):
     while len(message) > 0 or message != "":
         print(f"split_messages_to_send message length: {len(message)}")
@@ -31,7 +31,7 @@ def split_messages_to_send_discord(discord_webhook, message, divider_style: str 
             send_discord(discord_webhook, message[:split_index], divider_style)
             message = message[split_index:]
 
-@task(log_prints=True, cache_key_fn=None)
+@task(log_prints=True, cache_policy=None)
 def send_discord(discord_webhook, message, divider_style: str = "simple"):
     logger = get_run_logger()
     divider = divider_options.get(divider_style, divider_options["simple"])

@@ -4,7 +4,7 @@ from src.utils.jina_reader import call_jina_reader
 from src.utils.llm_client import LLMClient
 from src.utils.helpers import extract_llm_response
 from src.utils.tts import text_to_speech
-from src.utils.supabase_utils import upload_audio_file
+from src.utils.helpers import upload_file_to_r2
 from src.notebooklm.app import NotebookLM
 import uuid
 from src.config import AUDIO_CACHE_DIR
@@ -36,7 +36,7 @@ class ContentSummarizer:
         self.generate_podcast = generate_podcast
         self.generate_summary = generate_summary
 
-    @task(log_prints=True, retries=2, retry_delay_seconds=[5, 10], cache_key_fn=None)
+    @task(log_prints=True, retries=2, retry_delay_seconds=[5, 10], cache_policy=None)
     def _initial_summary(self, content: str) -> str:
         print(f"initial_summary - Content preview: {content[:100]}")
         prompt = INITIAL_SUMMARIZE_USER_PROMPT.format(
@@ -47,7 +47,7 @@ class ContentSummarizer:
         print(f"initial_summary - Summary: {summary}")
         return summary
 
-    @task(log_prints=True, retries=2, retry_delay_seconds=[5, 10], cache_key_fn=None)
+    @task(log_prints=True, retries=2, retry_delay_seconds=[5, 10], cache_policy=None)
     def _reflection(self, content: str, summary: str) -> str:
         print(f"reflection - Content preview: {content[:100]}")
         prompt = REFLECTION_SUMMARIZE_USER_PROMPT.format(
@@ -59,7 +59,7 @@ class ContentSummarizer:
         print(f"reflection - Reflection: {reflection}")
         return reflection
 
-    @task(log_prints=True, retries=2, retry_delay_seconds=[5, 10], cache_key_fn=None)
+    @task(log_prints=True, retries=2, retry_delay_seconds=[5, 10], cache_policy=None)
     def _final_summary(self, content: str, summary: str, reflection: str) -> str:
         print(f"final_summary - Content preview: {content[:100]}")
         prompt = FINAL_SUMMARIZE_USER_PROMPT.format(
@@ -72,7 +72,7 @@ class ContentSummarizer:
         print(f"final_summary - Final Summary: {final_summary}")
         return final_summary
 
-    @task(log_prints=True, cache_key_fn=None)
+    @task(log_prints=True, cache_policy=None)
     def summarize(self, content: str) -> SummaryResult:
         print(f"Summarizing with model {self.llm_client.model}")
         print(f"Content preview: {content[:100]}")
@@ -88,7 +88,7 @@ class ContentSummarizer:
         )
 
 
-    @task(log_prints=True, cache_key_fn=None)
+    @task(log_prints=True, cache_policy=None)
     def extract_content(self, topic: str, content: str) -> str:
         try:
             user_input = EXTRACT_CONTENT_USER_PROMPT.format(
@@ -104,17 +104,17 @@ class ContentSummarizer:
         except Exception as e:
             return f"Error extracting content: {e}"
 
-    @task(log_prints=True, cache_key_fn=None)
+    @task(log_prints=True, cache_policy=None)
     def article_to_speech(self, article: str) -> str:
         # Generate uuid for the file name
         print(f"Generating speech for article: {self.url}")
         os.makedirs(AUDIO_CACHE_DIR, exist_ok=True)
         unique_filename = os.path.join(AUDIO_CACHE_DIR, f"{uuid.uuid4()}.mp3")
         text_to_speech(article, unique_filename)
-        public_url = upload_audio_file(unique_filename)
+        public_url = upload_file_to_r2(unique_filename)
         return public_url
 
-    @task(log_prints=True, cache_key_fn=None)
+    @task(log_prints=True, cache_policy=None)
     async def article_to_podcast(self, article: str) -> str:
         print(f"Generating podcast for article: {self.url}")
         llm_client = LLMClient(use_azure_openai=True)

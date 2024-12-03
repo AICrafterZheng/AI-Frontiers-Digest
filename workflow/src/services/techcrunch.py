@@ -56,7 +56,7 @@ class TechCrunchService:
     def check_if_exists_in_supabase(self, url: str) -> bool:
         return checkIfExists('url', url)
 
-    @task(log_prints=True, cache_key_fn=None)
+    @task(log_prints=True, cache_policy=None)
     def get_ai_urls_from_tc(self) -> List[str]:
         response = requests.get(self.base_url)
         input_text = response.text
@@ -107,7 +107,7 @@ class TechCrunchService:
                 split_messages_to_send_discord(webhook, DISCORD_FOOTER)
         return stories
 
-    @task(log_prints=True, cache_key_fn=None)
+    @task(log_prints=True, cache_policy=None)
     async def send_emails(self, stories: List[Story], to_emails: List[str] = None) -> None:
         """Send email newsletter"""
         logger = get_run_logger()
