@@ -37,13 +37,23 @@ export function NewsletterCard({ story }: NewsletterCardProps) {
       
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 px-6 py-2">
         <div className="flex flex-wrap items-center gap-2">
-          <a href={story.url} className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+          <a 
+            href={story.url} 
+            className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Original Article
           </a>
           {story.hn_url && (
             <>
               <span>•</span>
-              <a href={story.hn_url} className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+              <a 
+                href={story.hn_url} 
+                className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 HN Discussion
               </a>
               <span>•</span>
