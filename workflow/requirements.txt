@@ -12,3 +12,4 @@ requests
 pydub
 tenacity
 boto3
+tweepy
