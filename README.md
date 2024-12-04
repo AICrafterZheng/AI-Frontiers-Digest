@@ -21,7 +21,7 @@
 5. **Web App:** View summaries and explore AI news on [aicrafter.info](https://aicrafter.info)
 6. **Audio:** Generate audio from article.
 7. **Podcast:** Generate podcasts from article.
-8. **Audio Playlist:** Playlists of audio and podcasts, which allows you to listen all the audios in one place.
+8. **Audio Player:** Auto play next audio/podcast.
 
 
 ## Tech Stack
@@ -79,9 +79,8 @@ npm run preview:wrangler
   - Reddit
   - Product Hunt
   - LinkedIn
-- Add Audio playlist to auto-play next audio.
 
-Let me know what do you like to see! Join our [Discord](https://discord.gg/Ukbeb8rDmm).
+Let me know what do you like to see! Join our [Discord](https://discord.gg/Ukbeb8rDmm), or provide feedback on [Feedback](https://aicrafter.canny.io/feature-requests).
 
 ## Contributing
 

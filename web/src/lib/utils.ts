@@ -20,3 +20,13 @@ export function getSourcePrefix(source: string) {
   };
   return prefixes[source.toLowerCase()] || '';
 };
+
+export function getTrackCover(source: string): string {
+  if (source.toLowerCase() === "techcrunch") {
+    return "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/tc.png";
+  } else if (source.toLowerCase() === "hackernews") {
+    return "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/yc.png";
+  } else {
+    return "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/ai.svg";
+  }
+}

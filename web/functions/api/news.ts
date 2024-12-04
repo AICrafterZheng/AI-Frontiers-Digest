@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { Track } from '../../src/types/types';
+import { getTrackCover } from '../../src/lib/utils';
 
 async function getLastRecordDate(supabase: any, tableName: string): Promise<string | null> {
   try {
@@ -18,16 +19,6 @@ async function getLastRecordDate(supabase: any, tableName: string): Promise<stri
   } catch (error) {
     console.error('Error in getLastRecordDate:', error);
     return null;
-  }
-}
-
-function getTrackCover(source: string): string {
-  if (source.toLowerCase() === "techcrunch") {
-    return "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/tc.png";
-  } else if (source.toLowerCase() === "hackernews") {
-    return "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/yc.png";
-  } else {
-    return "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/ai.svg";
   }
 }
 
@@ -61,6 +52,7 @@ export async function onRequest(context: any) {
     const source = url.searchParams.get('source');
     const limit = url.searchParams.get('limit');
     const dateParam = url.searchParams.get('date');
+    const id = url.searchParams.get('id');
 
     // Use the last record date if no date parameter is provided
     let date: Date;
@@ -89,7 +81,7 @@ export async function onRequest(context: any) {
     console.log('startOfDay', startOfDay);
     console.log('endOfDay', endOfDay);
 
-    // Start building the query
+    // Prepare query
     let query = supabase
       .from(context.env.SUPABASE_TABLE_STORIES!)
       .select('*')
@@ -101,13 +93,19 @@ export async function onRequest(context: any) {
       query = query.eq('source', source)
     }
 
-    // Execute the query with ordering and limit
-    let { data, error } = await query
-      .not('source', 'is', null)
-      // .order('created_at', { ascending: false })
-      .order('source', { ascending: true })
-      .order('score', { ascending: false })
-      .limit(limit ? parseInt(limit) : 30)
+    // Add story ID filter if provided
+    if (id) {
+      query = query.eq('id', id);
+    } else {
+      // Only apply limit if not searching for specific story
+      query = query.not('source', 'is', null)
+        .order('source', { ascending: true })
+        .order('score', { ascending: false })
+        .limit(limit ? parseInt(limit) : 30)
+    }
+
+    // Execute query
+    const { data, error } = await query;
 
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), {
