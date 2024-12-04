@@ -12,6 +12,9 @@ export function formatTime(seconds: number): string {
 }
 
 export function getSourcePrefix(source: string) {
+  if (!source) {
+    return '';
+  }
   const prefixes: Record<string, string> = {
     'hackernews': '[Hacker News] ',
     'techcrunch': '[TechCrunch] ',
@@ -22,11 +25,15 @@ export function getSourcePrefix(source: string) {
 };
 
 export function getTrackCover(source: string): string {
+  const defaultCover = "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/ai.svg";
+  if (!source) {
+    return defaultCover;
+  }
   if (source.toLowerCase() === "techcrunch") {
     return "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/tc.png";
   } else if (source.toLowerCase() === "hackernews") {
     return "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/yc.png";
   } else {
-    return "https://dyesbzillwyznubkjgbp.supabase.co/storage/v1/object/public/images/ai.svg";
+    return defaultCover;
   }
 }
