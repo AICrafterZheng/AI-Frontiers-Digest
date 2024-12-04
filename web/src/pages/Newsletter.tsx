@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { NewsletterCard } from '../components/NewsletterCard';
 import { Track, Story } from '../types/types';
-
+import { usePlayerStore } from '../store/usePlayerStore';
 const Newsletter: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [story, setStory] = useState<Story | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const setPlaylist = usePlayerStore(state => state.setPlaylist);
 
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_BACKEND_API_URL;
@@ -30,6 +31,7 @@ const Newsletter: React.FC = () => {
           return;
         }
         setStory(stories[0]);
+        setPlaylist(data.audioTracks)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -40,7 +42,7 @@ const Newsletter: React.FC = () => {
     if (id) {
       fetchStory();
     }
-  }, [id, navigate]);
+  }, [id, navigate, setPlaylist]);
 
   if (loading) {
     return (
