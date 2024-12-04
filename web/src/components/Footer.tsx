@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
               Feedback
             </a>
             <a
-              href="https://x.com/dannyzhengme"
+              href="https://x.com/dannyzheng_"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-gray-900 dark:hover:text-white transition-colors"
