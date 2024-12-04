@@ -20,7 +20,7 @@ const Footer: React.FC = () => {
               dannyzheng.me
             </a>
           </span>
-            <a href="https://aicrafter.canny.io/feature-requests" className="hover:text-gray-900 dark:hover:text-white transition-colors">
+            <a href="/feedback" className="hover:text-gray-900 dark:hover:text-white transition-colors">
               Feedback
             </a>
             <a
