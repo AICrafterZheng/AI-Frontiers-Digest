@@ -3,6 +3,7 @@ import { getSourcePrefix } from "../lib/utils";
 import { formatSummary } from '../lib/formatSummary'
 import { NewsletterCardProps } from "../types/types";
 import '../styles/summary.css';
+import { useState } from 'react';
 
 // Card components
 const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
@@ -27,12 +28,40 @@ const CardContent = ({ children }: { children: React.ReactNode }) => (
 
 
 export function NewsletterCard({ story }: NewsletterCardProps) {
+  const [showCopied, setShowCopied] = useState(false);
+
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/news/${story.id}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShowCopied(true);
+      setTimeout(() => setShowCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   return (
     <Card className="mb-8">
       <CardHeader>
-        <CardTitle>
-          {getSourcePrefix(story.source)}{story.title}
-        </CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle>
+            {getSourcePrefix(story.source)}{story.title}
+          </CardTitle>
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+            title="Share article"
+          >
+            {showCopied ? (
+              <span className="text-sm">Copied!</span>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+              </svg>
+            )}
+          </button>
+        </div>
       </CardHeader>
       
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 px-6 py-2">
