@@ -11,6 +11,7 @@ class Story:
     summary: str = ""
     comments_summary: str = ""
     source: str = ""
+    content: str = ""
     speech_url: str = ""
     notebooklm_url: str = ""
 
