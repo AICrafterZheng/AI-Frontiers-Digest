@@ -85,23 +85,26 @@ export async function onRequest(context: any) {
     let query = supabase
       .from(context.env.SUPABASE_TABLE_STORIES!)
       .select('*')
-      .gte('created_at', startOfDay)
-      .lt('created_at', endOfDay)
 
-    // Add source filter if provided
-    if (source) {
-      query = query.eq('source', source)
-    }
-
-    // Add story ID filter if provided
+    // If ID is provided, only search by ID
     if (id) {
       query = query.eq('id', id);
     } else {
-      // Only apply limit if not searching for specific story
-      query = query.not('source', 'is', null)
+      // Apply date and source filters only when not searching by ID
+      query = query
+        .gte('created_at', startOfDay)
+        .lt('created_at', endOfDay)
+        .not('source', 'is', null)
         .order('source', { ascending: true })
         .order('score', { ascending: false })
-        .limit(limit ? parseInt(limit) : 30)
+
+      // Add source filter if provided
+      if (source) {
+        query = query.eq('source', source)
+      }
+
+      // Apply limit only when not searching by ID
+      query = query.limit(limit ? parseInt(limit) : 30)
     }
 
     // Execute query
@@ -117,45 +120,57 @@ export async function onRequest(context: any) {
       })
     }
 
-    // Count by source
+    // Count by source - only count if source exists and is not empty
     const countBySource = data?.reduce((acc: any, story: any) => {
-      acc[story.source.toLowerCase()] = (acc[story.source.toLowerCase()] || 0) + 1;
+      if (story?.source) {
+        const sourceKey = story.source.toLowerCase();
+        acc[sourceKey] = (acc[sourceKey] || 0) + 1;
+      }
       return acc;
     }, {});
 
     // add cover to each story
     const stories = data?.map((story: any) => {
-      story.cover = getTrackCover(story.source);
+      if (story?.source) {
+        story.cover = getTrackCover(story.source);
+      } else {
+        story.cover = ''; // or provide a default cover
+      }
       return story;
     });
 
+    // Initialize empty tracks array
     const tracks: Track[] = [];
-    data?.forEach((story: any) => {
-      // Push speech URL track
-      const cover = getTrackCover(story.source);
-      if (story.speech_url) {
-        tracks.push({
-          id: story.story_id.toString() + "_audio",
-          cover: cover,
-          title: story.title,
-          type: "Article audio",
-          audioUrl: story.speech_url,
-          createdAt: story.created_at
-        });
-      }
-      
-      // Push notebook URL track
-      if (story.notebooklm_url) {
-        tracks.push({
-          id: story.story_id.toString() + "_podcast",
-          cover: cover,
-          title: story.title,
-          type: "AI-generated podcast",
-          audioUrl: story.notebooklm_url,
-          createdAt: story.created_at,
-        });
-      }
-    });
+    
+    // Only process audio tracks if there are stories with audio URLs
+    if (data && data.length > 0) {
+      data.forEach((story: any) => {
+        const cover = story?.source ? getTrackCover(story.source) : ''; // default empty string if no source
+        // Push speech URL track
+        if (story?.speech_url) {
+          tracks.push({
+            id: story.story_id?.toString() + "_audio",
+            cover: cover,
+            title: story.title || '',
+            type: "Article audio",
+            audioUrl: story.speech_url,
+            createdAt: story.created_at
+          });
+        }
+        
+        // Push notebook URL track
+        if (story?.notebooklm_url) {
+          tracks.push({
+            id: story.story_id?.toString() + "_podcast",
+            cover: cover,
+            title: story.title || '',
+            type: "AI-generated podcast",
+            audioUrl: story.notebooklm_url,
+            createdAt: story.created_at,
+          });
+        }
+      });
+    }
 
     const result = {stories: stories || [], audioTracks: tracks || [], countBySource: countBySource}
     return new Response(JSON.stringify(result), {
@@ -167,7 +182,7 @@ export async function onRequest(context: any) {
     })
 
   } catch (err) {
-    return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
+    return new Response(JSON.stringify({ error: `Internal Server Error ${err}` }), {
       status: 500,
       headers: {
         ...corsHeaders,
