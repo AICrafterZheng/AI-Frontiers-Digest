@@ -8,6 +8,7 @@ export interface Track {
 }
 
 export interface Story {
+  id: number;
   story_id: number;
   title: string;
   url: string;
