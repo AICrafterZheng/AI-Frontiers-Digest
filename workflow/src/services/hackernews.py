@@ -29,6 +29,7 @@ class HackerNewsService:
         self.llm_client = LLMClient(use_azure_openai=True)
         self.discord_webhooks = []
         self.columns_to_update = []
+        self.save_to_supabase = True
     @classmethod
     async def create(cls):
         instance = cls()
@@ -122,7 +123,7 @@ class HackerNewsService:
                 story.speech_url = result.get("speech_url")
                 story.notebooklm_url = result.get("notebooklm_url")
 
-                if len(self.discord_webhooks) > 0:
+                if len(self.discord_webhooks) > 0: # send to discord
                     summary_message = f"**Article**: <{story.url}>\n**Summary**:\n {story.summary}"
                     comments_summary_message = f"**HNUrl**: <{story.hn_url}>\n**Score**: {story.score}\n**Discussion Highlights**:\n {comments_summary} \n ----------"
                     comments_summary_message = f"{comments_summary_message}"
@@ -133,9 +134,12 @@ class HackerNewsService:
                     for webhook in self.discord_webhooks:
                         split_messages_to_send_discord(webhook, summary_message)
                         split_messages_to_send_discord(webhook, comments_summary_message)
+                # save to supabase
+                if self.save_to_supabase:
+                    save_to_supabase([story])
             except Exception as e:
                 logger.error(f"Error processing story {story.title}: {e}")
-        if len(stories) > 0:
+        if len(stories) > 0: # send the footer
             for webhook in self.discord_webhooks:
                 split_messages_to_send_discord(webhook, DISCORD_FOOTER)
         return stories
@@ -145,7 +149,6 @@ class HackerNewsService:
         print(f"Processing {len(storieIds)} story IDs")
         stories = await self.top_hn_flow(storieIds)
         await self.send_emails(stories)
-        save_to_supabase(stories)
 
 
 @flow(log_prints=True, name="hn-flow")
@@ -157,6 +160,7 @@ async def run_hn_flow():
 async def run_test_hn_flow():
     # llm_client = LLMClient(use_azure_openai=True)
     service = await HackerNewsService.create()
+    service.save_to_supabase = False
     columns_to_update = []
     columns_to_update.append("summary")
     columns_to_update.append("comments_summary")

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Archive } from 'lucide-react';
-
+import { ARCHIVE_LIST_DAYS } from '../lib/constants';
 interface NewsStats {
   [date: string]: {
     hackernews: number;
@@ -14,7 +14,7 @@ export const ArchiveList = () => {
   const [stats, setStats] = useState<NewsStats>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const title = `News Archive (last ${ARCHIVE_LIST_DAYS} days)`;
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -29,7 +29,6 @@ export const ArchiveList = () => {
         setLoading(false);
       }
     };
-
     fetchStats();
   }, []);
 
@@ -60,7 +59,7 @@ export const ArchiveList = () => {
     <div className="container mx-auto px-4">
       <div className="flex items-center gap-2 mb-6">
         <Archive className="w-6 h-6 text-gray-900 dark:text-white" />
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">News Archive</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h1>
       </div>
       <div className="text-center text-gray-600 dark:text-gray-400">Loading archive...</div>
     </div>
@@ -70,7 +69,7 @@ export const ArchiveList = () => {
     <div className="container mx-auto px-4">
       <div className="flex items-center gap-2 mb-6">
         <Archive className="w-6 h-6 text-gray-900 dark:text-white" />
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">News Archive</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h1>
       </div>
       <div className="text-center text-red-600 dark:text-red-400">{error}</div>
     </div>
@@ -80,7 +79,7 @@ export const ArchiveList = () => {
     <div className="container mx-auto px-4">
       <div className="flex items-center gap-2 mb-6">
         <Archive className="w-6 h-6 text-gray-900 dark:text-white" />
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">News Archive</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h1>
       </div>
 
       {/* Mobile view */}

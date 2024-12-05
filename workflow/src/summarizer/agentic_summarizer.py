@@ -7,7 +7,9 @@ from src.utils.tts import text_to_speech
 from src.utils.helpers import upload_file_to_r2
 from src.notebooklm.app import NotebookLM
 import uuid
-from src.config import AUDIO_CACHE_DIR
+from src.config import (AUDIO_CACHE_DIR, 
+                        FAILED_TO_FETCH_ARTICLE, 
+                        NO_CONTENT_EXTRACTED)
 import os
 from .prompts import (
     constraints_and_example,
@@ -117,6 +119,8 @@ class ContentSummarizer:
     @task(log_prints=True, cache_policy=None)
     async def article_to_podcast(self, article: str) -> str:
         print(f"Generating podcast for article: {self.url}")
+        if not article or len(article) < 100:
+            return ""
         llm_client = LLMClient(use_azure_openai=True)
         notebooklm = NotebookLM(llm_client=llm_client)
         public_url = await notebooklm.generate_and_upload_podcast(article)
@@ -127,14 +131,14 @@ class ContentSummarizer:
         # Fetch content
         article, error = call_jina_reader(self.url)
         if error or not article:
-            return error or "Failed to fetch article"
+            return error or NO_CONTENT_EXTRACTED
 
         # Extract and process content
         article = self.extract_content(self.topic, article)
         article = extract_llm_response(article, "extracted_content")
 
         if not article:
-            return "No content extracted"
+            return NO_CONTENT_EXTRACTED
 
         return article
 
@@ -156,7 +160,8 @@ class ContentSummarizer:
             result["summary"] = article
             return result
 
-        if self.generate_summary:
+
+        if self.generate_summary and article != NO_CONTENT_EXTRACTED:
             # Generate summary
             res = self.summarize(article)
             summary = res.final_summary.replace("\n\n", "\n")
