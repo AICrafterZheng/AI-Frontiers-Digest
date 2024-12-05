@@ -26,19 +26,23 @@ const CardContent = ({ children }: { children: React.ReactNode }) => (
   </div>
 )
 
-
-export function NewsletterCard({ story }: NewsletterCardProps) {
+export function NewsletterCard({ story}: NewsletterCardProps) {
   const [showCopied, setShowCopied] = useState(false);
 
-  const handleShare = async () => {
+  const handleCopyLink = () => {
     const shareUrl = `${window.location.origin}/news/${story.id}`;
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setShowCopied(true);
-      setTimeout(() => setShowCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
+    // Create a temporary input element
+    const tempInput = document.createElement('input');
+    tempInput.value = shareUrl;
+    document.body.appendChild(tempInput);
+    // Select and copy
+    tempInput.select();
+    document.execCommand('copy');
+    // Clean up
+    document.body.removeChild(tempInput);
+    // Show feedback
+    setShowCopied(true);
+    setTimeout(() => setShowCopied(false), 2000);
   };
 
   return (
@@ -49,17 +53,23 @@ export function NewsletterCard({ story }: NewsletterCardProps) {
             {getSourcePrefix(story.source)}{story.title}
           </CardTitle>
           <button
-            onClick={handleShare}
-            className="flex items-center gap-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
-            title="Share article"
+            onClick={handleCopyLink}
+            className="ml-2 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+            title="Copy link"
           >
-            {showCopied ? (
-              <span className="text-sm">Copied!</span>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-              </svg>
-            )}
+          {showCopied ? (
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
+              <g>
+                <path d="M12 2.59l5.7 5.7-1.41 1.41L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.41L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z" />
+              </g>
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" className="h-5 w-5 text-blue-400" fill="currentColor">
+              <g>
+                <path d="M12 2.59l5.7 5.7-1.41 1.41L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.41L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z" />
+              </g>
+            </svg>
+          )}
           </button>
         </div>
       </CardHeader>
@@ -89,8 +99,7 @@ export function NewsletterCard({ story }: NewsletterCardProps) {
               <span className="text-gray-600 dark:text-gray-300">Score: {story.score}</span>
             </>
           )}
-          <span>•</span>
-          <span className="text-gray-600 dark:text-gray-300">{new Date(story.created_at).toLocaleTimeString()}</span>
+          <span className="text-gray-600 dark:text-gray-300"><span>• </span>{new Date(story.created_at).toLocaleString()}</span>
         </div>
         <div className="w-full sm:w-auto sm:ml-auto flex justify-start gap-2">
           {story.speech_url && (
