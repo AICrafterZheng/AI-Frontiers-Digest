@@ -33,6 +33,7 @@ class TechCrunchService:
         ]
         self.discord_webhooks = []
         self.columns_to_update = []
+        self.save_to_supabase = True
     @classmethod
     async def create(cls):
         instance = cls()
@@ -92,17 +93,23 @@ class TechCrunchService:
                 title = summary.split("\n")[0]
                 title = title.strip('"').strip('(').strip(')').strip("'")
                 id = int(time.time())
-                stories.append(Story(id=id, url=url, title=title, summary=summary, source=TC_SOURCE_NAME, speech_url=speech_url, notebooklm_url=notebooklm_url))
+                story = Story(id=id, url=url, title=title, summary=summary, source=TC_SOURCE_NAME, speech_url=speech_url, notebooklm_url=notebooklm_url)
+                stories.append(story) # for later email sending
+                # save to supabase
+                if self.save_to_supabase:
+                    save_to_supabase([story])
             if first_news:
                 message = f"{self.header}\n<{url}>\n{summary}"
                 first_news = False
             else:
                 message = f"\n<{url}>\n{summary}"
             message = message.replace("\n\n", "\n")
-            for webhook in self.discord_webhooks:
+            # send to discord
+            for webhook in self.discord_webhooks: 
                 split_messages_to_send_discord(webhook, message)
-        
-        if len(stories) > 0:
+            
+
+        if len(stories) > 0: # send footer
             for webhook in self.discord_webhooks:
                 split_messages_to_send_discord(webhook, DISCORD_FOOTER)
         return stories
@@ -122,8 +129,6 @@ class TechCrunchService:
         urls = self.get_ai_urls_from_tc()
         stories = await self.process_urls(urls)
         await self.send_emails(stories)
-        save_to_supabase(stories)
-
 
 @flow(log_prints=True, name="tc-flow")
 async def run_tc_flow():
@@ -142,6 +147,7 @@ async def run_test_tc_flow():
     # urls = urls[:20]
     
     service = await TechCrunchService.create()
+    service.save_to_supabase = False
     columns_to_update = []
     # columns_to_update.append("summary")
     columns_to_update.append("speech_url") 
