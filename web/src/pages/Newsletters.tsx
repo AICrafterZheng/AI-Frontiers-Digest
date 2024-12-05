@@ -98,7 +98,7 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
       <p className="text-center">
         {stories.length > 0 && getSubtitle(countBySource)}
       </p>
-      <p className="text-center mb-8">{stories.length > 0 ? 'Please enjoy the GPT-4o-mini summaries and AI-generated podcasts 🎧✨' : ''}</p>
+      <p className="text-center mb-8">{stories.length > 0 ? 'Please enjoy the GPT-4o-mini summaries and AI-generated podcasts 🎧': ''}</p>
       {stories.map((story) => (
         <NewsletterCard key={story.story_id} story={story} />
       ))}
