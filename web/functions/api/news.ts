@@ -85,6 +85,7 @@ export async function onRequest(context: any) {
     let query = supabase
       .from(context.env.SUPABASE_TABLE_STORIES!)
       .select('*')
+      .not('deleted', 'is', true) // filter out deleted is not true
 
     // If ID is provided, only search by ID
     if (id) {
@@ -106,7 +107,6 @@ export async function onRequest(context: any) {
       // Apply limit only when not searching by ID
       query = query.limit(limit ? parseInt(limit) : 30)
     }
-
     // Execute query
     const { data, error } = await query;
 
