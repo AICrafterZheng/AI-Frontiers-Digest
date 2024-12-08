@@ -2,6 +2,18 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Header Component', () => {
   test.beforeEach(async ({ page }) => {
+    // Mock GitHub API response
+    await page.route('https://api.github.com/repos/AICrafterZheng/AI-Frontiers-Digest', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          stargazers_count: 123,
+          forks_count: 45
+        })
+      });
+    });
+
     await page.goto('http://localhost:5173');
     await page.waitForLoadState('domcontentloaded');
     // Set desktop viewport by default
@@ -34,7 +46,7 @@ test.describe('Header Component', () => {
     await expect(archiveIcon).toBeVisible();
   });
 
-  test('github link is visible and has correct href', async ({ page }) => {
+  test('github link is visible and has correct href and stars', async ({ page }) => {
     const githubLink = page.getByTestId('github-link').first();
     await expect(githubLink).toBeVisible({ timeout: 10000 });
     await expect(githubLink).toHaveAttribute('href', 'https://github.com/AICrafterZheng/AI-Frontiers-Digest');
@@ -43,9 +55,13 @@ test.describe('Header Component', () => {
     const githubIcon = githubLink.locator('.lucide-github');
     await expect(githubIcon).toBeVisible();
 
-    // More specific selector for stars count
+    // Verify stars count text
     const starsCount = githubLink.locator('span:has-text("★")').first();
     await expect(starsCount).toBeVisible();
+    
+    // Verify the exact star count
+    const starsText = await starsCount.textContent();
+    expect(starsText).toContain('★ 123');
   });
 
   test('theme toggle button is visible and functional', async ({ page }) => {
