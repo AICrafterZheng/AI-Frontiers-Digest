@@ -2,48 +2,139 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Header Component', () => {
   test.beforeEach(async ({ page }) => {
-    // Navigate to your site before each test
-    await page.goto('https://aicrafter.info/');
+    await page.goto('http://localhost:5173');
+    await page.waitForLoadState('domcontentloaded');
+    // Set desktop viewport by default
+    await page.setViewportSize({ width: 1280, height: 720 });
   });
 
-  test('displays logo and main navigation elements', async ({ page }) => {
-    // Check if logo is visible
-    await expect(page.getByRole('link', { name: 'AI Frontiers' })).toBeVisible();
+  test('subscribe button is visible and clickable', async ({ page }) => {
+    const subscribeButton = page.getByTestId('subscribe-button').first();
+    await expect(subscribeButton).toBeVisible({ timeout: 10000 });
+    await expect(subscribeButton).toBeEnabled();
+  });
+
+  test('discord button is visible and clickable', async ({ page }) => {
+    const discordButton = page.getByTestId('discord-button').first();
+    await expect(discordButton).toBeVisible({ timeout: 10000 });
+    await expect(discordButton).toBeEnabled();
     
-    // Check main navigation links
-    await expect(page.getByRole('navigation')).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Home' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Subscribe' })).toBeVisible();
+    // Verify Discord icon
+    const discordIcon = discordButton.locator('.lucide-message-square');
+    await expect(discordIcon).toBeVisible();
+  });
+
+  test('archive button is visible and clickable', async ({ page }) => {
+    const archiveButton = page.getByTestId('archive-button').first();
+    await expect(archiveButton).toBeVisible({ timeout: 10000 });
+    await expect(archiveButton).toBeEnabled();
+    
+    // Verify Archive icon
+    const archiveIcon = archiveButton.locator('.lucide-archive');
+    await expect(archiveIcon).toBeVisible();
+  });
+
+  test('github link is visible and has correct href', async ({ page }) => {
+    const githubLink = page.getByTestId('github-link').first();
+    await expect(githubLink).toBeVisible({ timeout: 10000 });
+    await expect(githubLink).toHaveAttribute('href', 'https://github.com/AICrafterZheng/AI-Frontiers-Digest');
+    
+    // Verify GitHub icon
+    const githubIcon = githubLink.locator('.lucide-github');
+    await expect(githubIcon).toBeVisible();
+
+    // More specific selector for stars count
+    const starsCount = githubLink.locator('span:has-text("★")').first();
+    await expect(starsCount).toBeVisible();
+  });
+
+  test('theme toggle button is visible and functional', async ({ page }) => {
+    const themeToggle = page.getByTestId('theme-toggle').first();
+    await expect(themeToggle).toBeVisible({ timeout: 10000 });
+    await expect(themeToggle).toBeEnabled();
+
+    // Get initial theme icon
+    const initialIcon = await themeToggle.locator('.lucide-sun, .lucide-moon').first();
+    await expect(initialIcon).toBeVisible();
+    
+    // Click theme toggle
+    await themeToggle.click();
+    await page.waitForTimeout(500); // Wait for theme transition
+    
+    // Verify theme changed
+    const newIcon = await themeToggle.locator('.lucide-sun, .lucide-moon').first();
+    await expect(newIcon).toBeVisible();
   });
 
   test('mobile menu functionality', async ({ page }) => {
-    // Test mobile viewport
+    // Set mobile viewport and wait for layout to adjust
     await page.setViewportSize({ width: 375, height: 667 });
-
-    // Check if hamburger menu button appears
-    const menuButton = page.getByRole('button', { name: /menu/i });
-    await expect(menuButton).toBeVisible();
-
-    // Click menu button and verify menu opens
-    await menuButton.click();
-    await expect(page.getByRole('navigation')).toBeVisible();
-  });
-
-  test('navigation links work correctly', async ({ page }) => {
-    // Click Subscribe and verify navigation
-    await page.getByRole('link', { name: 'Subscribe' }).click();
-    await expect(page).toHaveURL(/.*subscribe/);
-
-    // Navigate back to home
-    await page.getByRole('link', { name: 'Home' }).click();
-    await expect(page).toHaveURL('https://aicrafter.info/');
-  });
-
-  test('header remains visible when scrolling', async ({ page }) => {
-    // Scroll down the page
-    await page.evaluate(() => window.scrollTo(0, 500));
+    await page.waitForTimeout(500);
     
-    // Verify header is still visible
-    await expect(page.getByRole('banner')).toBeVisible();
+    // Check hamburger menu button
+    const menuButton = page.getByTestId('menu-button');
+    await expect(menuButton).toBeVisible({ timeout: 10000 });
+    
+    // Open menu and wait for animation
+    await menuButton.click();
+    await page.waitForTimeout(500);
+    
+    // Check if mobile menu items are visible
+    const mobileMenuItems = [
+      'subscribe-button-mobile',
+      'discord-button-mobile',
+      'archive-button-mobile',
+      'github-link-mobile',
+      'theme-toggle-mobile'
+    ];
+
+    for (const testId of mobileMenuItems) {
+      await expect(page.getByTestId(testId)).toBeVisible({ timeout: 5000 });
+    }
+    
+    // Close menu using close button
+    const closeButton = page.getByTestId('menu-button');
+    await expect(closeButton).toBeVisible({ timeout: 10000 });
+    await closeButton.click();
+    await page.waitForTimeout(500);
+    
+    // Verify menu is closed
+    await expect(page.getByTestId('subscribe-button-mobile')).not.toBeVisible();
   });
-}); 
+
+  test('navigation functionality', async ({ page }) => {
+    // Click Archive button and wait for navigation
+    const archiveButton = page.getByTestId('archive-button').first();
+    await expect(archiveButton).toBeVisible({ timeout: 10000 });
+    await archiveButton.click();
+    await page.waitForURL(/.*\/archive$/);
+    
+    // Click logo to go back home
+    const logo = page.locator('a:has-text("AI Frontiers")');
+    await expect(logo).toBeVisible();
+    await logo.click();
+    await page.waitForURL(/.*\/$/);
+  });
+
+  test('click outside closes mobile menu', async ({ page }) => {
+    // Set mobile viewport and wait for layout
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.waitForTimeout(500);
+    
+    // Open menu and wait for animation
+    const menuButton = page.getByTestId('menu-button');
+    await expect(menuButton).toBeVisible({ timeout: 10000 });
+    await menuButton.click();
+    await page.waitForTimeout(500);
+    
+    // Verify menu is open
+    await expect(page.getByTestId('subscribe-button-mobile')).toBeVisible();
+    
+    // Click outside menu and wait for close animation
+    await page.mouse.click(10, 10);
+    await page.waitForTimeout(500);
+    
+    // Verify menu is closed
+    await expect(page.getByTestId('subscribe-button-mobile')).not.toBeVisible();
+  });
+});

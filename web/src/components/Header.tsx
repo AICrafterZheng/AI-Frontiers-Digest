@@ -96,6 +96,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
           className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMenuOpen}
+          data-testid="menu-button"
         >
           {isMenuOpen ? (
             <X className="w-6 h-6 text-gray-600 dark:text-gray-300" />
@@ -107,6 +108,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
         {/* Desktop navigation */}
         <div className="hidden md:flex items-center gap-2 sm:gap-4">
           <button
+            data-testid="subscribe-button"
             onClick={onSubscribeClick}
             className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-[#5865F2] text-white hover:bg-[#4752C4] transition-colors text-xs sm:text-base"
           >
@@ -115,6 +117,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
           </button>
 
           <button
+            data-testid="discord-button"
             onClick={onDiscordClick}
             className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-xs sm:text-base dark:text-white"
           >
@@ -123,6 +126,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
           </button>
 
           <button
+            data-testid="archive-button"
             onClick={onArchiveClick}
             className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-xs sm:text-base dark:text-white"
           >
@@ -131,6 +135,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
           </button>
 
           <a
+            data-testid="github-link"
             href="https://github.com/AICrafterZheng/AI-Frontiers-Digest"
             target="_blank"
             rel="noopener noreferrer"
@@ -145,6 +150,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
           </a>
 
           <button
+            data-testid="theme-toggle"
             onClick={toggleTheme}
             className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-xs sm:text-base dark:text-white"
           >
@@ -162,6 +168,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
           <div ref={menuRef} className="absolute top-full left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-lg md:hidden">
             <div className="flex flex-col p-4 space-y-4 max-w-6xl mx-auto">
               <button
+                data-testid="subscribe-button-mobile"
                 onClick={() => handleNavItemClick(onSubscribeClick)}
                 className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#5865F2] text-white hover:bg-[#4752C4] transition-colors"
               >
@@ -170,6 +177,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
               </button>
 
               <button
+                data-testid="discord-button-mobile"
                 onClick={() => handleNavItemClick(onDiscordClick)}
                 className="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors dark:text-white"
               >
@@ -178,6 +186,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
               </button>
 
               <button
+                data-testid="archive-button-mobile"
                 onClick={() => handleNavItemClick(onArchiveClick)}
                 className="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors dark:text-white"
               >
@@ -186,6 +195,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
               </button>
 
               <a
+                data-testid="github-link-mobile"
                 href="https://github.com/AICrafterZheng/AI-Frontiers-Digest"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -200,6 +210,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
               </a>
 
               <button
+                data-testid="theme-toggle-mobile"
                 onClick={toggleTheme}
                 className="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors dark:text-white"
               >
