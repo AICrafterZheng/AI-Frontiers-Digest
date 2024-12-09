@@ -41,3 +41,4 @@ tmp/*
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+zerostep.config.json
