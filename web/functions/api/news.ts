@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { Track } from '../../src/types/types';
-import { getTrackCover } from '../../src/lib/utils';
+import { constructResult } from '../../src/lib/utils';
 
 async function getLastRecordDate(supabase: any, tableName: string): Promise<string | null> {
   try {
@@ -119,60 +118,7 @@ export async function onRequest(context: any) {
         }
       })
     }
-
-    // Count by source - only count if source exists and is not empty
-    const countBySource = data?.reduce((acc: any, story: any) => {
-      if (story?.source) {
-        const sourceKey = story.source.toLowerCase();
-        acc[sourceKey] = (acc[sourceKey] || 0) + 1;
-      }
-      return acc;
-    }, {});
-
-    // add cover to each story
-    const stories = data?.map((story: any) => {
-      if (story?.source) {
-        story.cover = getTrackCover(story.source);
-      } else {
-        story.cover = ''; // or provide a default cover
-      }
-      return story;
-    });
-
-    // Initialize empty tracks array
-    const tracks: Track[] = [];
-    
-    // Only process audio tracks if there are stories with audio URLs
-    if (data && data.length > 0) {
-      data.forEach((story: any) => {
-        const cover = story?.source ? getTrackCover(story.source) : ''; // default empty string if no source
-        // Push speech URL track
-        if (story?.speech_url) {
-          tracks.push({
-            id: story.story_id?.toString() + "_audio",
-            cover: cover,
-            title: story.title || '',
-            type: "Article audio",
-            audioUrl: story.speech_url,
-            createdAt: story.created_at
-          });
-        }
-        
-        // Push notebook URL track
-        if (story?.notebooklm_url) {
-          tracks.push({
-            id: story.story_id?.toString() + "_podcast",
-            cover: cover,
-            title: story.title || '',
-            type: "AI-generated podcast",
-            audioUrl: story.notebooklm_url,
-            createdAt: story.created_at,
-          });
-        }
-      });
-    }
-
-    const result = {stories: stories || [], audioTracks: tracks || [], countBySource: countBySource}
+    const result = constructResult(data)
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: {

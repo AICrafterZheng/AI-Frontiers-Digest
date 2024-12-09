@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom';
 import { NewsletterCard } from '../components/NewsletterCard';
-import {  Story, NewsletterProps } from "../types/types";
+import { SearchBox } from '../components/SearchBox';
+import { Story, NewsletterProps } from "../types/types";
 import { usePlayerStore } from '../store/usePlayerStore';
 
 const getSubtitle = (countBySource: Record<string, number>) => {
@@ -25,6 +26,8 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
   const [searchParams] = useSearchParams();
   const date = searchParams.get('date');
   const [stories, setStories] = useState<Story[]>([])
+  const [searchResults, setSearchResults] = useState<Story[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
   const [countBySource, setCountBySource] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -83,6 +86,11 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
     fetchStories()
   }, [source, limit, setPlaylist])
 
+  const handleSearchResults = (results: Story[], query: string) => {
+    setSearchResults(results);
+    setSearchQuery(query);
+  };
+
   const content = loading ? (
     <div className="text-center py-8">Loading...</div>
   ) : error ? (
@@ -94,14 +102,41 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
       <h1 className="text-4xl font-bold text-center text-blue-600 dark:text-blue-400 mb-2">
         {source ? `${source} News` : 'Latest AI News'}
       </h1>
-      <p className="text-center text-gray-600 dark:text-gray-300">{date ? new Date(date).toLocaleDateString() : new Date().toLocaleDateString()}</p>
+      <p className="text-center text-gray-600 dark:text-gray-300">
+        {date ? new Date(date).toLocaleDateString() : new Date().toLocaleDateString()}
+      </p>
       <p className="text-center">
         {stories.length > 0 && getSubtitle(countBySource)}
       </p>
-      <p className="text-center mb-8">{stories.length > 0 ? 'Please enjoy the GPT-4o-mini summaries and AI-generated podcasts 🎧': ''}</p>
-      {stories.map((story) => (
-        <NewsletterCard key={story.story_id} story={story} />
-      ))}
+      <p className="text-center mb-8">
+        {stories.length > 0 ? 'Please enjoy the GPT-4o-mini summaries and AI-generated podcasts 🎧': ''}
+      </p>
+      
+      {/* Search Box */}
+      <div className="mb-8">
+        <SearchBox 
+          onResultsFound={handleSearchResults}
+          className="mb-8"
+        />
+      </div>
+
+      {/* Search Results or Original Stories */}
+      {searchResults.length > 0 ? (
+        <>
+          <h2 className="text-2xl font-bold mb-4 dark:text-white text-center">Search Results</h2>
+          {searchResults.map((story) => (
+            <NewsletterCard key={story.story_id} story={story} />
+          ))}
+        </>
+      ) : searchQuery ? (
+        <div className="text-center py-8 text-gray-600 dark:text-gray-300">
+          No matching stories found
+        </div>
+      ) : (
+        stories.map((story) => (
+          <NewsletterCard key={story.story_id} story={story} />
+        ))
+      )}
     </div>
   );
 
@@ -109,5 +144,5 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
     <div className="relative z-0">
       {content}
     </div>
-  )
+  );
 }
