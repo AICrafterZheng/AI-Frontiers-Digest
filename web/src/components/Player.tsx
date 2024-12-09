@@ -60,37 +60,23 @@ export function Player() {
       </button>
       
       <div className="max-w-screen-lg mx-auto flex flex-col sm:flex-row items-center gap-4">
-        <div className="flex items-center gap-4 w-full sm:w-auto pr-8 sm:pr-0">
-          {/* Cover image - hidden on mobile */}
+        {/* Title and cover section - flexible width */}
+        <div className="flex items-center gap-4 w-full sm:flex-1">
           <img
             src={currentTrack.cover}
             alt={currentTrack.title}
             className="w-8 h-8 sm:w-16 sm:h-16 rounded object-cover"
           />
           
-          <div className="flex-1 sm:flex-initial min-w-0">
-            <h3 className="font-semibold text-white truncate">{currentTrack.title}</h3>
-            <p className="text-sm text-gray-400 truncate">{currentTrack.type}</p>
-          </div>
-
-          {/* Mobile play button */}
-          <div className="sm:hidden">
-            <button
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="p-2 rounded-full bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-            >
-              {isPlaying ? (
-                <Pause className="w-6 h-6 text-black dark:text-white" />
-              ) : (
-                <Play className="w-6 h-6 text-black dark:text-white" />
-              )}
-            </button>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-white truncate max-w-[300px] sm:max-w-[800px]">{currentTrack.title}</h3>
+            <p className="text-sm text-gray-400 truncate max-w-[300px] sm:max-w-[800px]">{currentTrack.type}</p>
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col items-center w-full sm:w-auto">
-          {/* Desktop controls */}
-          <div className="hidden sm:flex items-center space-x-4 mb-2">
+        {/* Playback controls section - fixed width */}
+        <div className="w-full sm:w-[220px] flex flex-col items-center shrink-0">
+          <div className="w-full flex items-center justify-center space-x-4 mb-2">
             <button
               onClick={playPrevious}
               className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -114,23 +100,22 @@ export function Player() {
               <SkipForward className="w-5 h-5 text-gray-400 cursor-pointer hover:text-white transition-colors" />
             </button>
           </div>
-          
-          <div className="w-full flex items-center space-x-2">
-            <span className="text-xs text-gray-400 min-w-[40px] text-right">{formatTime(currentTime)}</span>
+
+          <div className="w-full flex items-center gap-3 text-sm text-gray-400">
+            <span className="w-12 text-right">{formatTime(currentTime)}</span>
             <input
               type="range"
-              min={0}
+              min="0"
               max={duration || 0}
               value={currentTime}
               onChange={handleSeek}
-              className="flex-1 h-1 bg-gray-600 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
+              className="flex-1 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
             />
-            <span className="text-xs text-gray-400 min-w-[40px]">{formatTime(duration)}</span>
+            <span className="w-12">{formatTime(duration)}</span>
           </div>
         </div>
       </div>
 
-      {/* Audio element */}
       <audio
         ref={audioRef}
         src={currentTrack.audioUrl}
