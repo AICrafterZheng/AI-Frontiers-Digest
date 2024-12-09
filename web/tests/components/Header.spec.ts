@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-
+// const website = 'http://localhost:5173';
+const website = "https://aicrafter.info"
 test.describe('Header Component', () => {
   test.beforeEach(async ({ page }) => {
     // Mock GitHub API response
@@ -14,7 +15,7 @@ test.describe('Header Component', () => {
       });
     });
 
-    await page.goto('http://localhost:5173');
+    await page.goto(website);
     await page.waitForLoadState('domcontentloaded');
     // Set desktop viewport by default
     await page.setViewportSize({ width: 1280, height: 720 });
