@@ -90,8 +90,9 @@ class TechCrunchService:
             speech_url = result.get("speech_url")
             notebooklm_url = result.get("notebooklm_url")
             if (summary and summary != "No relevant content found") or len(self.columns_to_update) > 0:
-                title = summary.split("\n")[0]
-                title = title.strip('"').strip('(').strip(')').strip("'")
+                ai_title = summary.split("\n")[0]
+                ai_title = ai_title.strip('"').strip('(').strip(')').strip("'")
+                title = result.get("title", ai_title)
                 id = int(time.time())
                 story = Story(id=id, url=url, title=title, summary=summary, source=TC_SOURCE_NAME, speech_url=speech_url, notebooklm_url=notebooklm_url)
                 stories.append(story) # for later email sending
@@ -138,23 +139,24 @@ async def run_tc_flow():
 @flow(log_prints=True, name="test-tc-flow")
 async def run_test_tc_flow():
     # urls = ["https://techcrunch.com/2024/11/23/meet-three-incoming-eu-lawmakers-in-charge-of-key-tech-policy-areas/"]
-
-    from src.utils.supabase_utils import searchRow
-    from src.config import SUPABASE_TABLE
-    stories = searchRow(SUPABASE_TABLE, "source", TC_SOURCE_NAME, "speech_url", None)
-    urls = [story["url"] for story in stories]
-    print(f"len: {len(urls)}")
-    # urls = urls[:20]
+    urls = ["https://techcrunch.com/2024/12/07/openai-bets-youll-pay-200-a-month-for-chatgpt/"]
+    # from src.utils.supabase_utils import searchRow
+    # from src.config import SUPABASE_TABLE
+    # stories = searchRow(SUPABASE_TABLE, "source", TC_SOURCE_NAME, "speech_url", None)
+    # urls = [story["url"] for story in stories]
+    # print(f"len: {len(urls)}")
+    # # urls = urls[:20]
     
     service = await TechCrunchService.create()
     service.save_to_supabase = False
     columns_to_update = []
-    # columns_to_update.append("summary")
-    columns_to_update.append("speech_url") 
+    columns_to_update.append("summary")
+    columns_to_update.append("title")
+    # columns_to_update.append("speech_url")
     # columns_to_update.append("notebooklm_url")
-    columns_to_update.append("story_id")
+    # columns_to_update.append("story_id")
     service.columns_to_update = columns_to_update
-    service.formatted_dates = ["2024/11/19", "2024/11/20"]
+    # service.formatted_dates = ["2024/11/19", "2024/11/20"]
     # urls = service.get_ai_urls_from_tc()
     service.discord_webhooks = []
     stories = await service.process_urls(urls)

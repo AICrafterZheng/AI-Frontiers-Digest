@@ -43,7 +43,7 @@ def save_to_supabase(stories):
         try:
             print(f"Saving story: {story.title}")
             # Safely handle summary splitting
-            summary = story.summary.split("\n", 1)[1] if story.summary and "\n" in story.summary else story.summary
+            # summary = story.summary.split("\n", 1)[1] if story.summary and "\n" in story.summary else story.summary
             insertRow({
                 "story_id": int(story.id), 
                 "title": story.title, 

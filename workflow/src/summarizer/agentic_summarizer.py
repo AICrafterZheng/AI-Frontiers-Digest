@@ -135,20 +135,23 @@ class ContentSummarizer:
 
         # Extract and process content
         article = self.extract_content(self.topic, article)
+        title = extract_llm_response(article, "title")
         article = extract_llm_response(article, "extracted_content")
 
         if not article:
             return NO_CONTENT_EXTRACTED
 
-        return article
+        return {"article": article, "title": title}
 
 
     @flow(log_prints=True)
     async def summarize_url(self) -> dict:
         print(f"Processing URL: {self.url} with model: {self.llm_client.model}")
-        result = {"summary": "", "speech_url": "", "notebooklm_url": ""}
+        result = {"summary": "", "speech_url": "", "notebooklm_url": "", "title": ""}
         # Fetch content
-        article = self.extract_content_from_url()
+        extracted_content = self.extract_content_from_url()
+        article = extracted_content.get("article")
+        result["title"] = extracted_content.get("title")
 
         if self.generate_speech:
             audio_url = self.article_to_speech(article)

@@ -83,10 +83,10 @@ to whether there are ways to improve the summary's
 Output only the new summary of the indicated part and nothing else. Don't include your thoughts or reflections.
 """
 
-EXTRACT_CONTENT_SYS_PROMPT= "You are a helpful assistant that extracts the content from the jina reader that is relevant to the topic of the url"
+EXTRACT_CONTENT_SYS_PROMPT= "You are a helpful assistant that extracts the title and content from the jina reader that is relevant to the topic of the url"
 
 EXTRACT_CONTENT_USER_PROMPT = """
-You are tasked with extracting text content related to a specific topic from a given URL content returned by jina reader. The content may contain a mix of information, including image URLs and text. Your goal is to identify and extract only the text that is relevant to the provided topic.
+You are tasked with extracting title and text content related to a specific topic from a given URL content returned by jina reader. The content may contain a mix of information, including image URLs and text. Your goal is to identify and extract only the text that is relevant to the provided topic.
 
 First, you will be given the content from jina reader:
 
@@ -94,7 +94,7 @@ First, you will be given the content from jina reader:
 {JINA_READER_CONTENT}
 </jina_reader_content>
 
-Your task is to extract text content related to the following topic:
+Your task is to extract title and text content related to the following topic:
 
 <topic>
 {TOPIC}
@@ -114,14 +114,20 @@ Follow these steps to complete the task:
    - Preserve the original wording and order of the extracted text
    - Remove any duplicate text
    - Don't include your thoughts or reflections
+   - Present the extracted title inside <title> tags.
+   - Present the extracted text inside <extracted_content> tags.
 
-5. Present the extracted text inside <extracted_content> tags.
-
-6. If you cannot find any content related to the given topic, respond with "No relevant content found" inside the <extracted_content> tags.
+5. If you cannot find any content related to the given topic, respond with "No relevant content found" inside the <extracted_content> tags.
 
 Remember to focus only on the text content and ignore any images or non-textual elements. Ensure that the extracted content is directly relevant to the given topic.
 
-Begin your response with the extracted content:
+Return the extracted title and content in the following format:
+<title>
+the title of the content
+</title>
+<extracted_content>
+the extracted content
+</extracted_content>
 """
 
 SUMMARIZE_COMMENTS_SYSTEM_PROMPT = """You are a tech journalist writing a summary of comments from Hacker News."""
