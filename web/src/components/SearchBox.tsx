@@ -1,7 +1,8 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { Search, X } from 'lucide-react';
 import { Story } from '../types/types';
 import { usePlayerStore } from '../store/usePlayerStore';
+import debounce from 'lodash/debounce';
 
 interface SearchBoxProps {
   onResultsFound?: (results: Story[], query: string) => void;
@@ -14,8 +15,9 @@ export function SearchBox({ onResultsFound, className = '' }: SearchBoxProps) {
   const [searchError, setSearchError] = useState<string | null>(null);
   const setPlaylist = usePlayerStore(state => state.setPlaylist);
 
-  const performSearch = useCallback(async () => {
-    if (!searchQuery.trim()) {
+  const performSearch = useCallback(async (query: string) => {
+    if (!query.trim()) {
+      setIsSearching(false);
       onResultsFound?.([], '');
       return;
     }
@@ -25,30 +27,55 @@ export function SearchBox({ onResultsFound, className = '' }: SearchBoxProps) {
     const apiUrl = import.meta.env.VITE_BACKEND_API_URL;
 
     try {
-      const response = await fetch(`${apiUrl}/search?q=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(`${apiUrl}/search?q=${encodeURIComponent(query)}`);
       if (!response.ok) {
         throw new Error('Search failed');
       }
       const data = await response.json();
       setPlaylist(data.audioTracks || []);
-      onResultsFound?.(data.stories || [], searchQuery.trim());
+      onResultsFound?.(data.stories || [], query.trim());
     } catch (err) {
       setSearchError(err instanceof Error ? err.message : 'Search failed');
-      onResultsFound?.([], searchQuery.trim());
+      onResultsFound?.([], query.trim());
     } finally {
       setIsSearching(false);
     }
-  }, [searchQuery, onResultsFound, setPlaylist]);
+  }, [onResultsFound, setPlaylist]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      performSearch();
+  const debouncedSearch = useMemo(
+    () => debounce((query: string) => {
+      if (query.trim().length >= 2) {
+        performSearch(query);
+      } else {
+        setIsSearching(false);
+        onResultsFound?.([], '');
+      }
+    }, 300),
+    [performSearch, onResultsFound]
+  );
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    
+    if (!value.trim()) {
+      debouncedSearch.cancel();
+      setIsSearching(false);
+      onResultsFound?.([], '');
+      return;
     }
+
+    debouncedSearch(value);
   };
+
+  useEffect(() => {
+    return () => debouncedSearch.cancel();
+  }, [debouncedSearch]);
 
   const clearSearch = () => {
     setSearchQuery('');
+    debouncedSearch.cancel();
+    setIsSearching(false);
     onResultsFound?.([], '');
   };
 
@@ -59,8 +86,7 @@ export function SearchBox({ onResultsFound, className = '' }: SearchBoxProps) {
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onChange={handleInputChange}
             placeholder="Search articles..."
             className="w-full px-4 py-2 pl-10 pr-4 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white hover:border-blue-500 dark:hover:border-blue-400 transition-colors duration-200"
           />
