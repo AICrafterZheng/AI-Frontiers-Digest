@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-// const website = 'http://localhost:5173';
-const website = "https://aicrafter.info"
+const website = 'http://localhost:5173';
+// const website = "https://aicrafter.info"
 test.describe('Header Component', () => {
   test.beforeEach(async ({ page }) => {
     // Mock GitHub API response
@@ -31,7 +31,7 @@ test.describe('Header Component', () => {
     const discordButton = page.getByTestId('discord-button').first();
     await expect(discordButton).toBeVisible({ timeout: 10000 });
     await expect(discordButton).toBeEnabled();
-    
+
     // Verify Discord icon
     const discordIcon = discordButton.locator('.lucide-message-square');
     await expect(discordIcon).toBeVisible();
