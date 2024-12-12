@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-const website = 'http://localhost:5173';
-// const website = "https://aicrafter.info"
+// const website = 'http://localhost:5173';
+const website = "https://aicrafter.info"
 test.describe('Header Component', () => {
   test.beforeEach(async ({ page }) => {
     // Mock GitHub API response
