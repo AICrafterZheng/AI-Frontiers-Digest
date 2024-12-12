@@ -85,7 +85,7 @@ class EmailSender:
         }
 
 @task(log_prints=True, cache_policy=None)
-async def send_emails(subject: str, message: str, to_emails: List[str] = None) -> Dict:
+async def send_emails(subject: str, message: str, to_emails: List[str] = []) -> Dict:
     """Prefect task to send emails in parallel"""
     logger = get_run_logger()
     try:
@@ -93,7 +93,7 @@ async def send_emails(subject: str, message: str, to_emails: List[str] = None) -
             print("Message is empty")
             return {"success": 0, "error": 0, "total": 0, "results": []}
         
-        emails = to_emails if to_emails else get_emails()
+        emails = to_emails if len(to_emails) > 0 else get_emails()
         if not emails:
             print("No recipients found")
             return {"success": 0, "error": 0, "total": 0, "results": []}

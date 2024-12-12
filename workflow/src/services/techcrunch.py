@@ -12,14 +12,15 @@ from src.utils.llm_client import LLMClient
 from src.services.models import Story
 from src.utils.email_templates import get_email_html
 from src.utils.email_sender import send_emails
-from src.config import HACKER_NEWS_DISCORD_WEBHOOK, TC_SOURCE_NAME, AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK, DISCORD_FOOTER
+from src.config import (HACKER_NEWS_DISCORD_WEBHOOK, TC_SOURCE_NAME, AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK, DISCORD_FOOTER,
+                        AZURE_OPENAI_API_GPT_4o)
 from src.utils.helpers import save_to_supabase, update_supabase_row
 from src.utils.supabase_utils import checkIfExists
 import time
 class TechCrunchService:
     def __init__(self):
         self.base_url = "https://techcrunch.com/category/artificial-intelligence/"
-        self.llm_client = LLMClient(use_azure_mistral=True, model="large")
+        self.llm_client = LLMClient(use_azure_openai=True, model=AZURE_OPENAI_API_GPT_4o)
         self.header = "AI Frontiers on TechCrunch"
         
         # Get current date in PST
@@ -116,7 +117,7 @@ class TechCrunchService:
         return stories
 
     @task(log_prints=True, cache_policy=None)
-    async def send_emails(self, stories: List[Story], to_emails: List[str] = None) -> None:
+    async def send_emails(self, stories: List[Story], to_emails: List[str] = []) -> None:
         """Send email newsletter"""
         logger = get_run_logger()
         try:
@@ -139,7 +140,7 @@ async def run_tc_flow():
 @flow(log_prints=True, name="test-tc-flow")
 async def run_test_tc_flow():
     # urls = ["https://techcrunch.com/2024/11/23/meet-three-incoming-eu-lawmakers-in-charge-of-key-tech-policy-areas/"]
-    urls = ["https://techcrunch.com/2024/12/07/openai-bets-youll-pay-200-a-month-for-chatgpt/"]
+    # urls = ["https://techcrunch.com/2024/12/07/openai-bets-youll-pay-200-a-month-for-chatgpt/"]
     # from src.utils.supabase_utils import searchRow
     # from src.config import SUPABASE_TABLE
     # stories = searchRow(SUPABASE_TABLE, "source", TC_SOURCE_NAME, "speech_url", None)
@@ -148,19 +149,19 @@ async def run_test_tc_flow():
     # # urls = urls[:20]
     
     service = await TechCrunchService.create()
-    service.save_to_supabase = False
+    service.save_to_supabase = True
     columns_to_update = []
     columns_to_update.append("summary")
     columns_to_update.append("title")
     # columns_to_update.append("speech_url")
     # columns_to_update.append("notebooklm_url")
     # columns_to_update.append("story_id")
-    service.columns_to_update = columns_to_update
+    # service.columns_to_update = columns_to_update
     # service.formatted_dates = ["2024/11/19", "2024/11/20"]
-    # urls = service.get_ai_urls_from_tc()
+    urls = service.get_ai_urls_from_tc()
     service.discord_webhooks = []
     stories = await service.process_urls(urls)
     print(f"processed {len(stories)} stories")
     # await service.send_emails(stories, to_emails=["aicrafter.ai@gmail.com"])
     # save_to_supabase(stories)
-    update_supabase_row(stories, "url", columns_to_update)
+    # update_supabase_row(stories, "url", columns_to_update)

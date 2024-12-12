@@ -11,13 +11,14 @@ from src.summarizer.hn_comments_summarizer import HNCommentsSummarizer
 from src.summarizer.agentic_summarizer import ContentSummarizer
 from src.utils.discord import split_messages_to_send_discord
 from src.utils.helpers import has_mentioned_keywords, save_to_supabase, update_supabase_row
-from src.config import DISCORD_FOOTER
-
+from typing import Optional
 from src.config import (
     HN_API_BASE,
     HACKER_NEWS_DISCORD_WEBHOOK,
     AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK,
-    HN_SOURCE_NAME
+    HN_SOURCE_NAME,
+    DISCORD_FOOTER,
+    AZURE_OPENAI_API_GPT_4o
 )
 from .models import Story
 
@@ -26,10 +27,13 @@ class HackerNewsService:
     def __init__(self):
         self.logger = get_run_logger()
         self.header = "AI Frontiers on Hacker News"
-        self.llm_client = LLMClient(use_azure_openai=True)
+        self.llm_client = LLMClient(use_azure_openai=True, model=AZURE_OPENAI_API_GPT_4o)
         self.discord_webhooks = []
         self.columns_to_update = []
         self.save_to_supabase = True
+        self.discord_keywords: List[str] = []
+        self.score: int = 0
+
     @classmethod
     async def create(cls):
         instance = cls()
@@ -74,7 +78,7 @@ class HackerNewsService:
         await asyncio.gather(*tasks)
         return results
 
-    async def fetchStory(self, id) -> Story:
+    async def fetchStory(self, id) -> Optional[Story]:
         async with aiohttp.ClientSession() as session:
             async with session.get(f"{HN_API_BASE}/item/{id}.json") as response:
                 data = await response.json()
@@ -85,7 +89,7 @@ class HackerNewsService:
                     return None
 
     @task(log_prints=True, cache_policy=None)
-    async def send_emails(self, stories, to_emails: List[str] = None):
+    async def send_emails(self, stories, to_emails: List[str] = []):
         logger = get_run_logger()
         try:
             message = get_email_html(self.header, stories)
@@ -160,22 +164,20 @@ async def run_hn_flow():
 async def run_test_hn_flow():
     # llm_client = LLMClient(use_azure_openai=True)
     service = await HackerNewsService.create()
-    service.save_to_supabase = False
+    service.save_to_supabase = True
     columns_to_update = []
     columns_to_update.append("summary")
     columns_to_update.append("comments_summary")
-    columns_to_update.append("speech_url") 
+    columns_to_update.append("speech_url")
     columns_to_update.append("notebooklm_url")
-    # service.columns_to_update = columns_to_update
+    # service.columns_to_update = columns_to_update # Not updating
     # service.llm_client = llm_client
-    service.discord_webhooks = []
+    service.discord_webhooks = [] # Not sending discord
     # service.discord_keywords = ['Y']
     # service.score = 0
     storieIds = await service.fetchTopStoryIds()
     # storieIds = ["42250773"]
     stories = await service.top_hn_flow(storieIds)
     print(f"Found {len(stories)} stories")
-    # await service.send_emails(stories, ["aicrafter.ai@gmail.com"])
-    # save_to_supabase(stories)
-
+    # await service.send_emails(stories, ["aicrafter.ai@gmail.com"]) # not sending emails
     # update_supabase_row(stories, "story_id", columns_to_update)

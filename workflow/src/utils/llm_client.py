@@ -1,9 +1,12 @@
+from turtle import mode
 from prefect import task
 from openai import OpenAI
 from src.config import (AZURE_MISTRAL_SMALL_API, AZURE_MISTRAL_SMALL_INFERENCE_KEY, OPENROUTER_API_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY,
                     OPENROUTER_MODEL_MISTRAL_FREE, 
                     AZURE_MISTRAL_LARGE_API, AZURE_MISTRAL_LARGE_INFERENCE_KEY,
-                    AZURE_OPENAI_API_DEPLOYMENT_NAME, AZURE_OPENAI_API_BASE, AZURE_OPENAI_API_VERSION, AZURE_OPENAI_API_KEY)
+                    AZURE_OPENAI_API_BASE, AZURE_OPENAI_API_KEY_GPT_4o,
+                    AZURE_OPENAI_API_VERSION, AZURE_OPENAI_API_KEY_GPT_4o_MINI,
+                    AZURE_OPENAI_API_GPT_4o_MINI, AZURE_OPENAI_API_GPT_4o)
 import requests
 
 class LLMClient:
@@ -122,12 +125,17 @@ class LLMClient:
         return response.choices[0].message.content
 
     def _call_azure_openai(self, sys_prompt: str, user_input: str) -> str:
-        model = AZURE_OPENAI_API_DEPLOYMENT_NAME if self.model == "" else self.model
+        if self.model == AZURE_OPENAI_API_GPT_4o_MINI or self.model == "":
+            model = AZURE_OPENAI_API_GPT_4o_MINI
+            api_key = AZURE_OPENAI_API_KEY_GPT_4o_MINI
+        else:
+            model = AZURE_OPENAI_API_GPT_4o
+            api_key = AZURE_OPENAI_API_KEY_GPT_4o
         print(f"Calling Azure OpenAI with {model} ...")
         # Configuration
         headers = {
             "Content-Type": "application/json",
-            "api-key": AZURE_OPENAI_API_KEY,
+            "api-key": api_key,
         }
         # Payload for the request
         payload = {

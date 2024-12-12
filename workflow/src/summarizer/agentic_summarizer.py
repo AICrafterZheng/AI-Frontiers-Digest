@@ -8,7 +8,6 @@ from src.utils.helpers import upload_file_to_r2
 from src.notebooklm.app import NotebookLM
 import uuid
 from src.config import (AUDIO_CACHE_DIR, 
-                        FAILED_TO_FETCH_ARTICLE, 
                         NO_CONTENT_EXTRACTED)
 import os
 from .prompts import (
@@ -121,8 +120,7 @@ class ContentSummarizer:
         print(f"Generating podcast for article: {self.url}")
         if not article or len(article) < 100:
             return ""
-        llm_client = LLMClient(use_azure_openai=True)
-        notebooklm = NotebookLM(llm_client=llm_client)
+        notebooklm = NotebookLM(llm_client=self.llm_client)
         public_url = await notebooklm.generate_and_upload_podcast(article)
         return public_url
 
@@ -131,15 +129,14 @@ class ContentSummarizer:
         # Fetch content
         article, error = call_jina_reader(self.url)
         if error or not article:
-            return error or NO_CONTENT_EXTRACTED
+            return { "article": error or NO_CONTENT_EXTRACTED, "title": "" }
 
         # Extract and process content
         article = self.extract_content(self.topic, article)
+        if not article:
+            return {"article": NO_CONTENT_EXTRACTED, "title": NO_CONTENT_EXTRACTED}
         title = extract_llm_response(article, "title")
         article = extract_llm_response(article, "extracted_content")
-
-        if not article:
-            return NO_CONTENT_EXTRACTED
 
         return {"article": article, "title": title}
 
@@ -150,8 +147,8 @@ class ContentSummarizer:
         result = {"summary": "", "speech_url": "", "notebooklm_url": "", "title": ""}
         # Fetch content
         extracted_content = self.extract_content_from_url()
-        article = extracted_content.get("article")
-        result["title"] = extracted_content.get("title")
+        article = extracted_content.get("article", "")
+        result["title"] = extracted_content.get("title", "")
 
         if self.generate_speech:
             audio_url = self.article_to_speech(article)
