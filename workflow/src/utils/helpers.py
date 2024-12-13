@@ -6,14 +6,14 @@ from pathlib import Path
 from src.config import CLOUDFLARE_AUDIO_URL 
 
 def extract_llm_response(text: str, tag: str):
-    # Try to match <mermaid> tags first
+    # Try to match <tag> tags first
     if text is None or text == "":
         print(f"text is None or empty")
         return ""
     match = re.search(fr'<{re.escape(tag)}>(.*?)</{re.escape(tag)}>', text, re.DOTALL)
     if match:
         return match.group(1).strip()
-    # If <mermaid> tags are not found, try to match ```mermaid code blocks
+    # If <tag> tags are not found, try to match ```tag code blocks
     match = re.search(fr'```{re.escape(tag)}\s*(.*?)```', text, re.DOTALL)
     if match:
         return match.group(1).strip()
@@ -102,4 +102,4 @@ def upload_file_to_r2(file: str) -> str:
         return public_url
     except Exception as e:
         logger.error(f"Error uploading {file}: {e}")
-        return None
+        return ""

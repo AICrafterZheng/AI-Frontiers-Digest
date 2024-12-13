@@ -119,6 +119,7 @@ class ContentSummarizer:
     async def article_to_podcast(self, article: str) -> str:
         print(f"Generating podcast for article: {self.url}")
         if not article or len(article) < 100:
+            print("Article too short to generate podcast: {article}")
             return ""
         notebooklm = NotebookLM(llm_client=self.llm_client)
         public_url = await notebooklm.generate_and_upload_podcast(article)

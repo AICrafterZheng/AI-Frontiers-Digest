@@ -1,8 +1,7 @@
 from prefect import task, flow
 from src.utils.llm_client import LLMClient
 from src.utils.tts import generate_podcast_audio
-from src.utils.helpers import upload_file_to_r2
-
+from src.utils.helpers import upload_file_to_r2, extract_llm_response
 from .prompts import (
     SYS_PROMPT_PREPROCESS,
     SYSTEMP_PROMPT_TRANSCRIPT_WRITER,
@@ -32,6 +31,8 @@ class NotebookLM:
         """Rewrite transcript for TTS compatibility."""
         response = self.llm_client.call_llm(sys_prompt=SYSTEMP_PROMPT_TRANSCRIPT_REWRITER, user_input=transcript)
         print(f"rewrite_transcript - Response: {response}")
+        response = extract_llm_response(response, "python")
+        print(f"rewrite_transcript - extracted Response: {response}")
         return response
 
     @task(name="transcript_to_podcast")
