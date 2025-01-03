@@ -16,11 +16,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (savedTheme === 'dark' || savedTheme === 'light') {
       return savedTheme;
     }
-    // Then check system preference
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
-    return 'light';
+    // Default to dark mode
+    return 'dark';
   });
 
   useEffect(() => {

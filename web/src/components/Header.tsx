@@ -214,12 +214,12 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
                 onClick={toggleTheme}
                 className="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors dark:text-white"
               >
+                <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
                 {theme === 'dark' ? (
                   <Sun className="w-4 h-4" />
                 ) : (
                   <Moon className="w-4 h-4" />
                 )}
-                <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
               </button>
             </div>
           </div>
