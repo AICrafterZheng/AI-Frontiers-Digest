@@ -13,3 +13,4 @@ pydub
 tenacity
 boto3
 tweepy
+pytest-playwright

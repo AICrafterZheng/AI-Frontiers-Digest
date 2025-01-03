@@ -4,7 +4,7 @@ from prefect import task, flow, get_run_logger
 from prefect.variables import Variable
 from datetime import datetime, timedelta
 import asyncio
-from src.config import TWITTER_BEARER_TOKEN, TWITTER_API_KEY, TWITTER_API_SECRET
+from src.config import TWITTER_BEARER_TOKEN, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET
 from .models import Story
 from src.utils.jina_reader import call_jina_reader
 
@@ -13,8 +13,8 @@ class TwitterService:
         self.logger = get_run_logger()
         self.client = tweepy.Client(
             bearer_token=TWITTER_BEARER_TOKEN,
-            consumer_key=TWITTER_API_KEY,
-            consumer_secret=TWITTER_API_SECRET,
+            consumer_key=TWITTER_CONSUMER_KEY,
+            consumer_secret=TWITTER_CONSUMER_SECRET,
             wait_on_rate_limit=True
         )
         self.source = "Twitter"
