@@ -11,59 +11,67 @@ from datetime import datetime, timedelta
 from dateutil import tz
 
 @task
-async def take_screenshot(url: str):
+async def take_screenshot(url: str, save_path: str = None):
     logger = get_run_logger()
-    async with async_playwright() as p:
-        try:
-            # Launch browser with high DPI settings
-            browser = await p.chromium.launch(headless=True)
-            
-            # Create context with high DPI settings
-            context = await browser.new_context(
-                viewport={'width': 1920, 'height': 1080},  # 4K resolution
-                device_scale_factor=3  # Higher scale factor for better quality
-            )
-            
-            # Create page and navigate
-            page = await context.new_page()
-            await page.goto(url, wait_until="networkidle")
-            
-            # Wait for the card to be visible and ensure it's rendered
-            card = page.locator('.newsletter-card').first
-            await card.wait_for(state='visible', timeout=5000)
-            await page.wait_for_timeout(1000)  # Extra time for fonts to load
-            
-            # Get the bounding box of the card
-            box = await card.bounding_box()
-            logger.info(f"Found card with dimensions: {box}")
-            # Add some padding to height and width
-            padding = 40
-            box['height'] = box['height'] + (padding * 2)
-            box['width'] = box['width'] + (padding * 2)
-            
-            # Create a temporary file for the screenshot
-            with NamedTemporaryFile(suffix=".jpeg", delete=False) as tmp:
-                # Take high-quality screenshot of the card area
-                await page.screenshot(
-                path=tmp.name,
-                clip={
-                    'x': max(0, box['x'] - padding),
-                    'y': max(0, box['y'] - padding),
-                    'width': box['width'],
-                    'height': box['height']
-                },
-                full_page=True,
-                type="jpeg",
-                quality=100
-                )
-                logger.info(f"Screenshot saved to {tmp.name}")
-            return tmp.name
-        except Exception as e:
-            logger.error(f"Error taking screenshot: {e}")
-            raise
-        finally:
+    playwright = None
+    browser = None
+    context = None
+    try:
+        playwright = await async_playwright().start()
+        # Launch browser with high DPI settings
+        browser = await playwright.chromium.launch(headless=True)
+        
+        # Create context with iPhone 13 Pro Max settings
+        iphone_13_pro_max = playwright.devices['iPhone 13 Pro Max']
+        context = await browser.new_context(**iphone_13_pro_max)
+        
+        # Create page and navigate
+        page = await context.new_page()
+        await page.goto(url, wait_until="networkidle")
+        
+        # Wait for the card to be visible and ensure it's rendered
+        card = page.locator('.newsletter-card').first
+        await card.wait_for(state='visible', timeout=5000)
+        await page.wait_for_timeout(1000)  # Extra time for fonts to load
+        
+        # Get the bounding box of the card
+        box = await card.bounding_box()
+        logger.info(f"Found card with dimensions: {box}")
+        
+        # Add some padding to height and width
+        padding = 40
+        box['height'] = box['height'] + (padding * 2)
+        box['width'] = box['width'] + (padding * 2)
+        
+        # Determine the output path
+        output_path = save_path if save_path else NamedTemporaryFile(suffix=".jpeg", delete=False).name
+        
+        # Take high-quality screenshot of the card area
+        await page.screenshot(
+            path=output_path,
+            clip={
+                'x': max(0, box['x'] - padding),
+                'y': max(0, box['y'] - padding),
+                'width': box['width'],
+                'height': box['height']
+            },
+            full_page=True,
+            type="jpeg",
+            quality=100
+        )
+        logger.info(f"Screenshot saved to {output_path}")
+        return output_path
+        
+    except Exception as e:
+        logger.error(f"Error taking screenshot: {e}")
+        raise
+    finally:
+        if context:
             await context.close()
+        if browser:
             await browser.close()
+        if playwright:
+            await playwright.stop()
 
 @task
 def post_to_twitter(text: str, image_path: str):
@@ -134,10 +142,9 @@ async def run_send_twitter_flow():
     for story in stories:
         # await send_screenshot_tweet(story["url"], story["title"])
         url = f"https://aicrafter.info/news/{story['id']}"
-        # url = f"http://localhost:5173/news/{story['id']}"
         logger.info(f"Taking screenshot of {url}")
         screenshot_path = await take_screenshot(url)
-        text = f"{story['title']}\n Interested in listening to the podcast? Visit: {url}"
+        text = f"{story['title']}.\nInterested in listening to the podcast? Visit: {url}"
         logger.info(f"Posting tweet with text: {text}")
         post_to_twitter(text, screenshot_path)
-        await asyncio.sleep(60)
+        await asyncio.sleep(120)
