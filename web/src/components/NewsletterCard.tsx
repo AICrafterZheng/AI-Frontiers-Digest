@@ -46,7 +46,7 @@ export function NewsletterCard({ story}: NewsletterCardProps) {
   };
 
   return (
-    <Card className="mb-8">
+    <Card className="mb-8 newsletter-card">
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle>

@@ -2,6 +2,7 @@ from prefect.client.schemas.schedules import CronSchedule
 from prefect.docker import DockerImage
 from src.services.hackernews import run_hn_flow
 from src.services.techcrunch import run_tc_flow
+from src.services.send_twitter import run_send_twitter_flow
 if __name__ == "__main__":
 
     # # Hacker News flow
@@ -17,3 +18,10 @@ if __name__ == "__main__":
             image= DockerImage(name="tc-summary-image:v1.0.0", platform="linux/amd64", dockerfile="Dockerfile"),
             schedules= [CronSchedule(cron="30 7 * * *", timezone="America/Los_Angeles")]
             )
+
+    # # Send Twitter flow
+    run_send_twitter_flow.deploy(name="Send-Twitter",
+                work_pool_name="my-aci-pool",
+                image=DockerImage(name="twitter-image:v1.0.0", platform="linux/amd64", dockerfile="Dockerfile"),
+                schedules= [CronSchedule(cron="0 8 * * *", timezone="America/Los_Angeles")]
+                )
