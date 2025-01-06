@@ -1,0 +1,16 @@
+| Test Case ID | Test Case Description | Test Steps | Expected Result | Test Type |
+| --- | --- | --- | --- | --- |
+| TC001 | Verify the functionality of the "Subscribe" button | Click on the "Subscribe" button at the top of the page | The user is redirected to a subscription page or a subscription modal appears | Functionality testing |
+| TC002 | Verify the functionality of the "Discord" link | Click on the "Discord" link at the top of the page | The user is redirected to the AI Frontiers Discord community | Functionality testing |
+| TC003 | Verify the functionality of the "Archive" button | Click on the "Archive" button at the top of the page | The user is redirected to an archive page listing past articles | Functionality testing |
+| TC004 | Verify the theme toggle functionality | Click on the "Light" button to switch themes | The webpage theme changes to light mode | Functionality testing |
+| TC005 | Verify the search functionality | Enter a search term in the "Search articles..." field and press enter | The search results relevant to the term are displayed | Functionality testing |
+| TC006 | Verify the audio playback feature | Click on the "Audio" button next to the article title | The audio summary of the article starts playing | Functionality testing |
+| TC007 | Verify the NotebookLM link functionality | Click on the "NotebookLM" button next to the article title | The user is redirected to a NotebookLM page related to the article | Functionality testing |
+| TC008 | Check the responsiveness of the webpage on different screen sizes | Resize the browser window to various dimensions | The layout adjusts appropriately without losing functionality or readability | Compatibility testing |
+| TC009 | Validate the display of the article date and time | Check the date and time displayed under the article title | The date and time are correct and formatted consistently | Usability testing |
+| TC010 | Verify the accessibility of the webpage for screen readers | Use a screen reader to navigate the webpage | All elements are read correctly, and navigation is logical | Accessibility testing |
+| TC011 | Test the security of external links | Click on external links like "Original Article" and "HN Discussion" | The links open in a new tab to prevent cross-site scripting | Security testing |
+| TC012 | Verify the loading performance of the webpage | Measure the time taken for the webpage to load completely | The webpage loads within an acceptable time frame (e.g., under 3 seconds) | Performance testing |
+| TC013 | Validate the error handling for an invalid search query | Enter an invalid or nonsensical search term and press enter | A message indicating no results found is displayed | Negative testing |
+| TC014 | Check the display and functionality of the article summary and discussion highlights | Review the text content under "Article Summary" and "Discussion Highlights" | The text is displayed correctly, and bullet points are properly formatted | Usability testing |

@@ -7,7 +7,7 @@ from src.config import (AZURE_MISTRAL_SMALL_API, AZURE_MISTRAL_SMALL_INFERENCE_K
                     AZURE_OPENAI_API_VERSION, AZURE_OPENAI_API_KEY_GPT_4o_MINI,
                     AZURE_OPENAI_API_GPT_4o_MINI, AZURE_OPENAI_API_GPT_4o)
 import requests
-
+from .image import encode_image
 class LLMClient:
     def __init__(self, 
                  use_azure_mistral: bool = False,
@@ -29,7 +29,8 @@ class LLMClient:
     @task(log_prints=True, cache_policy=None, retries=2)
     def call_llm(self, 
                 sys_prompt: str, 
-                user_input: str, 
+                user_input: str,
+                image_path: str = "",
                 ai_input: str = ""):
         try:
             response = ""
@@ -39,7 +40,7 @@ class LLMClient:
                 elif self.model.lower() == "large":
                     response = self._call_azure_mistral(sys_prompt, user_input, ai_input, AZURE_MISTRAL_LARGE_API, AZURE_MISTRAL_LARGE_INFERENCE_KEY)
             elif self.use_azure_openai:
-                response = self._call_azure_openai(sys_prompt, user_input)
+                response = self._call_azure_openai(sys_prompt, user_input, image_path)
             elif self.use_openrouter:
                 if self.model == "":
                     self.model = OPENROUTER_MODEL_MISTRAL_FREE
@@ -123,24 +124,52 @@ class LLMClient:
         response = client.complete(payload)
         return response.choices[0].message.content
 
-    def _call_azure_openai(self, sys_prompt: str, user_input: str) -> str:
+    def _call_azure_openai(self, sys_prompt: str, question: str, image_path: str = "") -> str:
         if self.model == AZURE_OPENAI_API_GPT_4o_MINI or self.model == "":
             model = AZURE_OPENAI_API_GPT_4o_MINI
             api_key = AZURE_OPENAI_API_KEY_GPT_4o_MINI
         else:
             model = AZURE_OPENAI_API_GPT_4o
             api_key = AZURE_OPENAI_API_KEY_GPT_4o
-        print(f"Calling Azure OpenAI with {model} ...")
+        print(f"Calling Azure OpenAI with {model}, image_path: {image_path} ...")
         # Configuration
         headers = {
             "Content-Type": "application/json",
             "api-key": api_key,
         }
         # Payload for the request
+        user_input = {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": question
+                        }
+                    ]
+                }
+        if image_path != "":
+            base64_image = encode_image(image_path)
+            if base64_image:  # Check if base64_image is not empty
+                user_input["content"].append(
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": base64_image
+                        }
+                    }
+                )
         payload = {
             "messages": [
-                {"role": "user", "content": sys_prompt},
-                {"role": "user", "content": user_input}
+                {
+                    "role": "system",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": sys_prompt
+                        }
+                    ]
+                },
+                user_input
             ],
             "temperature": 0.7,
             "top_p": 0.7,
