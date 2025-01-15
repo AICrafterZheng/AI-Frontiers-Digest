@@ -3,9 +3,8 @@ from openai import OpenAI
 from src.config import (AZURE_MISTRAL_SMALL_API, AZURE_MISTRAL_SMALL_INFERENCE_KEY, OPENROUTER_API_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY,
                     OPENROUTER_MODEL_MISTRAL_FREE, 
                     AZURE_MISTRAL_LARGE_API, AZURE_MISTRAL_LARGE_INFERENCE_KEY,
-                    AZURE_OPENAI_API_BASE, AZURE_OPENAI_API_KEY_GPT_4o,
-                    AZURE_OPENAI_API_VERSION, AZURE_OPENAI_API_KEY_GPT_4o_MINI,
-                    AZURE_OPENAI_API_GPT_4o_MINI, AZURE_OPENAI_API_GPT_4o)
+                    AZURE_OPENAI_API_BASE, AZURE_OPENAI_API_KEY, AZURE_OPENAI_API_VERSION,
+                    AZURE_OPENAI_API_GPT_4o_MINI)
 import requests
 from .image import encode_image
 class LLMClient:
@@ -30,7 +29,7 @@ class LLMClient:
     def call_llm(self, 
                 sys_prompt: str, 
                 user_input: str,
-                image_path: str = "",
+                image_paths: list = None,
                 ai_input: str = ""):
         try:
             response = ""
@@ -40,7 +39,7 @@ class LLMClient:
                 elif self.model.lower() == "large":
                     response = self._call_azure_mistral(sys_prompt, user_input, ai_input, AZURE_MISTRAL_LARGE_API, AZURE_MISTRAL_LARGE_INFERENCE_KEY)
             elif self.use_azure_openai:
-                response = self._call_azure_openai(sys_prompt, user_input, image_path)
+                response = self._call_azure_openai(sys_prompt, user_input, image_paths)
             elif self.use_openrouter:
                 if self.model == "":
                     self.model = OPENROUTER_MODEL_MISTRAL_FREE
@@ -124,18 +123,13 @@ class LLMClient:
         response = client.complete(payload)
         return response.choices[0].message.content
 
-    def _call_azure_openai(self, sys_prompt: str, question: str, image_path: str = "") -> str:
-        if self.model == AZURE_OPENAI_API_GPT_4o_MINI or self.model == "":
-            model = AZURE_OPENAI_API_GPT_4o_MINI
-            api_key = AZURE_OPENAI_API_KEY_GPT_4o_MINI
-        else:
-            model = AZURE_OPENAI_API_GPT_4o
-            api_key = AZURE_OPENAI_API_KEY_GPT_4o
-        print(f"Calling Azure OpenAI with {model}, image_path: {image_path} ...")
+    def _call_azure_openai(self, sys_prompt: str, question: str, image_paths: list = None) -> str:
+        model = self.model if self.model != "" else AZURE_OPENAI_API_GPT_4o_MINI
+        print(f"Calling Azure OpenAI with {model}, image_paths: {image_paths} ...")
         # Configuration
         headers = {
             "Content-Type": "application/json",
-            "api-key": api_key,
+            "api-key": AZURE_OPENAI_API_KEY,
         }
         # Payload for the request
         user_input = {
@@ -147,15 +141,16 @@ class LLMClient:
                         }
                     ]
                 }
-        if image_path != "":
-            base64_image = encode_image(image_path)
-            if base64_image:  # Check if base64_image is not empty
-                user_input["content"].append(
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": base64_image
-                        }
+        if image_paths != None:
+            for image_path in image_paths:
+                base64_image = encode_image(image_path)
+                if base64_image:  # Check if base64_image is not empty
+                    user_input["content"].append(
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": base64_image
+                            }
                     }
                 )
         payload = {

@@ -1,0 +1,93 @@
+[
+    {
+        "id": "TC001",
+        "title": "Verify Page Title",
+        "description": "Ensure the page title is displayed correctly as 'AI Frontiers'.",
+        "steps": "Open the webpage, observe the title at the top left corner.",
+        "expected_result": "The page title should be 'AI Frontiers'."
+    },
+    {
+        "id": "TC002",
+        "title": "Check Subscribe Button Functionality",
+        "description": "Test if the 'Subscribe' button is clickable and leads to the correct subscription page.",
+        "steps": "Locate the 'Subscribe' button at the top of the page, click on it.",
+        "expected_result": "The user should be redirected to the subscription page."
+    },
+    {
+        "id": "TC003",
+        "title": "Check Discord Link Functionality",
+        "description": "Test if the 'Discord' button is clickable and leads to the correct Discord page.",
+        "steps": "Locate the 'Discord' button at the top of the page, click on it.",
+        "expected_result": "The user should be redirected to the Discord page."
+    },
+    {
+        "id": "TC004",
+        "title": "Check Archive Button Functionality",
+        "description": "Test if the 'Archive' button is clickable and leads to the correct archive page.",
+        "steps": "Locate the 'Archive' button at the top of the page, click on it.",
+        "expected_result": "The user should be redirected to the archive page."
+    },
+    {
+        "id": "TC005",
+        "title": "Check Theme Toggle Functionality",
+        "description": "Test if the 'Light' button toggles the theme to light mode.",
+        "steps": "Locate the 'Light' button at the top right corner, click on it.",
+        "expected_result": "The page theme should change to light mode."
+    },
+    {
+        "id": "TC006",
+        "title": "Verify Latest AI News Section Date",
+        "description": "Ensure the date in the 'Latest AI News' section is displayed correctly.",
+        "steps": "Check the date under the 'Latest AI News' heading.",
+        "expected_result": "The date should be displayed as '1/2/2025'."
+    },
+    {
+        "id": "TC007",
+        "title": "Search Functionality Test",
+        "description": "Test the search functionality to ensure it returns relevant articles.",
+        "steps": "Enter a keyword into the search bar and press enter.",
+        "expected_result": "The search results should display articles related to the keyword."
+    },
+    {
+        "id": "TC008",
+        "title": "Verify Article Title",
+        "description": "Ensure the article title '[Hacker News] How AI is unlocking ancient texts' is displayed correctly.",
+        "steps": "Locate the article title in the main content area.",
+        "expected_result": "The article title should be '[Hacker News] How AI is unlocking ancient texts'."
+    },
+    {
+        "id": "TC009",
+        "title": "Check Original Article Link",
+        "description": "Test if the 'Original Article' link is clickable and redirects to the correct page.",
+        "steps": "Click on the 'Original Article' link.",
+        "expected_result": "The user should be redirected to the original article page."
+    },
+    {
+        "id": "TC010",
+        "title": "Verify Audio Button Functionality",
+        "description": "Test if the 'Audio' button plays the article summary audio.",
+        "steps": "Click on the 'Audio' button next to the article title.",
+        "expected_result": "The audio summary of the article should start playing."
+    },
+    {
+        "id": "TC011",
+        "title": "Verify NotebookLM Button Functionality",
+        "description": "Test if the 'NotebookLM' button opens the article in NotebookLM.",
+        "steps": "Click on the 'NotebookLM' button next to the article title.",
+        "expected_result": "The article should open in NotebookLM for further interaction."
+    },
+    {
+        "id": "TC012",
+        "title": "Verify Article Summary Content",
+        "description": "Ensure the article summary content is displayed correctly.",
+        "steps": "Read the 'Article Summary' section.",
+        "expected_result": "The content should match the summary provided in the screenshot."
+    },
+    {
+        "id": "TC013",
+        "title": "Verify Discussion Highlights Content",
+        "description": "Ensure the discussion highlights content is displayed correctly.",
+        "steps": "Read the 'Discussion Highlights' section.",
+        "expected_result": "The content should match the discussion highlights provided in the screenshot."
+    }
+]

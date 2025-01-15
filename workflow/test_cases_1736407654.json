@@ -1,0 +1,72 @@
+[
+    {
+        "id": "TC001",
+        "title": "Subscribe Button Functionality",
+        "description": "Verify that the Subscribe button is clickable and leads to the correct subscription page or action.",
+        "steps": "1. Locate the Subscribe button on the top right corner of the page. 2. Click the Subscribe button.",
+        "expected_result": "The user is redirected to a subscription page or a subscription action is initiated."
+    },
+    {
+        "id": "TC002",
+        "title": "Discord Button Link",
+        "description": "Ensure the Discord button redirects to the correct Discord community page.",
+        "steps": "1. Locate the Discord button next to the Subscribe button. 2. Click the Discord button.",
+        "expected_result": "The user is redirected to the AI Frontiers Discord community page."
+    },
+    {
+        "id": "TC003",
+        "title": "Archive Button Functionality",
+        "description": "Check if the Archive button redirects to the archived news or articles section.",
+        "steps": "1. Locate the Archive button next to the Discord button. 2. Click the Archive button.",
+        "expected_result": "The user is redirected to a page displaying archived articles or news."
+    },
+    {
+        "id": "TC004",
+        "title": "Dark/Light Mode Toggle",
+        "description": "Verify that clicking the Light button toggles between dark and light modes.",
+        "steps": "1. Locate the Light button on the top right corner. 2. Click the Light button.",
+        "expected_result": "The webpage theme toggles between dark and light modes."
+    },
+    {
+        "id": "TC005",
+        "title": "Search Functionality",
+        "description": "Ensure the search bar allows users to search for articles.",
+        "steps": "1. Locate the search bar under the Latest AI News heading. 2. Enter a keyword (e.g., 'AI'). 3. Press Enter or click the search icon.",
+        "expected_result": "The page displays search results related to the entered keyword."
+    },
+    {
+        "id": "TC006",
+        "title": "Article Link Navigation",
+        "description": "Verify that clicking on the 'Original Article' link opens the original article in a new tab or window.",
+        "steps": "1. Locate the 'Original Article' link under the article title. 2. Click the link.",
+        "expected_result": "The original article opens in a new tab or window."
+    },
+    {
+        "id": "TC007",
+        "title": "Audio Playback Functionality",
+        "description": "Check if the Audio button plays the article's audio version.",
+        "steps": "1. Locate the Audio button next to the article's score. 2. Click the Audio button.",
+        "expected_result": "The audio version of the article starts playing."
+    },
+    {
+        "id": "TC008",
+        "title": "NotebookLM Link Functionality",
+        "description": "Ensure that the NotebookLM button opens the related notebook or document.",
+        "steps": "1. Locate the NotebookLM button next to the Audio button. 2. Click the NotebookLM button.",
+        "expected_result": "The related notebook or document opens for viewing."
+    },
+    {
+        "id": "TC009",
+        "title": "Date and Time Format",
+        "description": "Verify the format of the date and time displayed under the Latest AI News heading.",
+        "steps": "1. Observe the date and time format under the Latest AI News heading.",
+        "expected_result": "The date and time are displayed in a consistent and readable format (e.g., '1/2/2025, 7:06:05 AM')."
+    },
+    {
+        "id": "TC010",
+        "title": "Content Accuracy",
+        "description": "Ensure the content under Article Summary and Discussion Highlights is accurate and free of typographical errors.",
+        "steps": "1. Read the content under Article Summary and Discussion Highlights. 2. Check for accuracy and typographical errors.",
+        "expected_result": "The content is accurate and free from typographical errors."
+    }
+]

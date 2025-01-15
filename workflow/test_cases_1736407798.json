@@ -1,0 +1,72 @@
+[
+    {
+        "id": "TC001",
+        "title": "Verify Subscribe Button Functionality",
+        "description": "Ensure that the Subscribe button is clickable and redirects to the subscription page.",
+        "steps": "1. Locate the Subscribe button on the top navigation bar. 2. Click on the Subscribe button.",
+        "expected_result": "User is redirected to the subscription page."
+    },
+    {
+        "id": "TC002",
+        "title": "Verify Discord Link Functionality",
+        "description": "Ensure that the Discord button redirects to the Discord server invitation page.",
+        "steps": "1. Locate the Discord button on the top navigation bar. 2. Click on the Discord button.",
+        "expected_result": "User is redirected to the Discord server invitation page."
+    },
+    {
+        "id": "TC003",
+        "title": "Verify Archive Link Functionality",
+        "description": "Ensure that the Archive button redirects to the archive page.",
+        "steps": "1. Locate the Archive button on the top navigation bar. 2. Click on the Archive button.",
+        "expected_result": "User is redirected to the archive page."
+    },
+    {
+        "id": "TC004",
+        "title": "Verify Dark Mode Toggle Functionality",
+        "description": "Ensure that clicking the Light/Dark mode toggle changes the theme of the webpage.",
+        "steps": "1. Locate the Light/Dark mode toggle button on the top navigation bar. 2. Click on the toggle button.",
+        "expected_result": "The webpage theme changes from light to dark or vice versa."
+    },
+    {
+        "id": "TC005",
+        "title": "Verify Search Functionality",
+        "description": "Ensure that the search bar allows users to search for articles.",
+        "steps": "1. Locate the search bar under the Latest AI News header. 2. Enter a search term (e.g., 'AI'). 3. Press Enter or click the search icon.",
+        "expected_result": "Search results related to the search term are displayed."
+    },
+    {
+        "id": "TC006",
+        "title": "Verify Article Link Functionality",
+        "description": "Ensure that clicking the 'Original Article' link opens the original article in a new tab.",
+        "steps": "1. Locate the 'Original Article' link in the article section. 2. Click on the link.",
+        "expected_result": "The original article opens in a new browser tab."
+    },
+    {
+        "id": "TC007",
+        "title": "Verify Audio Button Functionality",
+        "description": "Ensure that clicking the Audio button starts playing the audio summary of the article.",
+        "steps": "1. Locate the Audio button in the article section. 2. Click on the Audio button.",
+        "expected_result": "Audio summary of the article starts playing."
+    },
+    {
+        "id": "TC008",
+        "title": "Verify NotebookLM Button Functionality",
+        "description": "Ensure that clicking the NotebookLM button provides a link or action related to NotebookLM.",
+        "steps": "1. Locate the NotebookLM button in the article section. 2. Click on the NotebookLM button.",
+        "expected_result": "The action related to NotebookLM is performed, such as opening a link or displaying content."
+    },
+    {
+        "id": "TC009",
+        "title": "Verify Article Content Display",
+        "description": "Ensure that the article content is displayed correctly with all sections visible.",
+        "steps": "1. View the article section under the Latest AI News header. 2. Verify the presence of 'Article Summary' and 'Discussion Highlights' sections.",
+        "expected_result": "All article content, including 'Article Summary' and 'Discussion Highlights', is displayed correctly."
+    },
+    {
+        "id": "TC010",
+        "title": "Verify Date and Time Format",
+        "description": "Ensure that the date and time format is consistent and correct across the webpage.",
+        "steps": "1. Locate the date and time under the Latest AI News header. 2. Verify the format of the date and time displayed.",
+        "expected_result": "Date is displayed in MM/DD/YYYY format and time is displayed in HH:MM:SS AM/PM format."
+    }
+]
