@@ -12,8 +12,13 @@ const Card = ({ children, className = '' }: { children: React.ReactNode; classNa
   </div>
 )
 
-const CardHeader = ({ children }: { children: React.ReactNode }) => (
-  <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">{children}</div>
+const CardHeader = ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
+  <div 
+    className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer" 
+    onClick={onClick}
+  >
+    {children}
+  </div>
 )
 
 const CardTitle = ({ children }: { children: React.ReactNode }) => (
@@ -45,11 +50,8 @@ export function NewsletterCard({ story}: NewsletterCardProps) {
 
   return (
     <Card className="mb-8 newsletter-card">
-      <CardHeader>
-        <div 
-          className="flex justify-between items-center cursor-pointer" 
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
+      <CardHeader onClick={() => setIsExpanded(!isExpanded)}>
+        <div className="flex justify-between items-center">
           <CardTitle>
             <div className="flex items-center">
               <svg 
