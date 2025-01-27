@@ -28,19 +28,17 @@ const CardContent = ({ children }: { children: React.ReactNode }) => (
 
 export function NewsletterCard({ story}: NewsletterCardProps) {
   const [showCopied, setShowCopied] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const handleCopyLink = () => {
+  const handleCopyLink = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent header click from triggering
     const shareUrl = `${window.location.origin}/news/${story.id}`;
-    // Create a temporary input element
     const tempInput = document.createElement('input');
     tempInput.value = shareUrl;
     document.body.appendChild(tempInput);
-    // Select and copy
     tempInput.select();
     document.execCommand('copy');
-    // Clean up
     document.body.removeChild(tempInput);
-    // Show feedback
     setShowCopied(true);
     setTimeout(() => setShowCopied(false), 500);
   };
@@ -48,9 +46,25 @@ export function NewsletterCard({ story}: NewsletterCardProps) {
   return (
     <Card className="mb-8 newsletter-card">
       <CardHeader>
-        <div className="flex justify-between items-center">
+        <div 
+          className="flex justify-between items-center cursor-pointer" 
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
           <CardTitle>
-            {getSourcePrefix(story.source)}{story.title}
+            <div className="flex items-center">
+              <svg 
+                className={`w-5 h-5 mr-2 transform transition-transform ${isExpanded ? 'rotate-90' : ''}`} 
+                fill="currentColor" 
+                viewBox="0 0 20 20"
+              >
+                <path 
+                  fillRule="evenodd" 
+                  d="M7.293 4.707a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L10.586 10 7.293 6.707a1 1 0 010-1.414z" 
+                  clipRule="evenodd" 
+                />
+              </svg>
+              {getSourcePrefix(story.source)}{story.title}
+            </div>
           </CardTitle>
           <button
             onClick={handleCopyLink}
@@ -74,84 +88,88 @@ export function NewsletterCard({ story}: NewsletterCardProps) {
         </div>
       </CardHeader>
       
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 px-6 py-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <a 
-            href={story.url} 
-            className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Original Article
-          </a>
-          {story.hn_url && (
-            <>
-              <span>•</span>
+      {isExpanded && (
+        <>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 px-6 py-2">
+            <div className="flex flex-wrap items-center gap-2">
               <a 
-                href={story.hn_url} 
+                href={story.url} 
                 className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                HN Discussion
+                Original Article
               </a>
-              <span>•</span>
-              <span className="text-gray-600 dark:text-gray-300">Score: {story.score}</span>
-            </>
-          )}
-          <span className="text-gray-600 dark:text-gray-300"><span>• </span>{new Date(story.created_at).toLocaleString()}</span>
-        </div>
-        <div className="w-full sm:w-auto sm:ml-auto flex justify-start gap-2">
-          {story.speech_url && (
-            <div>
-              <AudioButton 
-                speechUrl={story.speech_url} 
-                name="Audio" 
-                id={`${story.story_id}_audio`}
-                title={story.title}
-                type="Article audio"
-                createdAt={story.created_at}
-                cover={story.cover}
-              />
+              {story.hn_url && (
+                <>
+                  <span>•</span>
+                  <a 
+                    href={story.hn_url} 
+                    className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    HN Discussion
+                  </a>
+                  <span>•</span>
+                  <span className="text-gray-600 dark:text-gray-300">Score: {story.score}</span>
+                </>
+              )}
+              <span className="text-gray-600 dark:text-gray-300"><span>• </span>{new Date(story.created_at).toLocaleString()}</span>
             </div>
-          )}
-          {story.notebooklm_url && (
-            <div>
-              <AudioButton 
-                speechUrl={story.notebooklm_url} 
-                name="NotebookLM" 
-                id={`${story.story_id}_podcast`}
-                title={story.title}
-                type="AI-generated podcast"
-                createdAt={story.created_at}
-                cover={story.cover}
-              />
+            <div className="w-full sm:w-auto sm:ml-auto flex justify-start gap-2">
+              {story.speech_url && (
+                <div>
+                  <AudioButton 
+                    speechUrl={story.speech_url} 
+                    name="Audio" 
+                    id={`${story.story_id}_audio`}
+                    title={story.title}
+                    type="Article audio"
+                    createdAt={story.created_at}
+                    cover={story.cover}
+                  />
+                </div>
+              )}
+              {story.notebooklm_url && (
+                <div>
+                  <AudioButton 
+                    speechUrl={story.notebooklm_url} 
+                    name="NotebookLM" 
+                    id={`${story.story_id}_podcast`}
+                    title={story.title}
+                    type="AI-generated podcast"
+                    createdAt={story.created_at}
+                    cover={story.cover}
+                  />
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      </div>
+          </div>
 
-      <CardContent>
-        <div className="space-y-6">
-          {story.summary && (
-            <div className="text-gray-700 dark:text-gray-300">
-              <h3 className="font-semibold text-lg mb-3">Article Summary</h3>
-              <div
-                dangerouslySetInnerHTML={{ __html: formatSummary(story.summary) }} 
-              />
+          <CardContent>
+            <div className="space-y-6">
+              {story.summary && (
+                <div className="text-gray-700 dark:text-gray-300">
+                  <h3 className="font-semibold text-lg mb-3">Article Summary</h3>
+                  <div
+                    dangerouslySetInnerHTML={{ __html: formatSummary(story.summary) }} 
+                  />
+                </div>
+              )}
+              
+              {story.comments_summary && (
+                <div className="text-gray-700 dark:text-gray-300">
+                  <h3 className="font-semibold text-lg mb-3">Discussion Highlights</h3>
+                  <div 
+                    dangerouslySetInnerHTML={{ __html: formatSummary(story.comments_summary) }} 
+                  />
+                </div>
+              )}
             </div>
-          )}
-          
-          {story.comments_summary && (
-            <div className="text-gray-700 dark:text-gray-300">
-              <h3 className="font-semibold text-lg mb-3">Discussion Highlights</h3>
-              <div 
-                dangerouslySetInnerHTML={{ __html: formatSummary(story.comments_summary) }} 
-              />
-            </div>
-          )}
-        </div>
-      </CardContent>
+          </CardContent>
+        </>
+      )}
     </Card>
   );
 }
