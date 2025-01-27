@@ -24,11 +24,11 @@ const CardHeader = ({ children, onClick, isExpanded }: { children: React.ReactNo
 )
 
 const CardTitle = ({ children }: { children: React.ReactNode }) => (
-  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{children}</h3>
+  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-300">{children}</h3>
 )
 
 const CardContent = ({ children }: { children: React.ReactNode }) => (
-  <div className="px-6 py-4 prose dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-img:rounded-lg prose-ul:list-disc prose-ul:pl-6">
+  <div className="px-6 py-4 prose dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-gray-300 prose-p:text-gray-700 dark:prose-p:text-gray-400 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-img:rounded-lg prose-ul:list-disc prose-ul:pl-6">
     {children}
   </div>
 )
@@ -117,10 +117,10 @@ export function NewsletterCard({ story}: NewsletterCardProps) {
                       HN Discussion
                     </a>
                     <span>•</span>
-                    <span className="text-gray-600 dark:text-gray-300">Score: {story.score}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Score: {story.score}</span>
                   </>
                 )}
-                <span className="text-gray-600 dark:text-gray-300"><span>• </span>{new Date(story.created_at).toLocaleString()}</span>
+                <span className="text-gray-600 dark:text-gray-400"><span>• </span>{new Date(story.created_at).toLocaleString()}</span>
               </div>
               <div className="w-full sm:w-auto sm:ml-auto flex justify-start gap-2">
                 {story.speech_url && (
@@ -155,7 +155,7 @@ export function NewsletterCard({ story}: NewsletterCardProps) {
             <CardContent>
               <div className="space-y-6">
                 {story.summary && (
-                  <div className="text-gray-700 dark:text-gray-300">
+                  <div className="text-gray-700 dark:text-gray-400">
                     <h3 className="font-semibold text-lg mb-3">Article Summary</h3>
                     <div
                       dangerouslySetInnerHTML={{ __html: formatSummary(story.summary) }} 
@@ -164,7 +164,7 @@ export function NewsletterCard({ story}: NewsletterCardProps) {
                 )}
                 
                 {story.comments_summary && (
-                  <div className="text-gray-700 dark:text-gray-300">
+                  <div className="text-gray-700 dark:text-gray-400">
                     <h3 className="font-semibold text-lg mb-3">Discussion Highlights</h3>
                     <div 
                       dangerouslySetInnerHTML={{ __html: formatSummary(story.comments_summary) }} 
