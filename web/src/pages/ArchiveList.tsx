@@ -88,7 +88,7 @@ export const ArchiveList = () => {
       </div>
 
       {/* Desktop view with background */}
-      <div className="hidden sm:block bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+      <div className="hidden sm:block bg-white dark:bg-black shadow-md rounded-lg overflow-hidden">
         <div className="p-6">
           {content}
         </div>

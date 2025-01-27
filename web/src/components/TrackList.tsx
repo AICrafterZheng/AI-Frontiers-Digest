@@ -1,6 +1,7 @@
 import { Play } from 'lucide-react';
 import { Track } from '../types/types';
 import { usePlayerStore } from '../store/usePlayerStore';
+
 interface TrackListProps {
   tracks: Track[];
 }
@@ -18,8 +19,8 @@ export function TrackList({ tracks }: TrackListProps) {
       {tracks.map((track) => (
         <div
           key={track.id}
-          className={`flex items-center space-x-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors ${
-            currentTrack?.id === track.id ? 'bg-gray-100 dark:bg-gray-700' : ''
+          className={`flex items-center space-x-4 p-4 rounded-lg bg-gray-50 dark:bg-black/50 hover:bg-gray-100 dark:hover:bg-black cursor-pointer transition-colors ${
+            currentTrack?.id === track.id ? 'bg-gray-100 dark:bg-black' : ''
           }`}
           onClick={() => handlePlay(track)}
         >

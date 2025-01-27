@@ -35,7 +35,7 @@ export function SubscribeNewsletterCard() {
     };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg">
+    <div className="bg-white dark:bg-black rounded-3xl p-8 shadow-lg">
       <div className="flex items-center gap-3 mb-4">
         <Send className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
         <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Newsletter</h2>
@@ -49,7 +49,7 @@ export function SubscribeNewsletterCard() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-gray-800"
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-black"
           required
         />
         <button

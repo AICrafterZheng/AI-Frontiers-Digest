@@ -50,7 +50,7 @@ export function Player() {
   if (!currentTrack || !isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gray-900 dark:bg-gray-950 border-t border-gray-800 dark:border-gray-700 p-4">
+    <div className="fixed bottom-0 left-0 right-0 bg-gray-900 dark:bg-black border-t border-gray-800 dark:border-gray-700 p-4">
       <button
         onClick={close}
         className="absolute top-2 right-4 text-gray-400 hover:text-white transition-colors"
@@ -85,7 +85,7 @@ export function Player() {
             </button>
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="p-2 rounded-full bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              className="p-2 rounded-full bg-white dark:bg-black hover:bg-gray-200 dark:hover:bg-gray-900 transition-colors"
             >
               {isPlaying ? (
                 <Pause className="w-6 h-6 text-black dark:text-white" />

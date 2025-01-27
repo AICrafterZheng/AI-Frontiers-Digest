@@ -4,7 +4,7 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-white dark:bg-gray-900 mt-auto">
+    <footer className="bg-white dark:bg-black mt-auto">
       <div className="max-w-screen-xl mx-auto px-4 py-8">
         <div className="flex flex-col items-center space-y-6">
           <div className="flex flex-wrap justify-center items-center gap-8 text-gray-500 dark:text-gray-400">
@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
           </div>
           
           <span className="text-sm text-gray-500 dark:text-gray-400">
-          ©{currentYear} AI Frontiers. All Rights Reserved.
+          &copy;{currentYear} AI Frontiers. All Rights Reserved.
           </span>
         </div>
       </div>

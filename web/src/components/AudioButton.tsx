@@ -63,7 +63,7 @@ export default function AudioButton({
     <div className={`flex items-center gap-2 ${className}`}>
       <button
         onClick={togglePlay}
-        className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+        className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-black rounded-lg hover:bg-gray-200 dark:hover:bg-gray-900 transition-colors"
       >
         {isThisPlaying ? <Volume2 className="w-4 h-4" /> : <Volume1 className="w-4 h-4" />}
         <span>{name}</span>
