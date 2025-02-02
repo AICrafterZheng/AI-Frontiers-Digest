@@ -12,7 +12,7 @@ from src.utils.llm_client import LLMClient
 from src.config import HN_API_BASE
 from prefect import task, flow
 from src.utils.helpers import extract_llm_response
-
+from src.common import LLMProvider
 @dataclass
 class Comment:
     id: str
@@ -207,6 +207,5 @@ class HNCommentsSummarizer:
 
 # Usage example:
 if __name__ == "__main__":
-    # llm_client = LLMClient(use_openrouter=True, model=OPENROUTER_MODEL_MISTRAL_3B)
-    llm_client = LLMClient(use_azure=True)
+    llm_client = LLMClient(LLMProvider.AZURE_OPENAI_API_GPT_4o)
     asyncio.run(HNCommentsSummarizer(llm_client).summarize_comments("41991291"))

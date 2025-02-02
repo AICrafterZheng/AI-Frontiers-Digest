@@ -4,6 +4,9 @@ import os
 load_dotenv()
 HN_API_BASE = os.getenv("HN_API_BASE", "")
 
+# OpenAI Settings
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
 # Azure OpenAI Settings
 AZURE_OPENAI_API_BASE = os.getenv("AZURE_OPENAI_API_BASE", "")
@@ -18,6 +21,10 @@ AZURE_MISTRAL_LARGE_API = os.getenv("AZURE_MISTRAL_LARGE_API", "")
 AZURE_MISTRAL_LARGE_INFERENCE_KEY = os.getenv("AZURE_MISTRAL_LARGE_INFERENCE_KEY", "")
 AZURE_MISTRAL_SMALL_API = os.getenv("AZURE_MISTRAL_SMALL_API", "")
 AZURE_MISTRAL_SMALL_INFERENCE_KEY = os.getenv("AZURE_MISTRAL_SMALL_INFERENCE_KEY", "")
+
+# Azure DeepSeek Settings
+AZURE_DEEPSEEK_API = os.getenv("AZURE_DEEPSEEK_API", "")
+AZURE_DEEPSEEK_INFERENCE_KEY = os.getenv("AZURE_DEEPSEEK_INFERENCE_KEY", "")
 
 # OpenRouter Settings
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")

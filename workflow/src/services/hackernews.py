@@ -17,17 +17,18 @@ from src.config import (
     HACKER_NEWS_DISCORD_WEBHOOK,
     AI_FRONTIERS_DIGEST_DISCORD_WEBHOOK,
     HN_SOURCE_NAME,
-    DISCORD_FOOTER,
-    AZURE_OPENAI_API_GPT_4o
+    DISCORD_FOOTER
 )
+
 from .models import Story
+from src.common import LLMProvider
 
 
 class HackerNewsService:
     def __init__(self):
         self.logger = get_run_logger()
         self.header = "AI Frontiers on Hacker News"
-        self.llm_client = LLMClient(use_azure_openai=True, model=AZURE_OPENAI_API_GPT_4o)
+        self.llm_client = LLMClient(LLMProvider.AZURE_OPENAI_API_GPT_4o)
         self.discord_webhooks = []
         self.columns_to_update = []
         self.save_to_supabase = True
@@ -162,7 +163,7 @@ async def run_hn_flow():
 
 @flow(log_prints=True, name="test-hn-flow")
 async def run_test_hn_flow():
-    # llm_client = LLMClient(use_azure_openai=True)
+    # llm_client = LLMClient(LLMProvider.AZURE_OPENAI_API_GPT_4o)
     service = await HackerNewsService.create()
     service.save_to_supabase = True
     columns_to_update = []

@@ -17,10 +17,11 @@ from src.config import (HACKER_NEWS_DISCORD_WEBHOOK, TC_SOURCE_NAME, AI_FRONTIER
 from src.utils.helpers import save_to_supabase, update_supabase_row
 from src.utils.supabase_utils import checkIfExists
 import time
+from src.common import LLMProvider
 class TechCrunchService:
     def __init__(self):
         self.base_url = "https://techcrunch.com/category/artificial-intelligence/"
-        self.llm_client = LLMClient(use_azure_openai=True, model=AZURE_OPENAI_API_GPT_4o)
+        self.llm_client = LLMClient(LLMProvider.AZURE_OPENAI_GPT_4o)
         self.header = "AI Frontiers on TechCrunch"
         
         # Get current date in PST

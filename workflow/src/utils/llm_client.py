@@ -1,29 +1,17 @@
 from prefect import task
 from openai import OpenAI
-from src.config import (AZURE_MISTRAL_SMALL_API, AZURE_MISTRAL_SMALL_INFERENCE_KEY, OPENROUTER_API_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY,
-                    OPENROUTER_MODEL_MISTRAL_FREE, 
-                    AZURE_MISTRAL_LARGE_API, AZURE_MISTRAL_LARGE_INFERENCE_KEY,
-                    AZURE_OPENAI_API_BASE, AZURE_OPENAI_API_KEY, AZURE_OPENAI_API_VERSION,
-                    AZURE_OPENAI_API_GPT_4o_MINI)
+from src.config import(AZURE_OPENAI_API_VERSION)
 import requests
 from .image import encode_image
+from src.common import LLMProvider, LLM_2_ENDPOINT, LLM_2_INFERENCE_KEY, LLM_2_MODEL
+
 class LLMClient:
-    def __init__(self, 
-                 use_azure_mistral: bool = False,
-                 use_azure_openai: bool = False,
-                 use_openrouter: bool = False,
-                 use_anthropic: bool = False,
-                 use_openai: bool = False,
-                 model: str = "",
-                 app: str = "newsletterdigest"):
-        self.use_azure_mistral = use_azure_mistral
-        self.use_azure_openai = use_azure_openai
-        self.use_openrouter = use_openrouter
-        self.use_anthropic = use_anthropic
-        self.use_openai = use_openai
-        self.model = model
-        self.app = app
-        print(f"LLMClient init: use_azure_mistral: {self.use_azure_mistral}, use_azure_openai: {self.use_azure_openai}, use_openrouter: {self.use_openrouter}, use_anthropic: {self.use_anthropic}, use_openai: {self.use_openai}, model: {self.model}, app: {self.app}")
+    def __init__(self, llm_provider: LLMProvider = LLMProvider.AZURE_OPENAI_GPT_4o):
+        self.model = LLM_2_MODEL.get(llm_provider)
+        self.llm_endpoint = LLM_2_ENDPOINT.get(llm_provider)
+        self.llm_inference_key = LLM_2_INFERENCE_KEY.get(llm_provider)
+        self.llm_provider = llm_provider
+        print(f"LLMClient init: llm_provider: {self.llm_provider}, model: {self.model}, endpoint: {self.llm_endpoint}")
 
     @task(log_prints=True, cache_policy=None, retries=2)
     def call_llm(self, 
@@ -33,20 +21,15 @@ class LLMClient:
                 ai_input: str = ""):
         try:
             response = ""
-            if self.use_azure_mistral:
-                if self.model.lower() == "small":
-                    response = self._call_azure_mistral(sys_prompt, user_input, ai_input, AZURE_MISTRAL_SMALL_API, AZURE_MISTRAL_SMALL_INFERENCE_KEY)
-                elif self.model.lower() == "large":
-                    response = self._call_azure_mistral(sys_prompt, user_input, ai_input, AZURE_MISTRAL_LARGE_API, AZURE_MISTRAL_LARGE_INFERENCE_KEY)
-            elif self.use_azure_openai:
+            if self.llm_provider == LLMProvider.AZURE_MISTRAL_SMALL or self.llm_provider == LLMProvider.AZURE_MISTRAL_LARGE or self.llm_provider == LLMProvider.AZURE_DEEPSEEK:
+                    response = self._call_azure_llm(sys_prompt, user_input, ai_input)
+            elif self.llm_provider == LLMProvider.AZURE_OPENAI_GPT_4o or self.llm_provider == LLMProvider.AZURE_OPENAI_GPT_4o_MINI:
                 response = self._call_azure_openai(sys_prompt, user_input, image_paths)
-            elif self.use_openrouter:
-                if self.model == "":
-                    self.model = OPENROUTER_MODEL_MISTRAL_FREE
+            elif self.llm_provider == LLMProvider.OPENROUTER:
                 response = self._call_openrouter(sys_prompt, user_input, ai_input)
-            elif self.use_anthropic:
-                response = self._call_anthropic(sys_prompt, user_input, ai_input)
-            elif self.use_openai:
+            elif self.llm_provider == LLMProvider.ANTHROPIC:
+                response = self._call_anthropic(sys_prompt, user_input)
+            elif self.llm_provider == LLMProvider.OPENAI:
                 response = self._call_openai(sys_prompt, user_input, ai_input)
             else:
                 raise ValueError("No LLM provider selected")
@@ -54,17 +37,18 @@ class LLMClient:
                 return "LLM response is None"
             return response
         except Exception as e:
-            print(f"LLM Call Warning: {e}")
-            return f"LLM Call Warning: {e}"
+            print(f"LLM Call error: {e}")
+            return f"LLM Call error: {e}"
 
     def _call_openrouter(self, sys_prompt: str, user_input: str, ai_input: str) -> str:
         print(f"Calling OpenRouter with {self.model} ...")
+        app_name = "newsletterdigest"
         llm = OpenAI(
-            base_url="https://openrouter.ai/api/v1",
-            api_key=OPENROUTER_API_KEY
+            base_url=self.llm_endpoint,
+            api_key=self.llm_inference_key
         )
         response = llm.chat.completions.create(
-            extra_headers={"HTTP-Referer": f"https://{self.app}.com", "X-Title": self.app},
+            extra_headers={"HTTP-Referer": f"https://{app_name}.com", "X-Title": app_name},
             model=self.model,
             messages=[
                 {"role": "system", "content": sys_prompt},
@@ -76,7 +60,7 @@ class LLMClient:
         return response.choices[0].message.content
 
     def _call_openai(self, sys_prompt: str, user_input: str, ai_input: str) -> str:
-        llm = OpenAI(api_key=OPENAI_API_KEY)
+        llm = OpenAI(api_key=self.llm_inference_key)
         response = llm.chat.completions.create(
             model=self.model,
             temperature=0.7,
@@ -88,9 +72,9 @@ class LLMClient:
         )
         return response.choices[0].message.content
 
-    def _call_anthropic(self, sys_prompt: str, user_input: str, ai_input: str) -> str:
+    def _call_anthropic(self, sys_prompt: str, user_input: str) -> str:
         from anthropic import Anthropic
-        llm = Anthropic(api_key=ANTHROPIC_API_KEY)
+        llm = Anthropic(api_key=self.llm_inference_key)
         response = llm.messages.create(
             max_tokens=4096,
             messages=[{
@@ -101,14 +85,19 @@ class LLMClient:
         )
         return response.content[0].text
 
-    def _call_azure_mistral(self, sys_prompt: str, user_input: str, ai_input: str, endpoint: str, inference_key: str) -> str:
+    def _call_azure_llm(self, sys_prompt: str, user_input: str, ai_input: str) -> str:
         from azure.ai.inference import ChatCompletionsClient
         from azure.core.credentials import AzureKeyCredential
-        print(f"Calling Azure Mistral with {self.model} model ...")
+        print(f"Calling Azure LLM with {self.llm_provider}...")
         client = ChatCompletionsClient(
-            endpoint=endpoint,
-            credential=AzureKeyCredential(inference_key)
+            endpoint=self.llm_endpoint,
+            credential=AzureKeyCredential(self.llm_inference_key)
         )
+        model_info = client.get_model_info()
+        print("Model name:", model_info.model_name)
+        print("Model type:", model_info.model_type)
+        print("Model provider name:", model_info.model_provider_name)
+
         messages = [{"role": "user", "content": f"<s>[INST]<<SYS>>{ sys_prompt }<</SYS>>"}]
         if ai_input:
             messages.append({"role": "assistant", "content": ai_input})
@@ -116,7 +105,7 @@ class LLMClient:
         
         payload = {
             "messages": messages,
-            "max_tokens": 8192,
+            "max_tokens": 1024,
             "temperature": 0.7,
             "top_p": 0.7
         }
@@ -124,12 +113,11 @@ class LLMClient:
         return response.choices[0].message.content
 
     def _call_azure_openai(self, sys_prompt: str, question: str, image_paths: list = None) -> str:
-        model = self.model if self.model != "" else AZURE_OPENAI_API_GPT_4o_MINI
-        print(f"Calling Azure OpenAI with {model}, image_paths: {image_paths} ...")
+        print(f"Calling Azure OpenAI with {self.model}, image_paths: {image_paths} ...")
         # Configuration
         headers = {
             "Content-Type": "application/json",
-            "api-key": AZURE_OPENAI_API_KEY,
+            "api-key": self.llm_inference_key,
         }
         # Payload for the request
         user_input = {
@@ -170,7 +158,7 @@ class LLMClient:
             "top_p": 0.7,
             "max_tokens": 8192
         }
-        url = f"{AZURE_OPENAI_API_BASE}/openai/deployments/{model}/chat/completions?api-version={AZURE_OPENAI_API_VERSION}"
+        url = f"{self.llm_endpoint}/openai/deployments/{self.model}/chat/completions?api-version={AZURE_OPENAI_API_VERSION}"
         # Send request
         try:
             response = requests.post(url, headers=headers, json=payload)
