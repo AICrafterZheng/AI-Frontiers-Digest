@@ -20,8 +20,8 @@ if __name__ == "__main__":
             )
 
     # # Send Twitter flow
-    run_send_twitter_flow.deploy(name="Send-Twitter",
-                work_pool_name="my-aci-pool",
-                image=DockerImage(name="twitter-image:v1.0.0", platform="linux/amd64", dockerfile="Dockerfile"),
-                schedules= [CronSchedule(cron="0 8 * * *", timezone="America/Los_Angeles")]
-                )
+#     run_send_twitter_flow.deploy(name="Send-Twitter",
+#                 work_pool_name="my-aci-pool",
+#                 image=DockerImage(name="twitter-image:v1.0.0", platform="linux/amd64", dockerfile="Dockerfile"),
+#                 schedules= [CronSchedule(cron="0 8 * * *", timezone="America/Los_Angeles")]
+#                 )
