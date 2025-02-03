@@ -50,7 +50,7 @@ export function Player() {
   if (!currentTrack || !isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gray-900 dark:bg-black border-t border-gray-800 dark:border-gray-700 p-4">
+    <div className="sticky bottom-0 left-0 right-0 bg-gray-900 dark:bg-black border-t border-gray-800 dark:border-gray-700 p-4">
       <button
         onClick={close}
         className="absolute top-2 right-4 text-gray-400 hover:text-white transition-colors"
