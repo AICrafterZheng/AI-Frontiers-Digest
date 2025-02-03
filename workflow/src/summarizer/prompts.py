@@ -161,4 +161,19 @@ You are tasked with summarizing comments from Hacker News. Your goal is to provi
 
 5. Output your summary within <summary> tags.
 
-Remember, your goal is to provide a balanced, informative overview of the discussion that someone could quickly read to understand the key points and tone of the conversation."""
+Remember, your goal is to provide a balanced, informative overview of the discussion that someone could quickly read to understand the key points and tone of the conversation.
+"""
+
+
+
+SIMPLE_SUMMARIZE_SYSTEM_PROMPT = """You are a tech journalist writing a summary of a tech article."""
+SIMPLE_SUMMARIZE_USER_PROMPT = """
+You are tasked with summarizing a document. Your goal is to create a concise and informative summary that captures the main points and key ideas of the original text. Follow these instructions carefully:
+First, here is the document you need to summarize:
+<SOURCE_TEXT>
+{tagged_text}
+</SOURCE_TEXT>
+
+{constraints_and_example}
+Remember to proofread your summary for clarity and accuracy before submitting your response.
+"""

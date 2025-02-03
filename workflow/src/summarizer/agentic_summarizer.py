@@ -29,10 +29,11 @@ class SummaryResult:
     final_summary: str
 
 class ContentSummarizer:
-    def __init__(self, llm_client: LLMClient, topic: str, url: str, generate_speech: bool = True, generate_podcast: bool = True, generate_summary: bool = True):
+    def __init__(self, llm_client: LLMClient, topic: str, url: str, generate_speech: bool = True, generate_podcast: bool = True, generate_summary: bool = True, content: str = ""):
         self.llm_client = llm_client
-        self.topic = topic
+        self.topic = topic if topic != "" else url
         self.url = url
+        self.content = content
         self.generate_speech = generate_speech
         self.generate_podcast = generate_podcast
         self.generate_summary = generate_summary
@@ -146,10 +147,12 @@ class ContentSummarizer:
     async def summarize_url(self) -> dict:
         print(f"Processing URL: {self.url} with model: {self.llm_client.model}")
         result = {"summary": "", "speech_url": "", "notebooklm_url": "", "title": ""}
-        # Fetch content
-        extracted_content = self.extract_content_from_url()
-        article = extracted_content.get("article", "")
-        result["title"] = extracted_content.get("title", "")
+        if self.content:
+            article = self.content
+        else:
+            extracted_content = self.extract_content_from_url()
+            article = extracted_content.get("article", "")
+            result["title"] = extracted_content.get("title", "")
 
         if self.generate_speech:
             audio_url = self.article_to_speech(article)
