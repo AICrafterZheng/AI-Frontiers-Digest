@@ -3,8 +3,11 @@ export function formatSummary(text: string): string {
     return "";
   }
 
-  // Function to clean text
+  // Function to clean text and handle bold formatting
   const cleanText = (text: string) => {
+    // Handle bold text (text between double asterisks)
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
     return text
       .trim()
       .replace(/^["'()]|["'()]$/g, '')
@@ -30,7 +33,7 @@ export function formatSummary(text: string): string {
         inSubList = false;
       }
       // Start new numbered item
-      html += `<li ">${cleanText(trimmedLine)}`;
+      html += `<li>${cleanText(trimmedLine)}`;
     } else if (trimmedLine.startsWith('-')) {
       // Handle sub-points
       if (!inSubList) {
