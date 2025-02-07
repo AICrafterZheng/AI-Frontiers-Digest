@@ -33,9 +33,9 @@ const CardContent = ({ children }: { children: React.ReactNode }) => (
   </div>
 )
 
-export function NewsletterCard({ story}: NewsletterCardProps) {
+export function NewsletterCard({ story, expanded = false }: NewsletterCardProps) {
   const [showCopied, setShowCopied] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(expanded);
 
   const handleCopyLink = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent header click from triggering

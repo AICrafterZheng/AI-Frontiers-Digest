@@ -89,9 +89,7 @@ const Newsletter: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4">
-      <NewsletterCard
-        story={story}
-      />
+      {story && <NewsletterCard story={story} expanded={true} />}
     </div>
   );
 };
