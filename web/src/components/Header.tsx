@@ -87,7 +87,7 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
               window.location.reload();
             }}
           >
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">AI Frontiers</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">AI Crafter</h1>
           </Link>
         </div>
 

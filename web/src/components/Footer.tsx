@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
           </div>
           
           <span className="text-sm text-gray-500 dark:text-gray-400">
-          &copy;{currentYear} AI Frontiers. All Rights Reserved.
+          &copy;{currentYear} AI Crafter. All Rights Reserved.
           </span>
         </div>
       </div>
