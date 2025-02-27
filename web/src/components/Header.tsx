@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react';
 import { Send, MessageSquare, Github, Archive, Menu, X, Sun, Moon } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeProvider';
@@ -6,6 +6,8 @@ import { useTheme } from '../context/ThemeProvider';
 interface HeaderProps {
   onSubscribeClick: () => void;
   onDiscordClick: () => void;
+  activeButton: ActiveButton;
+  setActiveButton: Dispatch<SetStateAction<ActiveButton>>;
 }
 
 interface GitHubStats {
@@ -13,7 +15,14 @@ interface GitHubStats {
   forks: number;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick }) => {
+type ActiveButton = 'subscribe' | 'discord' | 'archive' | 'github' | 'theme';
+
+export const Header: React.FC<HeaderProps> = ({ 
+  onSubscribeClick, 
+  onDiscordClick, 
+  activeButton, 
+  setActiveButton 
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [githubStats, setGithubStats] = useState<GitHubStats>({ stars: 0, forks: 0 });
   const { theme, toggleTheme } = useTheme();
@@ -68,6 +77,34 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
     if (callback) callback();
   };
 
+  const handleSubscribeClick = () => {
+    setActiveButton('subscribe');
+    onSubscribeClick();
+  };
+
+  const handleDiscordClick = () => {
+    setActiveButton('discord');
+    onDiscordClick();
+  };
+
+  const handleArchiveClick = () => {
+    setActiveButton('archive');
+    onArchiveClick();
+  };
+
+  const handleThemeClick = () => {
+    setActiveButton('theme');
+    toggleTheme();
+  };
+
+  const getButtonClass = (buttonType: ActiveButton) => {
+    const baseClass = "flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-base";
+    const gradientClass = "bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 hover:from-blue-700 hover:via-purple-700 hover:to-blue-700 text-white animate-gradient bg-[length:200%_auto]";
+    const regularClass = "bg-gray-100 hover:bg-gray-200 dark:bg-black dark:hover:bg-gray-900 dark:text-white";
+    
+    return `${baseClass} ${activeButton === buttonType ? gradientClass : regularClass}`;
+  };
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-200 ${
@@ -111,8 +148,8 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
         <div className="hidden md:flex items-center gap-2 sm:gap-4">
           <button
             data-testid="subscribe-button"
-            onClick={onSubscribeClick}
-            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-[#5865F2] text-white hover:bg-[#4752C4] transition-colors text-xs sm:text-base"
+            onClick={handleSubscribeClick}
+            className={getButtonClass('subscribe')}
           >
             <Send className="w-3 h-3 sm:w-4 sm:h-4 hidden sm:block" />
             <span>Subscribe</span>
@@ -120,8 +157,8 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
 
           <button
             data-testid="discord-button"
-            onClick={onDiscordClick}
-            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-black dark:hover:bg-gray-900 transition-colors text-xs sm:text-base dark:text-white"
+            onClick={handleDiscordClick}
+            className={getButtonClass('discord')}
           >
             <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4 hidden sm:block" />
             <span>Discord</span>
@@ -129,8 +166,8 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
 
           <button
             data-testid="archive-button"
-            onClick={onArchiveClick}
-            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-black dark:hover:bg-gray-900 transition-colors text-xs sm:text-base dark:text-white"
+            onClick={handleArchiveClick}
+            className={getButtonClass('archive')}
           >
             <Archive className="w-3 h-3 sm:w-4 sm:h-4 hidden sm:block" />
             <span>Archive</span>
@@ -141,7 +178,8 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
             href="https://github.com/AICrafterZheng/AI-Frontiers-Digest"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 sm:gap-3 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-black dark:hover:bg-gray-900 transition-colors text-xs sm:text-base dark:text-white"
+            onClick={() => setActiveButton('github')}
+            className={getButtonClass('github')}
           >
             <Github className="w-3 h-3 sm:w-4 sm:h-4 hidden sm:block" />
             <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
@@ -153,8 +191,8 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
 
           <button
             data-testid="theme-toggle"
-            onClick={toggleTheme}
-            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-black dark:hover:bg-gray-900 transition-colors text-xs sm:text-base dark:text-white"
+            onClick={handleThemeClick}
+            className={getButtonClass('theme')}
           >
             {theme === 'dark' ? (
               <Sun className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -171,8 +209,10 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
             <div className="flex flex-col p-4 space-y-4 max-w-6xl mx-auto">
               <button
                 data-testid="subscribe-button-mobile"
-                onClick={() => handleNavItemClick(onSubscribeClick)}
-                className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#5865F2] text-white hover:bg-[#4752C4] transition-colors"
+                onClick={() => {
+                  handleNavItemClick(handleSubscribeClick);
+                }}
+                className={getButtonClass('subscribe')}
               >
                 <span>Subscribe</span>
                 <Send className="w-4 h-4" />
@@ -180,8 +220,10 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
 
               <button
                 data-testid="discord-button-mobile"
-                onClick={() => handleNavItemClick(onDiscordClick)}
-                className="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-black dark:hover:bg-gray-900 transition-colors dark:text-white"
+                onClick={() => {
+                  handleNavItemClick(handleDiscordClick);
+                }}
+                className={getButtonClass('discord')}
               >
                 <span>Discord</span>
                 <MessageSquare className="w-4 h-4" />
@@ -189,8 +231,10 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
 
               <button
                 data-testid="archive-button-mobile"
-                onClick={() => handleNavItemClick(onArchiveClick)}
-                className="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-black dark:hover:bg-gray-900 transition-colors dark:text-white"
+                onClick={() => {
+                  handleNavItemClick(handleArchiveClick);
+                }}
+                className={getButtonClass('archive')}
               >
                 <span>Archive</span>
                 <Archive className="w-4 h-4" />
@@ -201,8 +245,11 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
                 href="https://github.com/AICrafterZheng/AI-Frontiers-Digest"
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => setIsMenuOpen(false)}
-                className="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-black dark:hover:bg-gray-900 transition-colors dark:text-white"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setActiveButton('github');
+                }}
+                className={getButtonClass('github')}
               >
                 <span>GitHub</span>
                 <div className="flex items-center gap-2">
@@ -213,8 +260,10 @@ export const Header: React.FC<HeaderProps> = ({ onSubscribeClick, onDiscordClick
 
               <button
                 data-testid="theme-toggle-mobile"
-                onClick={toggleTheme}
-                className="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-black dark:hover:bg-gray-900 transition-colors dark:text-white"
+                onClick={() => {
+                  handleNavItemClick(handleThemeClick);
+                }}
+                className={getButtonClass('theme')}
               >
                 <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
                 {theme === 'dark' ? (
