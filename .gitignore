@@ -159,6 +159,7 @@ wandb/
 
 tmp*
 test/
+test*
 generated/
 data/
 *venv/

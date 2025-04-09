@@ -104,3 +104,6 @@ CLOUDFLARE_AUDIO_URL = os.getenv("CLOUDFLARE_AUDIO_URL", "")
 # Messages
 FAILED_TO_FETCH_ARTICLE = "Jina Reader failed to fetch article"
 NO_CONTENT_EXTRACTED = "Jina Reader returned no content"
+
+# Firecrawl
+FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY", "")

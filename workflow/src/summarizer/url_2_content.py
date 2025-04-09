@@ -1,5 +1,6 @@
 from prefect import task, flow
 from src.utils.jina_reader import call_jina_reader
+from src.utils.firecrawl_utils import firecrawl_scrape
 from src.utils.llm_client import LLMClient
 from src.utils.helpers import extract_llm_response
 from src.config import (NO_CONTENT_EXTRACTED)
@@ -8,12 +9,16 @@ from .prompts import (
     EXTRACT_CONTENT_USER_PROMPT
 )
 from src.common import LLMProvider
+class Crawler:
+    JINA_READER = "jina_reader" # default
+    FIRECRAWL = "firecrawl"
 
 class ContentExtractor:
-    def __init__(self, url: str, topic: str = ""):
+    def __init__(self, url: str, topic: str = "", crawler: Crawler = Crawler.JINA_READER):
         self.llm_client = LLMClient(LLMProvider.AZURE_OPENAI_GPT_4o)
         self.topic = url if topic == "" else topic
         self.url = url
+        self.crawler = crawler
 
     @task(log_prints=True, cache_policy=None)
     def extract_content(self, topic: str, content: str) -> str:
@@ -35,7 +40,10 @@ class ContentExtractor:
     @flow(log_prints=True)
     def url_2_content(self) -> dict:
         # Fetch content
-        article, error = call_jina_reader(self.url)
+        if self.crawler == Crawler.JINA_READER:
+            article, error = call_jina_reader(self.url)
+        elif self.crawler == Crawler.FIRECRAWL:
+            article, error = firecrawl_scrape(self.url)
         if error or not article:
             return { "article": error or NO_CONTENT_EXTRACTED, "title": "" }
 

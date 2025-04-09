@@ -1,11 +1,10 @@
 from dataclasses import dataclass
 from prefect import task, flow
-from src.utils.jina_reader import call_jina_reader
 from src.utils.llm_client import LLMClient
-from src.utils.helpers import extract_llm_response
 from src.utils.tts import text_to_speech
 from src.utils.helpers import upload_file_to_r2
 from src.notebooklm.app import NotebookLM
+from src.summarizer.url_2_content import ContentExtractor, Crawler
 import uuid
 from src.config import (AUDIO_CACHE_DIR, 
                         NO_CONTENT_EXTRACTED)
@@ -29,11 +28,12 @@ class SummaryResult:
     final_summary: str
 
 class ContentSummarizer:
-    def __init__(self, llm_client: LLMClient, topic: str, url: str, generate_speech: bool = True, generate_podcast: bool = True, generate_summary: bool = True, content: str = ""):
+    def __init__(self, llm_client: LLMClient, topic: str, url: str, generate_speech: bool = True, generate_podcast: bool = True, generate_summary: bool = True, content: str = "", crawler: Crawler = Crawler.JINA_READER):
         self.llm_client = llm_client
         self.topic = topic if topic != "" else url
         self.url = url
         self.content = content
+        self.crawler = crawler
         self.generate_speech = generate_speech
         self.generate_podcast = generate_podcast
         self.generate_summary = generate_summary
@@ -126,22 +126,6 @@ class ContentSummarizer:
         public_url = await notebooklm.generate_and_upload_podcast(article)
         return public_url
 
-    @flow(log_prints=True)
-    def extract_content_from_url(self) -> dict:
-        # Fetch content
-        article, error = call_jina_reader(self.url)
-        if error or not article:
-            return { "article": error or NO_CONTENT_EXTRACTED, "title": "" }
-
-        # Extract and process content
-        article = self.extract_content(self.topic, article)
-        if not article:
-            return {"article": NO_CONTENT_EXTRACTED, "title": NO_CONTENT_EXTRACTED}
-        title = extract_llm_response(article, "title")
-        article = extract_llm_response(article, "extracted_content")
-
-        return {"article": article, "title": title}
-
 
     @flow(log_prints=True)
     async def summarize_url(self) -> dict:
@@ -150,7 +134,8 @@ class ContentSummarizer:
         if self.content:
             article = self.content
         else:
-            extracted_content = self.extract_content_from_url()
+            content_extractor = ContentExtractor(self.url, crawler=self.crawler)
+            extracted_content = content_extractor.url_2_content()
             article = extracted_content.get("article", "")
             result["title"] = extracted_content.get("title", "")
 

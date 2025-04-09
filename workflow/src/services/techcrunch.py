@@ -5,6 +5,7 @@ import re
 from datetime import datetime, timedelta
 from src.utils.discord import split_messages_to_send_discord
 from src.summarizer.agentic_summarizer import ContentSummarizer
+from src.summarizer.url_2_content import Crawler
 from urllib.parse import urlparse
 import pytz
 from typing import List
@@ -83,7 +84,8 @@ class TechCrunchService:
             result = await ContentSummarizer(
                 llm_client=self.llm_client, 
                 topic=url, 
-                url=url, 
+                url=url,
+                crawler=Crawler.FIRECRAWL,
                 generate_summary= len(self.columns_to_update) == 0 or "summary" in self.columns_to_update,
                 generate_speech= len(self.columns_to_update) == 0 or "speech_url" in self.columns_to_update,
                 generate_podcast= len(self.columns_to_update) == 0 or "notebooklm_url" in self.columns_to_update
