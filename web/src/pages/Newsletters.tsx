@@ -123,15 +123,15 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
   ) : error ? (
     <div className="text-center py-8 text-red-600 dark:text-red-400">{error}</div>
   ) : stories.length === 0 ? (
-    <div className="text-center py-8 text-gray-600 dark:text-gray-300">No stories found</div>
+    <div className="text-center py-8 text-gray-600 dark:text-gray-300">No stories found on the selected date, please try a different date.</div>
   ) : (
     <div>
       <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 dark:from-blue-400 dark:via-purple-400 dark:to-blue-400 bg-clip-text text-transparent animate-gradient mb-2">
         {source ? `${source} News` : 'Latest AI News'}
       </h1>
-
       <p className="text-center text-gray-600 dark:text-gray-300">        
-        {date ? new Date(`${date}T12:00:00Z`).toLocaleDateString() : new Date().toLocaleDateString()}
+        {/* check if current time is before 12pm don't add T12:00:00Z */}
+        {date ? (new Date().getHours() < 12 ? new Date(date).toLocaleDateString() : new Date(`${date}T12:00:00Z`).toLocaleDateString()) : new Date().toLocaleDateString()}
       </p>
       <p className="text-center">
         {stories.length > 0 && getSubtitle(countBySource)}
