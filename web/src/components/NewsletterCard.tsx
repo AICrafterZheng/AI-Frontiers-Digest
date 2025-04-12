@@ -140,7 +140,7 @@ export function NewsletterCard({ story, expanded = false }: NewsletterCardProps)
                   <div>
                     <AudioButton 
                       speechUrl={story.notebooklm_url} 
-                      name="NotebookLM" 
+                      name="Podcast" 
                       id={`${story.story_id}_podcast`}
                       title={story.title}
                       type="AI-generated podcast"

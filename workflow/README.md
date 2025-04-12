@@ -31,7 +31,7 @@ git clone https://github.com/AICrafterZheng/AI-Frontiers-Digest-Workflow.git
 2. Install dependencies
 
 ```bash
-python3.11 -m venv .venv
+python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```

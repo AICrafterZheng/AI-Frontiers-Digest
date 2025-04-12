@@ -28,7 +28,7 @@ class HackerNewsService:
     def __init__(self):
         self.logger = get_run_logger()
         self.header = "AI Frontiers on Hacker News"
-        self.llm_client = LLMClient(LLMProvider.AZURE_OPENAI_API_GPT_4o)
+        self.llm_client = LLMClient(LLMProvider.AZURE_OPENAI_GPT_4o)
         self.discord_webhooks = []
         self.columns_to_update = []
         self.save_to_supabase = True
@@ -163,7 +163,7 @@ async def run_hn_flow():
 
 @flow(log_prints=True, name="test-hn-flow")
 async def run_test_hn_flow():
-    # llm_client = LLMClient(LLMProvider.AZURE_OPENAI_API_GPT_4o)
+    # llm_client = LLMClient(LLMProvider.AZURE_OPENAI_GPT_4o)
     service = await HackerNewsService.create()
     service.save_to_supabase = True
     columns_to_update = []

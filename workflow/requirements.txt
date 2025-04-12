@@ -1,4 +1,4 @@
-prefect
+prefect==3.3.4
 python-dotenv
 supabase
 aiohttp

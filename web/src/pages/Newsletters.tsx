@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { NewsletterCard } from '../components/NewsletterCard';
 import { SearchBox } from '../components/SearchBox';
 import { Story, NewsletterProps } from "../types/types";
@@ -24,7 +24,8 @@ const getSubtitle = (countBySource: Record<string, number>) => {
 
 export default function AIFrontiersArticles({ source, limit }: NewsletterProps) {
   const [searchParams] = useSearchParams();
-  const date = searchParams.get('date');
+  const navigate = useNavigate();
+  const date = searchParams.get('date')
   const [stories, setStories] = useState<Story[]>([])
   const [searchResults, setSearchResults] = useState<Story[]>([])
   const [searchQuery, setSearchQuery] = useState('')
@@ -33,7 +34,34 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
   const [error, setError] = useState<string | null>(null)
   const setPlaylist = usePlayerStore(state => state.setPlaylist);
 
+  const handlePrevDay = () => {
+    const currentDate = date ? new Date(date) : new Date().toLocaleDateString();
+    const prevDate = new Date(currentDate);
+    prevDate.setDate(prevDate.getDate() + 1);
+    const today = new Date();
+    
+    // Prevent navigating to future dates
+    if (prevDate > today) {
+      console.log('Cannot navigate to future date');
+      return;
+    }
+    
+    const formattedDate = prevDate.toISOString().split('T')[0];
+    console.log('Navigating to previous day:', formattedDate);
+    navigate(`/articles?date=${formattedDate}`);
+  };
+
+  const handleNextDay = () => {
+    const currentDate = date ? new Date(date) : new Date().toLocaleDateString();
+    const nextDate = new Date(currentDate);
+    nextDate.setDate(nextDate.getDate() - 1);
+    const formattedDate = nextDate.toISOString().split('T')[0];
+    console.log('Navigating to next day:', formattedDate);
+    navigate(`/articles?date=${formattedDate}`);
+  };
+
   useEffect(() => {
+    console.log('Current date param:', date);
     const apiUrl = import.meta.env.VITE_BACKEND_API_URL;
 
     const fetchStories = async () => {
@@ -41,7 +69,6 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
         setLoading(true)
         // Build the URL with query parameters
         const params = new URLSearchParams()
-        // if (source) params.append('source', source)
         if (limit) params.append('limit', limit.toString())
         if (source) params.append('source', source)
         if (date) params.append('date', date)
@@ -84,7 +111,7 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
       }
     }
     fetchStories()
-  }, [source, limit, setPlaylist])
+  }, [source, limit, date, setPlaylist])
 
   const handleSearchResults = (results: Story[], query: string) => {
     setSearchResults(results);
@@ -102,8 +129,9 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
       <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 dark:from-blue-400 dark:via-purple-400 dark:to-blue-400 bg-clip-text text-transparent animate-gradient mb-2">
         {source ? `${source} News` : 'Latest AI News'}
       </h1>
-      <p className="text-center text-gray-600 dark:text-gray-300">
-        {date ? new Date(date).toLocaleDateString() : new Date().toLocaleDateString()}
+
+      <p className="text-center text-gray-600 dark:text-gray-300">        
+        {date ? new Date(`${date}T12:00:00Z`).toLocaleDateString() : new Date().toLocaleDateString()}
       </p>
       <p className="text-center">
         {stories.length > 0 && getSubtitle(countBySource)}
@@ -143,6 +171,23 @@ export default function AIFrontiersArticles({ source, limit }: NewsletterProps) 
   return (
     <div className="relative z-0">
       {content}
+      
+      {/* Navigation Buttons */}
+      <div className="flex justify-center gap-4 my-8">
+        <button
+          onClick={handlePrevDay}
+          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={new Date(date) >= new Date()}
+        >
+          ← Pre
+        </button>
+        <button
+          onClick={handleNextDay}
+          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        >
+          Next →
+        </button>
+      </div>
     </div>
   );
 }
