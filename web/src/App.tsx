@@ -13,8 +13,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<Layout />}>
-            <Route path="/" element={<AIFrontiersArticles limit={20}/>} />
-            <Route path="/articles" element={<AIFrontiersArticles limit={20}/>} />
+            <Route path="/" element={<AIFrontiersArticles/>} />
+            <Route path="/articles" element={<AIFrontiersArticles/>} />
             <Route path="/archive" element={<ArchiveList />} />
             <Route path="/feedback" element={<Redirect to="https://aicrafter.canny.io/feature-requests" />} />
             <Route path="/news/:id" element={<Newsletter />} />

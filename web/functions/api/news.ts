@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { constructResult } from '../../src/lib/utils';
-
+const LIMIT = 100;
 async function getLastRecordDate(supabase: any, tableName: string): Promise<string | null> {
   try {
     const { data, error } = await supabase
@@ -52,7 +52,7 @@ export async function onRequest(context: any) {
     const limit = url.searchParams.get('limit');
     const dateParam = url.searchParams.get('date');
     const id = url.searchParams.get('id');
-
+    console.log("url: ", url)
     // Use the last record date if no date parameter is provided
     let date: Date;
     if (dateParam) {
@@ -104,7 +104,7 @@ export async function onRequest(context: any) {
       }
 
       // Apply limit only when not searching by ID
-      query = query.limit(limit ? parseInt(limit) : 30)
+      query = query.limit(limit ? parseInt(limit) : LIMIT)
     }
     // Execute query
     const { data, error } = await query;
