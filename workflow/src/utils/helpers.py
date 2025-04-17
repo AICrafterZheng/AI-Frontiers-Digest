@@ -42,6 +42,10 @@ def save_to_supabase(stories):
     for story in stories:
         try:
             print(f"Saving story: {story.title}")
+            # only save if story.title is not empty
+            if story.title is None or story.title == "":
+                logger.error(f"Story title is empty: {story.url}")
+                continue
             # Safely handle summary splitting
             summary = story.summary.split("\n", 1)[1] if story.summary and "\n" in story.summary else story.summary
             story.summary = summary
