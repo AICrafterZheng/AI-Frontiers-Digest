@@ -26,3 +26,49 @@ def firecrawl_scrape(url: str) -> str:
 if __name__ == "__main__":
     url = "https://dannyzheng.me/2025/01/12/building-effective-agents/"
     firecrawl_scrape(url)
+
+
+def firecrawl_scrape_self_hosted(url: str) -> str:
+    import requests
+    payload = {
+        "url": url,
+        "formats": ["markdown"],
+        "onlyMainContent": True,
+        "includeTags": ["<string>"],
+        "excludeTags": ["<string>"],
+        "headers": {},
+        "waitFor": 0,
+        "mobile": False,
+        "skipTlsVerification": False,
+        "timeout": 30000,
+        "jsonOptions": {
+            "schema": {},
+            "systemPrompt": "<string>",
+            "prompt": "<string>"
+        },
+        "actions": [
+            {
+                "type": "wait",
+                "milliseconds": 2,
+                "selector": "#my-element"
+            }
+        ],
+        "location": {
+            "country": "US",
+            "languages": ["en-US"]
+        },
+        "removeBase64Images": True,
+        "blockAds": True,
+        "proxy": "basic",
+        "changeTrackingOptions": {
+            "mode": "git-diff",
+            "schema": {},
+            "prompt": "<string>"
+        }
+    }
+    headers = {
+        "Authorization": "Bearer <token>",
+        "Content-Type": "application/json"
+    }
+    response = requests.request("POST", "http://localhost:3002/v0/scrape", json=payload, headers=headers)
+    print(response.text)

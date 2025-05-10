@@ -19,13 +19,16 @@ class SimpleSummarizer:
 
 
     @task(log_prints=True, cache_policy=None)
-    def summarize(self, content: str) -> str:
+    def summarize(self, content: str, system_prompt: str = "", user_prompt: str = "") -> str:
         print(f"summarize - Content preview: {content[:100]}")
-        prompt = SIMPLE_SUMMARIZE_USER_PROMPT.format(
-            constraints_and_example=constraints_and_example, 
-            tagged_text=content
-        )
-        summary = self.llm_client.call_llm(SIMPLE_SUMMARIZE_SYSTEM_PROMPT, prompt)
+        if system_prompt == "":
+            system_prompt = SIMPLE_SUMMARIZE_SYSTEM_PROMPT
+        if user_prompt == "":
+            user_prompt = SIMPLE_SUMMARIZE_USER_PROMPT.format(
+                constraints_and_example=constraints_and_example, 
+                tagged_text=content
+            )
+        summary = self.llm_client.call_llm(system_prompt, user_prompt)
         print(f"summarize - Summary: {summary}")
         return summary
 

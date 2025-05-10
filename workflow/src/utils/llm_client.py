@@ -23,7 +23,7 @@ class LLMClient:
             response = ""
             if self.llm_provider == LLMProvider.AZURE_MISTRAL_SMALL or self.llm_provider == LLMProvider.AZURE_MISTRAL_LARGE or self.llm_provider == LLMProvider.AZURE_DEEPSEEK:
                     response = self._call_azure_llm(sys_prompt, user_input, ai_input)
-            elif self.llm_provider == LLMProvider.AZURE_OPENAI_GPT_4o or self.llm_provider == LLMProvider.AZURE_OPENAI_GPT_4o_MINI:
+            elif self.llm_provider == LLMProvider.AZURE_OPENAI_GPT_4o or self.llm_provider == LLMProvider.AZURE_OPENAI_GPT_4o_MINI or self.llm_provider == LLMProvider.AZURE_OPENAI_GPT_41:
                 response = self._call_azure_openai(sys_prompt, user_input, image_paths)
             elif self.llm_provider == LLMProvider.OPENROUTER:
                 response = self._call_openrouter(sys_prompt, user_input, ai_input)

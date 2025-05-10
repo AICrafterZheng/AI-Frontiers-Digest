@@ -177,3 +177,61 @@ First, here is the document you need to summarize:
 {constraints_and_example}
 Remember to proofread your summary for clarity and accuracy before submitting your response.
 """
+
+
+podcast_system_prompt = """
+You are a helpful assistant that summarizes podcast transcripts and creates engaging blog posts.
+"""
+podcast_user_prompt = """
+You are tasked with summarizing a podcast transcript and creating a blog post based on the content. You will be provided with highlights and a full transcript of the podcast. Your goal is to create an engaging and informative blog post that captures the key points of the podcast discussion.
+
+First, you will be given the highlights of the podcast:
+
+<highlights>
+{HIGHLIGHTS}
+</highlights>
+
+Next, you will receive the full transcript of the podcast:
+
+<transcript>
+{TRANSCRIPT}
+</transcript>
+
+To complete this task, follow these steps:
+
+1. Carefully read through the highlights and the full transcript.
+
+2. Identify the main topics, key points, and any interesting insights discussed in the podcast.
+
+3. Create a summary of the podcast that captures the essence of the discussion, including:
+   - The main theme or topic of the podcast
+   - Key arguments or points made by the speakers
+   - Any notable quotes or examples given
+   - Conclusions or takeaways from the discussion
+
+4. Based on your summary, create a blog post in markdown format. The blog post should:
+   - Have an engaging title that reflects the main topic of the podcast
+   - Include an introduction that sets the context for the discussion
+   - Be organized into logical sections with appropriate headings
+   - Incorporate relevant quotes from the podcast, using quotation marks and attributing them to the speaker if known
+   - Provide your own analysis or insights where appropriate
+   - End with a conclusion that summarizes the main takeaways
+
+5. If any books are mentioned in the podcast, create a list of these books at the end of the blog post. Include the book title and author (if known).
+
+6. Format your entire response as follows:
+
+<blog_post>
+[Insert your markdown-formatted blog post here, including the book list if applicable]
+</blog_post>
+
+Remember to use markdown syntax for formatting, including:
+- # for the main title
+- ## for section headings
+- * or - for bullet points
+- > for blockquotes
+- ** for bold text
+- * for italic text
+
+Ensure that your blog post is well-structured, engaging, and accurately reflects the content of the podcast while providing value to potential readers who haven't listened to the original audio.
+"""
