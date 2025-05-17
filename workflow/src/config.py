@@ -109,3 +109,4 @@ NO_CONTENT_EXTRACTED = "Jina Reader returned no content"
 
 # Firecrawl
 FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY", "")
+FIRECRAWL_SELF_HOSTED_URL = os.getenv("FIRECRAWL_SELF_HOSTED_URL", "")

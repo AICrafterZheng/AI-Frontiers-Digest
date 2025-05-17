@@ -2,11 +2,14 @@ from prefect import task, flow
 from .prompts import (
     constraints_and_example,
     SIMPLE_SUMMARIZE_SYSTEM_PROMPT,
-    SIMPLE_SUMMARIZE_USER_PROMPT
+    SIMPLE_SUMMARIZE_USER_PROMPT,
+    podcast_system_prompt,
+    podcast_user_prompt
 )
 from src.config import (NO_CONTENT_EXTRACTED)
 from .url_2_content import ContentExtractor
 from src.utils.llm_client import LLMClient
+from src.utils.helpers import extract_llm_response
 
 class SimpleSummarizer:
     def __init__(self, llm_client: LLMClient, url: str, content: str, generate_speech: bool = True, generate_podcast: bool = True, generate_summary: bool = True):
@@ -58,3 +61,14 @@ class SimpleSummarizer:
         return result
 
 
+    def summarize_content(self,  output_file: str, system_prompt: str = podcast_system_prompt) -> str:
+        try:
+            summary = self.llm_client.call_llm(sys_prompt=system_prompt, user_input=self.content)
+            summary = extract_llm_response(summary, "blog_post")
+            # Write summaries to the output file
+            with open(output_file, 'w', encoding='utf-8') as out_file:
+                out_file.write(summary)
+            print(f"Summary have been saved to {output_file}")
+            return summary
+        except Exception as e:
+            print(f"Error in summarize_file: {e}")

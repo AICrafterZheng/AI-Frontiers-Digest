@@ -216,8 +216,9 @@ To complete this task, follow these steps:
    - Incorporate relevant quotes from the podcast, using quotation marks and attributing them to the speaker if known
    - Provide your own analysis or insights where appropriate
    - End with a conclusion that summarizes the main takeaways
+   - Add the podcast link at the end of the blog post.
 
-5. If any books are mentioned in the podcast, create a list of these books at the end of the blog post. Include the book title and author (if known).
+5. If any books are mentioned/recommended in the podcast, create a list of these books at the end of the blog post. Include the book title, author (if known) and the reason why the book is mentioned/recommended.
 
 6. Format your entire response as follows:
 

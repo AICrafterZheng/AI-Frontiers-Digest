@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      imagePullSecrets:
+        - name: docker-registry-secret
+      containers:
+        - name: worker
+          image: docker.io/dannyzheng/firecrawl:latest
+          imagePullPolicy: Always
+          args: [ "pnpm", "run", "workers" ]
+          env:
+            - name: FLY_PROCESS_GROUP
+              value: "worker"
+          envFrom:
+            - configMapRef:
+                name: firecrawl-config
+            - secretRef:
+                name: firecrawl-secret

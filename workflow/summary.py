@@ -5,6 +5,7 @@ from src.utils.llm_client import LLMClient
 from src.utils.helpers import extract_llm_response
 from src.summarizer.prompts import podcast_system_prompt, podcast_user_prompt
 from src.common import LLMProvider
+
 def summarize_file( llm_client: LLMClient, content: str, output_file: str, chunk_size: int = 10000, chunking: bool = False) -> None:
     try:
         # Read the input file
@@ -37,11 +38,21 @@ def summarize_file( llm_client: LLMClient, content: str, output_file: str, chunk
 
 
 if __name__ == "__main__":
-    from tmp.jerry_colonna import highlights, transcript
-    output_file = "/Users/danny/Documents/repos/posts/aicrafterzheng.github.io/docs/posts/podcasts/ceo_coaching.md"
-    chunking = False
+
+    file_name = "the_power_of_introvert"
+    content = f"/Users/danny/Documents/repos/posts/aicrafterzheng.github.io/docs/posts/podcasts/transcripts/{file_name}.txt"
+    file_name = f"{file_name}1.md"
+    output_file = f"/Users/danny/Documents/repos/posts/aicrafterzheng.github.io/docs/posts/podcasts/{file_name}"
     # llm_client = LLMClient(llm_provider=LLMProvider.AZURE_OPENAI_GPT_4o)
     llm_client = LLMClient(llm_provider=LLMProvider.AZURE_OPENAI_GPT_41)
+    highlights = ""
+    transcript = ""
+    with open(content, 'r', encoding='utf-8') as file:
+        file_content = file.read()
+        [highlights, transcript] = file_content.split("danny_cut")
+    # summarize_file(llm_client, transcript, output_file, chunking=chunking)
+    prompt = podcast_user_prompt.format( HIGHLIGHTS=highlights, TRANSCRIPT=transcript)
 
-    summarize_file(llm_client, transcript, output_file, chunking=chunking)
+    summarizer = SimpleSummarizer(llm_client, "", prompt)
+    summarizer.summarize_content(output_file=output_file)
   

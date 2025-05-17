@@ -1,6 +1,6 @@
 from prefect import task, flow
 from src.utils.jina_reader import call_jina_reader
-from src.utils.firecrawl_utils import firecrawl_scrape
+from src.utils.firecrawl_utils import firecrawl_scrape, firecrawl_scrape_self_hosted
 from src.utils.llm_client import LLMClient
 from src.utils.helpers import extract_llm_response
 from src.config import (NO_CONTENT_EXTRACTED)
@@ -43,7 +43,7 @@ class ContentExtractor:
         if self.crawler == Crawler.JINA_READER:
             article, error = call_jina_reader(self.url)
         elif self.crawler == Crawler.FIRECRAWL:
-            article, error = firecrawl_scrape(self.url)
+            article, error = firecrawl_scrape_self_hosted(self.url)
         if error or not article:
             return { "article": error or NO_CONTENT_EXTRACTED, "title": "" }
 
