@@ -7,18 +7,19 @@ from .prompts import (
     podcast_user_prompt
 )
 from src.config import (NO_CONTENT_EXTRACTED)
-from .url_2_content import ContentExtractor
+from src.summarizer.url_2_content import ContentExtractor, Crawler
 from src.utils.llm_client import LLMClient
 from src.utils.helpers import extract_llm_response
 
 class SimpleSummarizer:
-    def __init__(self, llm_client: LLMClient, url: str, content: str, generate_speech: bool = True, generate_podcast: bool = True, generate_summary: bool = True):
+    def __init__(self, llm_client: LLMClient, url: str, content: str = "", crawler: Crawler = Crawler.JINA_READER, generate_speech: bool = True, generate_podcast: bool = True, generate_summary: bool = True):
         self.llm_client = llm_client
         self.url = url
         self.content = content
         self.generate_speech = generate_speech
         self.generate_podcast = generate_podcast
         self.generate_summary = generate_summary
+        self.crawler = crawler
 
 
     @task(log_prints=True, cache_policy=None)
@@ -43,7 +44,7 @@ class SimpleSummarizer:
             article = self.content
         else:
             # Fetch content
-            content_extractor = ContentExtractor(self.url)
+            content_extractor = ContentExtractor(self.url, crawler=self.crawler)
             extracted_content = content_extractor.url_2_content()
             article = extracted_content.get("article", "")
             result["title"] = extracted_content.get("title", "")

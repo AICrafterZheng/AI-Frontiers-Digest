@@ -165,7 +165,6 @@ Remember, your goal is to provide a balanced, informative overview of the discus
 """
 
 
-
 SIMPLE_SUMMARIZE_SYSTEM_PROMPT = """You are a tech journalist writing a summary of a tech article."""
 SIMPLE_SUMMARIZE_USER_PROMPT = """
 You are tasked with summarizing a document. Your goal is to create a concise and informative summary that captures the main points and key ideas of the original text. Follow these instructions carefully:

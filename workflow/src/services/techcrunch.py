@@ -5,6 +5,7 @@ import re
 from datetime import datetime, timedelta
 from src.utils.discord import split_messages_to_send_discord
 from src.summarizer.agentic_summarizer import ContentSummarizer
+from src.summarizer.simple_summarizer import SimpleSummarizer
 from src.summarizer.url_2_content import Crawler
 from urllib.parse import urlparse
 import pytz
@@ -81,9 +82,8 @@ class TechCrunchService:
         stories = []
         for url in urls:
             # Use TechCrunch url as the topic
-            result = await ContentSummarizer(
+            result = SimpleSummarizer(
                 llm_client=self.llm_client, 
-                topic=url, 
                 url=url,
                 crawler=Crawler.FIRECRAWL,
                 generate_summary= len(self.columns_to_update) == 0 or "summary" in self.columns_to_update,
@@ -141,9 +141,9 @@ async def run_tc_flow():
     await service.run_flow()
 
 @flow(log_prints=True, name="test-tc-flow")
-async def run_test_tc_flow():
+async def run_test_tc_flow(urls: List[str] = []):
     # urls = ["https://techcrunch.com/2024/11/23/meet-three-incoming-eu-lawmakers-in-charge-of-key-tech-policy-areas/"]
-    urls = ["https://techcrunch.com/2024/12/07/openai-bets-youll-pay-200-a-month-for-chatgpt/"]
+    # urls = ["https://techcrunch.com/2024/12/07/openai-bets-youll-pay-200-a-month-for-chatgpt/"]
     # from src.utils.supabase_utils import searchRow
     # from src.config import SUPABASE_TABLE
     # stories = searchRow(SUPABASE_TABLE, "source", TC_SOURCE_NAME, "speech_url", None)
