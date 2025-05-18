@@ -43,6 +43,11 @@ class NotebookLM:
         print(f"generate_chinese_podcast - Response: {response}")
         return response
 
+    def one_shot_transcript(self, raw_text: str) -> str:
+        """Generate one shot transcript from raw text."""
+        response = self.llm_client.call_llm(sys_prompt=chinese_podcast_prompt, user_input=raw_text)
+        print(f"one_shot_transcript - Response: {response}")
+        return response
 
     @task(name="transcript_to_podcast")
     async def transcript_to_podcast(self, transcript: str) -> str:
@@ -52,10 +57,11 @@ class NotebookLM:
     @flow(name="generate_upload_podcast")
     async def generate_and_upload_podcast(self, raw_text: str) -> str:
         """Main flow to generate podcast from raw text."""
-        preprocessed = self.preprocess_text(raw_text)
-        transcript = self.write_transcript(preprocessed)
-        tts_transcript = self.rewrite_transcript(transcript)
-        audio_path = await self.transcript_to_podcast(tts_transcript)
+        # preprocessed = self.preprocess_text(raw_text)
+        # transcript = self.write_transcript(preprocessed)
+        # tts_transcript = self.rewrite_transcript(transcript)
+        one_shot_transcript = self.one_shot_transcript(raw_text)
+        audio_path = await self.transcript_to_podcast(one_shot_transcript)
         public_url = upload_file_to_r2(audio_path)
         print(f"generate_upload_podcast - Public URL: {public_url}")
         return public_url
@@ -64,7 +70,7 @@ class NotebookLM:
     @flow(name="test_generate_chinese_podcast")
     async def test_generate_chinese_podcast(self, raw_text: str):
         """Test flow to generate Chinese podcast."""
-        response = self.generate_chinese_podcast(raw_text)
+        response = self.one_shot_transcript(raw_text)
         audio_path = await self.transcript_to_podcast(response)
         print(f"test_generate_chinese_podcast - Audio path: {audio_path}")
 
