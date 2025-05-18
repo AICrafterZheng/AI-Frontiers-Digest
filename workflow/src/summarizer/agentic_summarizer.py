@@ -84,23 +84,6 @@ class ContentSummarizer:
             final_summary=final_summary
         )
 
-
-    @task(log_prints=True, cache_policy=None)
-    def extract_content(self, topic: str, content: str) -> str:
-        try:
-            user_input = EXTRACT_CONTENT_USER_PROMPT.format(
-                JINA_READER_CONTENT=content,
-                TOPIC=topic
-            )
-            extracted_content = self.llm_client.call_llm(
-                EXTRACT_CONTENT_SYS_PROMPT,
-                user_input
-            )
-            print(f"Extracted content preview (first 100 characters): {extracted_content[:100]}")
-            return extracted_content
-        except Exception as e:
-            return f"Error extracting content: {e}"
-
     @flow(log_prints=True)
     async def summarize_url(self) -> dict:
         print(f"Processing URL: {self.url} with model: {self.llm_client.model}")
@@ -108,7 +91,7 @@ class ContentSummarizer:
         if self.content:
             article = self.content
         else:
-            content_extractor = ContentExtractor(self.url, crawler=self.crawler)
+            content_extractor = ContentExtractor(self.url, topic=self.topic, crawler=self.crawler)
             extracted_content = content_extractor.url_2_content()
             article = extracted_content.get("article", "")
             result["title"] = extracted_content.get("title", "")

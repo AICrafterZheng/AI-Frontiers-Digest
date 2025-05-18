@@ -8,7 +8,8 @@ from src.utils.llm_client import LLMClient
 from src.utils.email_sender import send_emails
 from src.utils.supabase_utils import checkIfExists
 from src.summarizer.hn_comments_summarizer import HNCommentsSummarizer
-from src.summarizer.agentic_summarizer import ContentSummarizer
+from src.summarizer.simple_summarizer import SimpleSummarizer
+
 from src.utils.discord import split_messages_to_send_discord
 from src.utils.helpers import has_mentioned_keywords, save_to_supabase, update_supabase_row
 from typing import Optional
@@ -116,10 +117,10 @@ class HackerNewsService:
                 if len(self.columns_to_update) == 0 or "comments_summary" in self.columns_to_update:
                     comments_summary = await HNCommentsSummarizer(self.llm_client).summarize_comments(str(story.id))
                     story.comments_summary = comments_summary
-                result = await ContentSummarizer(
+                result = await SimpleSummarizer(
                     self.llm_client,
-                    story.title,
-                    url,
+                    topic=story.title,
+                    url=url,
                     generate_summary= len(self.columns_to_update) == 0 or "summary" in self.columns_to_update,
                     generate_speech= len(self.columns_to_update) == 0 or "speech_url" in self.columns_to_update,
                     generate_podcast= len(self.columns_to_update) == 0 or "notebooklm_url" in self.columns_to_update

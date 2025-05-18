@@ -13,8 +13,9 @@ from src.utils.helpers import extract_llm_response
 from src.utils.tts import article_to_audio
 from src.notebooklm.app import NotebookLM
 class SimpleSummarizer:
-    def __init__(self, llm_client: LLMClient, url: str, content: str = "", crawler: Crawler = Crawler.JINA_READER, generate_speech: bool = True, generate_podcast: bool = True, generate_summary: bool = True):
+    def __init__(self, llm_client: LLMClient, topic: str, url: str, content: str = "", crawler: Crawler = Crawler.JINA_READER, generate_speech: bool = True, generate_podcast: bool = True, generate_summary: bool = True):
         self.llm_client = llm_client
+        self.topic = topic if topic != "" else url
         self.url = url
         self.content = content
         self.generate_speech = generate_speech
@@ -45,7 +46,7 @@ class SimpleSummarizer:
             article = self.content
         else:
             # Fetch content
-            content_extractor = ContentExtractor(self.url, crawler=self.crawler)
+            content_extractor = ContentExtractor(self.url, topic=self.topic, crawler=self.crawler)
             extracted_content = content_extractor.url_2_content()
             article = extracted_content.get("article", "")
             result["title"] = extracted_content.get("title", "")

@@ -83,6 +83,7 @@ class TechCrunchService:
             # Use TechCrunch url as the topic
             result = await SimpleSummarizer(
                 llm_client=self.llm_client, 
+                topic=url,
                 url=url,
                 crawler=Crawler.FIRECRAWL,
                 generate_summary= len(self.columns_to_update) == 0 or "summary" in self.columns_to_update,
