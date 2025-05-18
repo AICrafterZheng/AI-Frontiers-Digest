@@ -5,7 +5,8 @@ from src.utils.helpers import upload_file_to_r2, extract_llm_response
 from .prompts import (
     SYS_PROMPT_PREPROCESS,
     SYSTEMP_PROMPT_TRANSCRIPT_WRITER,
-    SYSTEMP_PROMPT_TRANSCRIPT_REWRITER
+    SYSTEMP_PROMPT_TRANSCRIPT_REWRITER,
+    chinese_podcast_prompt
 )
 
 class NotebookLM:
@@ -35,6 +36,14 @@ class NotebookLM:
         print(f"rewrite_transcript - extracted Response: {response}")
         return response
 
+    @task(name="generate_chinese_podcast")
+    def generate_chinese_podcast(self, raw_text: str) -> str:
+        """Generate Chinese podcast from raw text."""
+        response = self.llm_client.call_llm(sys_prompt=chinese_podcast_prompt, user_input=raw_text)
+        print(f"generate_chinese_podcast - Response: {response}")
+        return response
+
+
     @task(name="transcript_to_podcast")
     async def transcript_to_podcast(self, transcript: str) -> str:
         """Generate podcast audio from transcript."""
@@ -50,3 +59,12 @@ class NotebookLM:
         public_url = upload_file_to_r2(audio_path)
         print(f"generate_upload_podcast - Public URL: {public_url}")
         return public_url
+    
+    # test flow
+    @flow(name="test_generate_chinese_podcast")
+    async def test_generate_chinese_podcast(self, raw_text: str):
+        """Test flow to generate Chinese podcast."""
+        response = self.generate_chinese_podcast(raw_text)
+        audio_path = await self.transcript_to_podcast(response)
+        print(f"test_generate_chinese_podcast - Audio path: {audio_path}")
+

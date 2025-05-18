@@ -38,7 +38,7 @@
     - OpenRouter: claude-3.5-sonet, mistral-7b-instruct
 - Jina Reader: URL to LLM-friendly input.
 - NotebookLM: article to Podcast
-    - Credits to [NotebookLlama](https://github.com/meta-llama/llama-recipes/blob/main/recipes/quickstart/NotebookLlama/README.md) for podcast transcript generation, and [PodCastLM](https://github.com/YOYZHANG/PodCastLM/blob/master/backend/utils.py) for audio generation.
+    - Credits to [NotebookLlama](https://github.com/meta-llama/llama-cookbook/blob/7dab6a3298ec2e4742283670b56b6d405bafb54d/end-to-end-use-cases/NotebookLlama/README.md) for podcast transcript generation, and [PodCastLM](https://github.com/YOYZHANG/PodCastLM/blob/master/backend/utils.py) for audio generation.
     - Transcript generation model: gpt-4o (Azure AI Services)
     - Audio generation: Azure TTS (Text-to-Speech)
 - Prefect: Workflow orchestration
