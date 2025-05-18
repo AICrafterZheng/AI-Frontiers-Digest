@@ -1,9 +1,8 @@
 import boto3
 from botocore.config import Config
-import os
 from typing import Optional, BinaryIO
 from pathlib import Path
-from src.config import CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_ACCESS_KEY_ID, CLOUDFLARE_ACCESS_KEY_SECRET, CLOUDFLARE_BUCKET_NAME
+from src.config import CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_ACCESS_KEY_ID, CLOUDFLARE_ACCESS_KEY_SECRET, CLOUDFLARE_BUCKET_NAME, CLOUDFLARE_AUDIO_URL
 from prefect import task, get_run_logger
 
 class R2Client:
@@ -84,6 +83,23 @@ class R2Client:
         )
 
         return key
+
+    @task(log_prints=True, cache_policy=None)
+    def upload_file_to_r2(self, file: str) -> str:
+        logger = get_run_logger()
+        try:
+            # Upload file
+            logger.info(f"Uploading {file}")
+            file_path = Path(file)
+            key = file_path.name
+            uploaded_key = self.upload_file(file_path, key=key)
+            logger.info(f"File uploaded successfully: {uploaded_key}")
+            public_url = f"{CLOUDFLARE_AUDIO_URL}/{uploaded_key}"
+            logger.info(f"Public URL: {public_url}")
+            return public_url
+        except Exception as e:
+            logger.error(f"Error uploading {file}: {e}")
+            return ""
 
     def upload_fileobj(
         self,

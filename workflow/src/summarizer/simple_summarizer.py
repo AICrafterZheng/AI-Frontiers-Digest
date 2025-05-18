@@ -10,7 +10,8 @@ from src.config import (NO_CONTENT_EXTRACTED)
 from src.summarizer.url_2_content import ContentExtractor, Crawler
 from src.utils.llm_client import LLMClient
 from src.utils.helpers import extract_llm_response
-
+from src.utils.tts import article_to_audio
+from src.notebooklm.app import NotebookLM
 class SimpleSummarizer:
     def __init__(self, llm_client: LLMClient, url: str, content: str = "", crawler: Crawler = Crawler.JINA_READER, generate_speech: bool = True, generate_podcast: bool = True, generate_summary: bool = True):
         self.llm_client = llm_client
@@ -37,7 +38,7 @@ class SimpleSummarizer:
         return summary
 
     @flow(log_prints=True)
-    def summarize_url(self) -> dict:
+    async def summarize_url(self) -> dict:
         print(f"Processing URL: {self.url} with model: {self.llm_client.model}")
         result = {"summary": "", "title": ""}
         if not self.url:
@@ -48,6 +49,14 @@ class SimpleSummarizer:
             extracted_content = content_extractor.url_2_content()
             article = extracted_content.get("article", "")
             result["title"] = extracted_content.get("title", "")
+
+        if self.generate_speech:
+            audio_url = article_to_audio(article)
+            result["speech_url"] = audio_url
+        if self.generate_podcast:
+            notebooklm = NotebookLM(self.llm_client)
+            notebooklm_url = await notebooklm.generate_podcast(article)
+            result["notebooklm_url"] = notebooklm_url
 
         if len(article) < 500:
             result["summary"] = article

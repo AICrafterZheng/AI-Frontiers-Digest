@@ -4,7 +4,6 @@ from prefect.variables import Variable
 import re
 from datetime import datetime, timedelta
 from src.utils.discord import split_messages_to_send_discord
-from src.summarizer.agentic_summarizer import ContentSummarizer
 from src.summarizer.simple_summarizer import SimpleSummarizer
 from src.summarizer.url_2_content import Crawler
 from urllib.parse import urlparse
@@ -23,7 +22,7 @@ from src.common import LLMProvider
 class TechCrunchService:
     def __init__(self):
         self.base_url = "https://techcrunch.com/category/artificial-intelligence/"
-        self.llm_client = LLMClient(LLMProvider.AZURE_OPENAI_GPT_4o)
+        self.llm_client = LLMClient(LLMProvider.AZURE_OPENAI_GPT_4o_MINI)
         self.header = "AI Frontiers on TechCrunch"
         
         # Get current date in PST
@@ -82,7 +81,7 @@ class TechCrunchService:
         stories = []
         for url in urls:
             # Use TechCrunch url as the topic
-            result = SimpleSummarizer(
+            result = await SimpleSummarizer(
                 llm_client=self.llm_client, 
                 url=url,
                 crawler=Crawler.FIRECRAWL,
@@ -157,7 +156,7 @@ async def run_test_tc_flow(urls: List[str] = []):
     columns_to_update.append("summary")
     columns_to_update.append("title")
     # columns_to_update.append("speech_url")
-    # columns_to_update.append("notebooklm_url")
+    columns_to_update.append("notebooklm_url")
     # columns_to_update.append("story_id")
     service.columns_to_update = columns_to_update
     # service.formatted_dates = ["2024/11/19", "2024/11/20"]

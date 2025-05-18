@@ -7,6 +7,20 @@ import ast
 import uuid
 import os
 from pydub import AudioSegment
+from src.utils.r2_client import R2Client
+
+@task(log_prints=True, cache_policy=None)
+def article_to_audio(article: str) -> str:
+    # Generate uuid for the file name
+    print(f"Generating speech for article: {article[:100]}")
+    if not article or len(article) < 100:
+        print("Article too short to generate speech: {article}")
+        return ""
+    os.makedirs(AUDIO_CACHE_DIR, exist_ok=True)
+    unique_filename = os.path.join(AUDIO_CACHE_DIR, f"{uuid.uuid4()}.mp3")
+    text_to_speech(article, unique_filename)
+    public_url = R2Client().upload_file_to_r2(unique_filename)
+    return public_url
 
 @task(log_prints=True, cache_policy=None)
 def text_to_speech(text: str, output_file: str = "output.mp3"):

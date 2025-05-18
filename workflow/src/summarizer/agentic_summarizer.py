@@ -1,14 +1,9 @@
 from dataclasses import dataclass
 from prefect import task, flow
 from src.utils.llm_client import LLMClient
-from src.utils.tts import text_to_speech
-from src.utils.helpers import upload_file_to_r2
 from src.notebooklm.app import NotebookLM
 from src.summarizer.url_2_content import ContentExtractor, Crawler
-import uuid
-from src.config import (AUDIO_CACHE_DIR, 
-                        NO_CONTENT_EXTRACTED)
-import os
+from src.config import (NO_CONTENT_EXTRACTED)
 from .prompts import (
     constraints_and_example,
     INITIAL_SUMMARIZE_SYSTEM_PROMPT,
@@ -106,27 +101,6 @@ class ContentSummarizer:
         except Exception as e:
             return f"Error extracting content: {e}"
 
-    @task(log_prints=True, cache_policy=None)
-    def article_to_speech(self, article: str) -> str:
-        # Generate uuid for the file name
-        print(f"Generating speech for article: {self.url}")
-        os.makedirs(AUDIO_CACHE_DIR, exist_ok=True)
-        unique_filename = os.path.join(AUDIO_CACHE_DIR, f"{uuid.uuid4()}.mp3")
-        text_to_speech(article, unique_filename)
-        public_url = upload_file_to_r2(unique_filename)
-        return public_url
-
-    @task(log_prints=True, cache_policy=None)
-    async def article_to_podcast(self, article: str) -> str:
-        print(f"Generating podcast for article: {self.url}")
-        if not article or len(article) < 100:
-            print("Article too short to generate podcast: {article}")
-            return ""
-        notebooklm = NotebookLM(llm_client=self.llm_client)
-        public_url = await notebooklm.generate_and_upload_podcast(article)
-        return public_url
-
-
     @flow(log_prints=True)
     async def summarize_url(self) -> dict:
         print(f"Processing URL: {self.url} with model: {self.llm_client.model}")
@@ -140,10 +114,10 @@ class ContentSummarizer:
             result["title"] = extracted_content.get("title", "")
 
         if self.generate_speech:
-            audio_url = self.article_to_speech(article)
+            audio_url = NotebookLM(self.llm_client).article_to_audio(article)
             result["speech_url"] = audio_url
         if self.generate_podcast:
-            notebooklm_url = await self.article_to_podcast(article)
+            notebooklm_url = await NotebookLM(self.llm_client).generate_podcast(article)
             result["notebooklm_url"] = notebooklm_url
         if len(article) < 500:
             result["summary"] = article

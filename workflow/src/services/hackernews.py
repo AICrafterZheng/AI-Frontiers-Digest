@@ -28,7 +28,7 @@ class HackerNewsService:
     def __init__(self):
         self.logger = get_run_logger()
         self.header = "AI Frontiers on Hacker News"
-        self.llm_client = LLMClient(LLMProvider.AZURE_OPENAI_GPT_4o)
+        self.llm_client = LLMClient(LLMProvider.AZURE_OPENAI_GPT_4o_MINI)
         self.discord_webhooks = []
         self.columns_to_update = []
         self.save_to_supabase = True
